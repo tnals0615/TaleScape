@@ -1,0 +1,168 @@
+/* Global Styles */
+body {
+  height: 100vh;
+  margin: 0;
+  padding: 20px;
+  overflow: hidden; /* 전체 페이지 스크롤 제거 */
+  background-color: white;
+  color: black;
+}
+
+main {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 100px); /* 헤더와 여백 제외한 화면 높이 */
+  overflow: hidden; /* 메인 내부의 스크롤 제거 */
+}
+
+/* Link Styles */
+a {
+  color: black; /* 링크 색상 검정 */
+}
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: black; /* 모든 상태에서 검정색 유지 */
+  text-underline-offset: 4px; /* 밑줄 간격 */
+}
+
+/* List Styles */
+.toggle-list {
+  list-style-type: none; /* 기본 목록 스타일 제거 */
+  padding: 10px 0 0 10px;
+}
+ul {
+  padding: 10px 0 0 20px;
+  margin: 0;
+}
+li {
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+/* Divider */
+.black-divider {
+  border: none; /* 기본 스타일 제거 */
+  border-top: 2px solid black; /* 검정색 상단 선 */
+}
+
+/* Title Styles */
+.TaleScape {
+  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-size: 64px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.aside-title {
+  margin-top: 10px;
+  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-size: 20px;
+}
+
+.main-title {
+  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-size: 40px;
+  text-align: center;
+  text-decoration: underline; /* 텍스트 밑줄 */
+  text-decoration-thickness: 2px; /* 밑줄 두께 */
+  text-underline-offset: 20px; /* 텍스트와 밑줄 간격 */
+  margin-bottom: 50px;
+}
+
+/* Layout: Aside and Section */
+aside,
+section {
+  background-color: #d9d9d9;
+  height: calc(100% - 70px); /* 페이지 상단 및 하단 20px 여백 */
+  padding: 10px;
+  position: relative;
+  box-sizing: border-box; /* padding 포함 */
+  margin: 20px 0; /* 상하 여백 */
+  font-family: "나눔스퀘어_ac", sans-serif;
+}
+
+aside {
+  width: 15%;
+  font-size: 16px;
+}
+
+section {
+  width: 100%;
+  margin: 20px 20px; /* 좌우 여백 */
+  padding: 30px 20px 10px; /* 상단 여백, 좌우 여백 */
+  font-size: 20px;
+  overflow-y: auto; /* 세로 스크롤 추가 */
+}
+
+/* Header Container */
+.header-container {
+  display: flex;
+  align-items: flex-end; /* 텍스트와 아이콘 아래 정렬 */
+  justify-content: space-between; /* 공간 배분 */
+}
+
+/* Icon Styles */
+.icon-plus {
+  font-size: 20px;
+  color: white;
+  background-color: black; /* 검정 배경 */
+  border-radius: 10px; /* 모서리 둥글게 */
+  width: 30px; /* 정사각형 너비 */
+  height: 30px; /* 정사각형 높이 */
+  display: flex; /* 내용 가운데 정렬을 위해 flex 사용 */
+  align-items: center; /* 수직 가운데 정렬 */
+  justify-content: center; /* 수평 가운데 정렬 */
+  margin-bottom: -3px; /* 아래로 살짝 내리기 */
+}
+
+.icon-moon {
+  font-size: 30px;
+  color: white;
+  background-color: black; /* 검정 배경 */
+  border-radius: 10px; /* 모서리 둥글게 */
+  margin: 0 5px 10px 0; /* 여백 설정 */
+  padding: 5px;
+}
+
+button {
+  border: none; /* 기본 테두리 제거 */
+  outline: none; /* 포커스 시 생기는 외곽선 제거 */
+  background: transparent; /* 배경 제거 */
+  padding: 0; /* 기본 여백 제거 */
+  cursor: pointer; /* 버튼처럼 동작하도록 커서 변경 */
+}
+
+/* 다크모드 */
+body.dark-mode {
+  background-color: black;
+  color: white;
+}
+
+body.dark-mode a:link,
+body.dark-mode a:visited,
+body.dark-mode a:hover,
+body.dark-mode a:active {
+  color: white; /* 모든 상태에서 흰색 유지 */
+}
+
+body.dark-mode aside,
+body.dark-mode section {
+  background-color: #414141;
+}
+
+body.dark-mode .icon-moon {
+  color: black; /* 다크 모드에서는 아이콘 색상을 검정으로 변경 */
+  background-color: white; /* 배경을 흰색으로 변경 */
+}
+
+body.dark-mode .icon-plus {
+  color: black; /* 다크 모드에서는 아이콘 색상을 검정으로 변경 */
+  background-color: white; /* 배경을 흰색으로 변경 */
+}
+
+body.dark-mode .black-divider {
+  border: none; /* 기본 스타일 제거 */
+  border-top: 2px solid white; /* 검정색 상단 선 */
+}
