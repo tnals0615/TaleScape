@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소설 작성 및 편집 도구</title>
+    <style>
+        #editor {
+            margin: 20px;
+        }
+        #editing-tools {
+            margin: 10px 20px;
+        }
+        #preview {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 200px;
+        }
+        .animated {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        #novel-content {
+            white-space: pre-wrap;  /* 줄바꿈 유지 */
+            font-family: Arial, sans-serif;
+        }
+        
+        /* 태그 숨기기 위한 스타일 */
+        #novel-content {
+            color: transparent;
+            text-shadow: 0 0 0 #000;
+        }
+        
+        /* 크기 선택 드롭다운 스타일 */
+        #font-size-select {
+            margin: 0 10px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="editor">
+        <textarea id="novel-content" rows="20" cols="80"></textarea>
+    </div>
+    <div id="editing-tools">
+        <button onclick="applyStyle('bold')">굵게</button>
+        <button onclick="applyStyle('italic')">기울임꼴</button>
+        <select id="font-size-select" onchange="changeFontSize(this.value)">
+            <option value="">글자 크기</option>
+            <option value="small">작게</option>
+            <option value="medium">보통</option>
+            <option value="large">크게</option>
+            <option value="x-large">매우 크게</option>
+        </select>
+        <input type="color" onchange="changeColor(this.value)">
+        <button onclick="applyAnimation()">애니메이션</button>
+        <input type="file" accept="audio/*" onchange="addBackgroundMusic(this)">
+    </div>
+    <div id="preview">
+        <!-- 실시간 미리보기 영역 -->
+    </div>
+
+    <script>
+        const textarea = document.getElementById('novel-content');
+        const preview = document.getElementById('preview');
+
+        // 텍스트 입력시 실시간 미리보기
+        textarea.addEventListener('input', function() {
+            updatePreview();
+        });
+
+        function updatePreview() {
+            let previewContent = textarea.value;
+            // 모든 태그 변환
+            previewContent = previewContent
+                .replace(/\{size:([^}]+)\}([^{]+)\{\/size\}/g, '<span style="font-size: $1">$2</span>')
+                .replace(/\*([^\*]+)\*/g, '<strong>$1</strong>')
+                .replace(/_([^_]+)_/g, '<em>$1</em>')
+                .replace(/\{color:([^}]+)\}([^{]+)\{\/color\}/g, '<span style="color: $1">$2</span>')
+                .replace(/\n/g, '<br>');
+            preview.innerHTML = previewContent;
+        }
+
+        // 스타일 적용 함수
+        function applyStyle(style) {
+            const selection = textarea.value.substring(
+                textarea.selectionStart, 
+                textarea.selectionEnd
+            );
+            if (!selection) return;
+
+            let prefix = '', suffix = '';
+            switch(style) {
+                case 'bold':
+                    prefix = '*';
+                    suffix = '*';
+                    break;
+                case 'italic':
+                    prefix = '_';
+                    suffix = '_';
+                    break;
+            }
+
+            // 텍스트 에디터 업데이트
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            textarea.value = 
+                textarea.value.substring(0, start) + 
+                prefix + selection + suffix + 
+                textarea.value.substring(end);
+
+            // 미리보기 업데이트
+            let previewContent = textarea.value;
+            // 마크다운 스타일 변환
+            previewContent = previewContent
+                .replace(/\*([^\*]+)\*/g, '<strong>$1</strong>')
+                .replace(/_([^_]+)_/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+            preview.innerHTML = previewContent;
+
+            // 커서 위치 조정
+            textarea.selectionStart = start;
+            textarea.selectionEnd = end + prefix.length + suffix.length;
+            textarea.focus();
+        }
+
+        // 색상 변경 함수
+        function changeColor(color) {
+            const selection = textarea.value.substring(
+                textarea.selectionStart, 
+                textarea.selectionEnd
+            );
+            if (!selection) return;
+
+            const prefix = `{color:${color}}`;
+            const suffix = '{/color}';
+
+            // 텍스트 에디터 업데이트
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            textarea.value = 
+                textarea.value.substring(0, start) + 
+                prefix + selection + suffix + 
+                textarea.value.substring(end);
+
+            // 미리보기 업데이트
+            let previewContent = textarea.value;
+            // 색상 태그 변환
+            previewContent = previewContent
+                .replace(/\{color:([^}]+)\}([^{]+)\{\/color\}/g, '<span style="color: $1">$2</span>')
+                .replace(/\n/g, '<br>');
+            preview.innerHTML = previewContent;
+
+            // 커서 위치 조정
+            textarea.selectionStart = start;
+            textarea.selectionEnd = end + prefix.length + suffix.length;
+            textarea.focus();
+        }
+
+        // 애니메이션 적용 함수
+        function applyAnimation() {
+            const selection = window.getSelection();
+            const selectedText = selection.toString();
+            if (!selectedText) return;
+            
+            const styledText = `<span class="animated">${selectedText}</span>`;
+            
+            // textarea의 내용 업데이트
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            textarea.value = 
+                textarea.value.substring(0, start) + 
+                styledText + 
+                textarea.value.substring(end);
+                
+            // 미리보기 업데이트
+            preview.innerHTML = textarea.value.replace(/\n/g, '<br>');
+        }
+
+        // 배경 음악 추가 함수
+        function addBackgroundMusic(input) {
+            const file = input.files[0];
+            if (file) {
+                const audio = document.createElement('audio');
+                audio.src = URL.createObjectURL(file);
+                audio.controls = true;
+                document.body.appendChild(audio);
+            }
+        }
+
+        // 글자 크기 변경 함수 추가
+        function changeFontSize(size) {
+            const selection = textarea.value.substring(
+                textarea.selectionStart, 
+                textarea.selectionEnd
+            );
+            if (!selection) return;
+
+            const prefix = `{size:${size}}`;
+            const suffix = '{/size}';
+
+            // 텍스트 에디터 업데이트
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            textarea.value = 
+                textarea.value.substring(0, start) + 
+                prefix + selection + suffix + 
+                textarea.value.substring(end);
+
+            // 미리보기 업데이트
+            let previewContent = textarea.value;
+            // 크기 태그 변환
+            previewContent = previewContent
+                .replace(/\{size:([^}]+)\}([^{]+)\{\/size\}/g, '<span style="font-size: $1">$2</span>')
+                .replace(/\*([^\*]+)\*/g, '<strong>$1</strong>')
+                .replace(/_([^_]+)_/g, '<em>$1</em>')
+                .replace(/\{color:([^}]+)\}([^{]+)\{\/color\}/g, '<span style="color: $1">$2</span>')
+                .replace(/\n/g, '<br>');
+            preview.innerHTML = previewContent;
+
+            // 커서 위치 조정
+            textarea.selectionStart = start;
+            textarea.selectionEnd = end + prefix.length + suffix.length;
+            textarea.focus();
+        }
+    </script>
+</body>
+</html>
