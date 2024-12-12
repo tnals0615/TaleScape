@@ -1,613 +1,613 @@
 body {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .sidebar {
-    background-color: #e0e0e0;
-    min-height: calc(100vh - 60px);
-    padding: 20px;
+  background-color: #e0e0e0;
+  min-height: calc(100vh - 60px);
+  padding: 20px;
 }
 
 .main-content {
-    background-color: #e0e0e0;
-    min-height: calc(100vh - 60px);
-    padding: 20px;
-    margin: 0 20px;
-    border-radius: 4px;
+  background-color: #e0e0e0;
+  min-height: calc(100vh - 60px);
+  padding: 20px;
+  margin: 0 20px;
+  border-radius: 4px;
 }
 
 .project-list {
-    list-style: none;
-    padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
 .project-list li {
-    padding: 8px 0;
+  padding: 8px 0;
 }
 
 .menu-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
 }
 
 .menu-list li {
-    padding: 8px 0;
-    color: #666;
+  padding: 8px 0;
+  color: #666;
 }
 
 .menu-list li.active {
-    color: #ff4444;
+  color: #ff4444;
 }
 
 .chapter-table {
-    margin-top: 100px;
-    background-color: white;
-    border-radius: 4px;
+  margin-top: 100px;
+  background-color: white;
+  border-radius: 4px;
 }
 
 .status-badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    background-color: #ddd;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #ddd;
 }
 
 .chapter-row .delete-btn {
-    display: none;
-    color: #dc3545;
+  display: none;
+  color: #dc3545;
 }
 
 .chapter-row:hover .delete-btn {
-    display: inline-block;
+  display: inline-block;
 }
 
 .chapter-row .delete-btn:hover {
-    color: #bb2d3b;
+  color: #bb2d3b;
 }
 
 .header {
-    padding: 20px 20px;
+  padding: 20px 20px;
 }
 
 .header h1 {
-    font-family: 'NanumMyeongjo', serif;
-    font-size: 64px;
-    font-weight: bold;
+  font-family: "NanumMyeongjo", serif;
+  font-size: 64px;
+  font-weight: bold;
 }
 
 .theme-toggle {
-    color: #333;
-    text-decoration: none;
+  color: #333;
+  text-decoration: none;
 }
 
 .theme-toggle:hover {
-    color: #666;
+  color: #666;
 }
 
 hr {
-    margin: 0 20px;
-    border-color: #ccc;
+  margin: 0 20px;
+  border-color: #ccc;
 }
 
 /* 다크모드 스타일 */
 body.dark-mode .theme-toggle {
-    color: #fff;
+  color: #fff;
 }
 
 body.dark-mode .theme-toggle:hover {
-    color: #ccc;
+  color: #ccc;
 }
 
 body.dark-mode hr {
-    border-color: #444;
+  border-color: #444;
 }
 
 body.dark-mode {
-    background-color: #1a1a1a;
-    color: #ffffff;
+  background-color: #1a1a1a;
+  color: #ffffff;
 }
 
 body.dark-mode .sidebar {
-    background-color: #2a2a2a;
+  background-color: #2a2a2a;
 }
 
 body.dark-mode .main-content {
-    background-color: #2a2a2a;
+  background-color: #2a2a2a;
 }
 
 body.dark-mode .section-header,
 body.dark-mode .project-description,
 body.dark-mode .chapter-table,
 body.dark-mode .section-content {
-    background-color: #333 !important;
-    color: #ffffff;
+  background-color: #333 !important;
+  color: #ffffff;
 }
 
 body.dark-mode .table {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 body.dark-mode .form-control,
 body.dark-mode .form-select {
-    background-color: #2a2a2a;
-    border-color: #444;
-    color: #ffffff;
+  background-color: #2a2a2a;
+  border-color: #444;
+  color: #ffffff;
 }
 
 body.dark-mode .btn-outline-secondary {
-    color: #ffffff !important;
-    border-color: #666;
-    background-color: #444 !important;
+  color: #ffffff !important;
+  border-color: #666;
+  background-color: #444 !important;
 }
 
 body.dark-mode .btn-outline-secondary:hover {
-    background-color: #444;
+  background-color: #444;
 }
 
 body.dark-mode .modal-content {
-    background-color: #2a2a2a;
-    color: #ffffff;
+  background-color: #2a2a2a;
+  color: #ffffff;
 }
 
 body.dark-mode .modal-header {
-    border-bottom-color: #444;
+  border-bottom-color: #444;
 }
 
 body.dark-mode .modal-footer {
-    border-top-color: #444;
+  border-top-color: #444;
 }
 
 body.dark-mode .btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%);
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 body.dark-mode .text-muted {
-    color: #aaa !important;
+  color: #aaa !important;
 }
 
 body.dark-mode .bg-light {
-    background-color: #333 !important;
+  background-color: #333 !important;
 }
 
 body.dark-mode .memo-item,
 body.dark-mode .character-item {
-    background-color: #2a2a2a !important;
+  background-color: #2a2a2a !important;
 }
 
 body.dark-mode .btn-link {
-    color: #aaa;
+  color: #aaa;
 }
 
 body.dark-mode .btn-link:hover {
-    color: #fff;
+  color: #fff;
 }
 
 .project-item .btn-link,
 .memo-item .btn-link,
 .character-item .btn-link,
 .chapter-row .btn-link {
-    display: none;
+  display: none;
 }
 
 .project-item:hover .btn-link,
 .memo-item:hover .btn-link,
 .character-item:hover .btn-link,
 .chapter-row:hover .btn-link {
-    display: inline-block;
+  display: inline-block;
 }
 
 /* 스타일 수정 - URL 버튼 관련 스타일 추가 */
 .chapter-row .btn-link {
-    display: none;
+  display: none;
 }
 
 .chapter-row:hover .btn-link {
-    display: inline-block;
+  display: inline-block;
 }
 
 /* URL 버튼은 항상 표시 */
 .chapter-row .url-btn {
-    display: inline-block !important;
+  display: inline-block !important;
 }
 
 /* 폰트 정의 */
 @font-face {
-    font-family: 'NanumMyeongjo';
-    src: url('./fonts/NanumMyeongjo.otf') format('opentype');
+  font-family: "NanumMyeongjo";
+  src: url("./fonts/NanumMyeongjo.otf") format("opentype");
 }
 
 /* 섹션 헤더 스타일 */
 .section-header {
-    cursor: pointer;
-    user-select: none;
-    background: none !important;
-    font-weight: bold;
-    padding-left: 1.5rem !important;
-    position: relative;
+  cursor: pointer;
+  user-select: none;
+  background: none !important;
+  font-weight: bold;
+  padding-left: 1.5rem !important;
+  position: relative;
 }
 
 .section-header i {
-    transition: transform 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 /* 섹션 내용 토글 애니메이션 */
 .collapse {
-    display: none;
+  display: none;
 }
 
 .collapse.show {
-    display: block;
+  display: block;
 }
 
 .collapsing {
-    height: 0;
-    overflow: hidden;
-    transition: height 0.35s ease;
+  height: 0;
+  overflow: hidden;
+  transition: height 0.35s ease;
 }
 
 /* 섹션 헤더의 화살표 아이콘 회전 애니메이션 */
 .section-header .bi-chevron-down {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
 }
 
 .section-header.collapsed .bi-chevron-down {
-    transform: translateY(-50%) rotate(-90deg);
+  transform: translateY(-50%) rotate(-90deg);
 }
 
 /* 커서 스타일 */
 .cursor-pointer {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 /* edit.html 관련 스타일 */
 .editor-section {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .editor-section textarea {
-    border: none;
-    resize: none;
+  border: none;
+  resize: none;
 }
 
 .editor-section textarea:focus {
-    outline: none;
-    box-shadow: none;
+  outline: none;
+  box-shadow: none;
 }
 
 /* 다크모드에서 에디터 스타일 */
 body.dark-mode .editor-section {
-    background-color: #2a2a2a;
-    border-color: #444;
+  background-color: #2a2a2a;
+  border-color: #444;
 }
 
 body.dark-mode .editor-section textarea {
-    background-color: #2a2a2a;
-    color: #fff;
+  background-color: #2a2a2a;
+  color: #fff;
 }
 
 /* 툴바 스타일 */
 .tool-section li {
-    cursor: pointer;
-    color: #666;
+  cursor: pointer;
+  color: #666;
 }
 
 .tool-section li:hover {
-    color: #333;
+  color: #333;
 }
 
 body.dark-mode .tool-section li {
-    color: #aaa;
+  color: #aaa;
 }
 
 body.dark-mode .tool-section li:hover {
-    color: #fff;
+  color: #fff;
 }
 
 /* 메인 컨텐츠 영역 스타일 수정 */
 .main-content {
-    background-color: #e0e0e0;
-    min-height: calc(100vh - 60px);
-    padding: 20px;
-    margin: 0 20px;
-    border-radius: 4px;
+  background-color: #e0e0e0;
+  min-height: calc(100vh - 60px);
+  padding: 20px;
+  margin: 0 20px;
+  border-radius: 4px;
 }
 
 /* 다크모드에서 메인 컨텐츠 배경색 */
 body.dark-mode .main-content {
-    background-color: #2a2a2a;
+  background-color: #2a2a2a;
 }
 
 /* 사이드바와 메인 컨텐츠 사이 간격 */
 .col-md-8 {
-    padding: 0 15px;
+  padding: 0 15px;
 }
 
 /* 텍스트 영역 스타일 */
 .main-content textarea {
-    width: 100%;
-    background-color: #fff;
+  width: 100%;
+  background-color: #fff;
 }
 
 body.dark-mode .main-content textarea {
-    background-color: #333;
-    color: #fff;
+  background-color: #333;
+  color: #fff;
 }
 
 body.dark-mode .form-select {
-    background-color: #ffffff;
-    border-color: #444;
-    color: #000000;
+  background-color: #ffffff;
+  border-color: #444;
+  color: #000000;
 }
 
 /* 다크모드에서 select 요소에 hover 효과 */
 body.dark-mode .form-select:hover {
-    background-color: #f8f8f8;
+  background-color: #f8f8f8;
 }
 
 /* 다크모드에서 select 요소가 focus 됐을 때 */
 body.dark-mode .form-select:focus {
-    background-color: #f8f8f8;
-    border-color: #666;
-    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+  background-color: #f8f8f8;
+  border-color: #666;
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
 }
 
 /* 챕터 제목 링크 스타일 */
 .chapter-title {
-    color: inherit;
+  color: inherit;
 }
 
 body.dark-mode .chapter-title {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 .chapter-title:hover {
-    text-decoration: underline !important;
+  text-decoration: underline !important;
 }
 
 /* 프로젝트 설명 부분 스타일 수정 */
 .project-description {
-    background: none !important;
-    border: none !important;
+  background: none !important;
+  border: none !important;
 }
 
 /* 다크모드에서도 배경 없애기 */
 body.dark-mode .section-header,
 body.dark-mode .project-description {
-    background: none !important;
+  background: none !important;
 }
 
 /* 섹션 내용 스타일 수정 */
 .section-content {
-    background: none !important;
-    border: none !important;
+  background: none !important;
+  border: none !important;
 }
 
 /* 버튼 스타일 수정 */
 .add-memo-btn,
 .add-character-btn,
 .add-world-btn {
-    background: none !important;
-    border: none !important;
-    color: inherit;
+  background: none !important;
+  border: none !important;
+  color: inherit;
 }
 
 /* 다크모드에서 섹션 내용 배경 제거 */
 body.dark-mode .section-content {
-    background: none !important;
+  background: none !important;
 }
 
 /* 메모, 캐릭터, 세계관 아이템 스타일 수정 */
 .memo-item,
 .character-item,
 .world-item {
-    background: none !important;
-    border: none !important;
+  background: none !important;
+  border: none !important;
 }
 
 body.dark-mode .memo-item,
 body.dark-mode .character-item,
 body.dark-mode .world-item {
-    background: none !important;
+  background: none !important;
 }
 
 /* 프로젝트 제목 스타일 */
 .main-content h2 {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 /* 다크모드에서 표 스타일 수정 */
 body.dark-mode .table {
-    color: #aaa;
+  color: #aaa;
 }
 
 /* 다크모드에서 호버 시 버튼과 텍스트 숨김 */
 body.dark-mode .chapter-row:hover .btn-link,
 body.dark-mode .chapter-row:hover .url-btn,
 body.dark-mode .chapter-row:hover .chapter-title {
-    color: #2a2a2a;
+  color: #2a2a2a;
 }
 
 /* URL 버튼 스타일 수정 */
 .url-btn {
-    color: #666;
+  color: #666;
 }
 
 body.dark-mode .url-btn {
-    color: #aaa;
+  color: #aaa;
 }
 
 /* 챕터 테이블 스타일 */
 .chapter-table {
-    margin-top: 100px;
-    background-color: white;
-    border-radius: 4px;
+  margin-top: 100px;
+  background-color: white;
+  border-radius: 4px;
 }
 
 /* 챕터 행 텍스트 스타일 */
 .chapter-row td {
-    color: #000000 !important;
+  color: #000000 !important;
 }
 
 /* 챕터 행의 버튼 스타일 */
 .chapter-row .btn-link {
-    display: none;
+  display: none;
 }
 
 .chapter-row:hover .btn-link {
-    display: inline-block;
+  display: inline-block;
 }
 
 /* URL 버튼 스타일 */
 .chapter-row .url-btn {
-    display: inline-block !important;
-    color: #000000 !important;
+  display: inline-block !important;
+  color: #000000 !important;
 }
 
 /* 메모, 캐릭터, 세계관 리스트 스타일 */
 .memo-list,
 .character-list,
 .world-list {
-    list-style: none;
-    padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
 .memo-list li,
 .character-list li,
 .world-list li {
-    margin-bottom: 0.5rem;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 /* 다크모드에서 리스트 구분선 */
 body.dark-mode .memo-list li,
 body.dark-mode .character-list li,
 body.dark-mode .world-list li {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* 섹션 간격 조정 */
 .sections > section {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 /* 마지막 ��션은 여백 제거 */
 .sections > section:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 /* 토글 섹션 내부 여백 조정 */
 .section-content {
-    padding: 1rem !important;
+  padding: 1rem !important;
 }
 
 /* 다크모드에서도 챕터 행 텍스트 색상 유지 */
 body.dark-mode .chapter-row td,
 body.dark-mode .chapter-row .url-btn,
 body.dark-mode .chapter-title {
-    color: #000000 !important;
+  color: #000000 !important;
 }
 
 /* 다크모드에서 테이블 배경색 */
 body.dark-mode .chapter-table {
-    background-color: white !important;
+  background-color: white !important;
 }
 
 /* 기본 레이아웃 */
 .header-wrap {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
 }
 
 .logo {
-    font-size: 64px;
-    font-weight: bold;
-    font-family: 'NanumMyeongjo', serif;
+  font-size: 64px;
+  font-weight: bold;
+  font-family: "NanumMyeongjo", serif;
 }
 
 .theme-btn {
-    border: none;
-    background: none;
+  border: none;
+  background: none;
 }
 
 /* 사이드바 */
 .sidebar {
-    padding: 1rem;
+  padding: 1rem;
 }
 
 .project-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .add-btn {
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
 }
 
 /* 토글 섹션 */
 .toggle-wrap {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .toggle-header {
-    cursor: pointer;
-    padding-left: 1.5rem;
-    position: relative;
+  cursor: pointer;
+  padding-left: 1.5rem;
+  position: relative;
 }
 
 .toggle-content {
-    padding: 1rem;
+  padding: 1rem;
 }
 
 .item-list {
-    list-style: none;
-    padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
 /* 테이블 */
 .data-table {
-    background: white;
-    border-radius: 4px;
-    margin-top: 2rem;
+  background: white;
+  border-radius: 4px;
+  margin-top: 2rem;
 }
 
 /* 다크모드 */
 .dark {
-    background: #1a1a1a;
-    color: white;
+  background: #1a1a1a;
+  color: white;
 }
 
 .dark .data-table {
-    background: white;
-    color: black;
+  background: white;
+  color: black;
 }
 
 /* 챕터 테이블의 새 항목 추가 버튼만 수정 */
 body.dark-mode .chapter-table .btn-outline-secondary {
-    color: #ffffff !important;
-    border-color: #666;
-    background-color: #444 !important;
+  color: #ffffff !important;
+  border-color: #666;
+  background-color: #444 !important;
 }
 
 body.dark-mode .chapter-table .btn-outline-secondary:hover {
-    background-color: #444;
+  background-color: #444;
 }
 
 /* 메모, 캐릭터, 세계관 추가 버튼은 원래 스타일 유지 */
 body.dark-mode .add-memo-btn,
 body.dark-mode .add-character-btn,
 body.dark-mode .add-world-btn {
-    background: none !important;
-    border: none !important;
-    color: inherit;
+  background: none !important;
+  border: none !important;
+  color: inherit;
 }
