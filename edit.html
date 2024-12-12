@@ -9,11 +9,12 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
   </head>
   <body>
     <div class="header-container">
       <header class="TaleScape">TaleScape</header>
-      <i class="fa-solid fa-moon icon-moon"></i>
+      <button id="moon"><i class="fa-solid fa-moon icon-moon"></i></button>
     </div>
 
     <hr class="black-divider" />
@@ -22,7 +23,9 @@
       <aside>
         <div class="header-container">
           <header class="aside-title">Project</header>
-          <i class="fa-solid fa-square-plus icon-plus"></i>
+          <button class="icon-plus">
+            <i class="fa-solid fa-plus"></i>
+          </button>
         </div>
 
         <hr class="black-divider" />
@@ -37,9 +40,11 @@
 
       <section>
         <header class="main-title">1화. 괴담에 떨어짐</header>
-        <article></article>
-        <article></article>
-        <article>위지위그 에디터</article>
+        <article>▼ 줄거리</article>
+        <article>▼ 본문</article>
+        <textarea id="wysiwyg-editor">
+위지위그 에디터를 여기에 추가합니다.</textarea
+        >
       </section>
 
       <aside>
@@ -55,5 +60,7 @@
         </article>
       </aside>
     </main>
+
+    <script src="script_edit.js"></script>
   </body>
 </html>

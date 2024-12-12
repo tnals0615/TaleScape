@@ -4,6 +4,8 @@ body {
   margin: 0;
   padding: 20px;
   overflow: hidden; /* 전체 페이지 스크롤 제거 */
+  background-color: white;
+  color: black;
 }
 
 main {
@@ -87,7 +89,7 @@ aside {
 }
 
 section {
-  width: 85%;
+  width: 100%;
   margin: 20px 20px; /* 좌우 여백 */
   padding: 30px 20px 10px; /* 상단 여백, 좌우 여백 */
   font-size: 20px;
@@ -103,17 +105,64 @@ section {
 
 /* Icon Styles */
 .icon-plus {
-  font-size: 30px;
-  cursor: pointer;
+  font-size: 20px;
+  color: white;
+  background-color: black; /* 검정 배경 */
+  border-radius: 10px; /* 모서리 둥글게 */
+  width: 30px; /* 정사각형 너비 */
+  height: 30px; /* 정사각형 높이 */
+  display: flex; /* 내용 가운데 정렬을 위해 flex 사용 */
+  align-items: center; /* 수직 가운데 정렬 */
+  justify-content: center; /* 수평 가운데 정렬 */
   margin-bottom: -3px; /* 아래로 살짝 내리기 */
 }
 
 .icon-moon {
   font-size: 30px;
-  color: #ffd43b; /* 노란색 */
+  color: white;
   background-color: black; /* 검정 배경 */
   border-radius: 10px; /* 모서리 둥글게 */
   margin: 0 5px 10px 0; /* 여백 설정 */
   padding: 5px;
-  cursor: pointer;
+}
+
+button {
+  border: none; /* 기본 테두리 제거 */
+  outline: none; /* 포커스 시 생기는 외곽선 제거 */
+  background: transparent; /* 배경 제거 */
+  padding: 0; /* 기본 여백 제거 */
+  cursor: pointer; /* 버튼처럼 동작하도록 커서 변경 */
+}
+
+/* 다크모드 */
+body.dark-mode {
+  background-color: black;
+  color: white;
+}
+
+body.dark-mode a:link,
+body.dark-mode a:visited,
+body.dark-mode a:hover,
+body.dark-mode a:active {
+  color: white; /* 모든 상태에서 흰색 유지 */
+}
+
+body.dark-mode aside,
+body.dark-mode section {
+  background-color: #414141;
+}
+
+body.dark-mode .icon-moon {
+  color: black; /* 다크 모드에서는 아이콘 색상을 검정으로 변경 */
+  background-color: white; /* 배경을 흰색으로 변경 */
+}
+
+body.dark-mode .icon-plus {
+  color: black; /* 다크 모드에서는 아이콘 색상을 검정으로 변경 */
+  background-color: white; /* 배경을 흰색으로 변경 */
+}
+
+body.dark-mode .black-divider {
+  border: none; /* 기본 스타일 제거 */
+  border-top: 2px solid white; /* 검정색 상단 선 */
 }
