@@ -1,0 +1,118 @@
+body {
+  height: 100vh;
+  margin: 0;
+  padding: 20px;
+  overflow: hidden; /* 전체 페이지 스크롤 제거 */
+}
+
+main {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 100px); /* 헤더와 여백 제외한 화면 높이 */
+  overflow: hidden; /* 메인 내부의 스크롤 제거 */
+}
+
+/* 링크 */
+a {
+  color: black; /* 링크 색상 검정 */
+}
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: black; /* 모든 상태에서 검정색 유지 */
+  text-underline-offset: 4px;
+}
+
+/* 리스트 */
+.toggle-list {
+  list-style-type: none; /* 기본 목록 스타일 제거 */
+  padding: 10px 0px 0px 10px;
+}
+ul {
+  padding: 10px 0px 0px 20px;
+  margin: 0;
+}
+li {
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+/* 구분선 */
+.black-divider {
+  border: none; /* 기본 스타일 제거 */
+  border-top: 2px solid black; /* 검정색 상단 선 */
+}
+
+/* 타이틀 */
+.TaleScape {
+  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-size: 64px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.aside-title {
+  margin-top: 10px;
+  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-size: 20px;
+}
+
+.main-title {
+  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-size: 40px;
+  text-align: center;
+  text-decoration: underline; /* 텍스트 밑줄 */
+  text-decoration-thickness: 2px; /* 밑줄 두께 */
+  text-underline-offset: 20px; /* 텍스트와 밑줄 간격 */
+  margin-bottom: 50px;
+}
+
+/* 메인 */
+aside,
+section {
+  background-color: #d9d9d9;
+  height: calc(100% - 70px); /* 페이지 상단 및 하단 20px 여백 */
+  padding: 10px;
+  position: relative;
+  box-sizing: border-box; /* padding 포함 */
+  margin: 20px 0; /* 상하 여백 */
+  font-family: "나눔스퀘어_ac", sans-serif;
+}
+
+aside {
+  width: 15%;
+  font-size: 16px;
+}
+
+section {
+  width: 85%;
+  margin: 20px 20px; /* 좌우 여백 */
+  padding: 30px 20px 10px; /* 상단 여백, 좌우 여백 */
+  font-size: 20px;
+  overflow-y: auto; /* 세로 스크롤 추가 */
+}
+
+.header-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between; /* 공간 배분 */
+}
+
+.icon-plus {
+  font-size: 30px;
+  cursor: pointer;
+  margin-bottom: -3px;
+}
+
+.icon-moon {
+  font-size: 30px;
+  color: #ffd43b;
+  background-color: black;
+  border-radius: 10px;
+
+  margin: 0px 5px 10px 0px;
+  padding: 5px;
+
+  cursor: pointer;
+}
