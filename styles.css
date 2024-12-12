@@ -1,3 +1,4 @@
+/* Global Styles */
 body {
   height: 100vh;
   margin: 0;
@@ -12,7 +13,7 @@ main {
   overflow: hidden; /* 메인 내부의 스크롤 제거 */
 }
 
-/* 링크 */
+/* Link Styles */
 a {
   color: black; /* 링크 색상 검정 */
 }
@@ -21,16 +22,16 @@ a:visited,
 a:hover,
 a:active {
   color: black; /* 모든 상태에서 검정색 유지 */
-  text-underline-offset: 4px;
+  text-underline-offset: 4px; /* 밑줄 간격 */
 }
 
-/* 리스트 */
+/* List Styles */
 .toggle-list {
   list-style-type: none; /* 기본 목록 스타일 제거 */
-  padding: 10px 0px 0px 10px;
+  padding: 10px 0 0 10px;
 }
 ul {
-  padding: 10px 0px 0px 20px;
+  padding: 10px 0 0 20px;
   margin: 0;
 }
 li {
@@ -38,13 +39,13 @@ li {
   cursor: pointer;
 }
 
-/* 구분선 */
+/* Divider */
 .black-divider {
   border: none; /* 기본 스타일 제거 */
   border-top: 2px solid black; /* 검정색 상단 선 */
 }
 
-/* 타이틀 */
+/* Title Styles */
 .TaleScape {
   font-family: "나눔명조 ExtraBold", sans-serif;
   font-size: 64px;
@@ -68,7 +69,7 @@ li {
   margin-bottom: 50px;
 }
 
-/* 메인 */
+/* Layout: Aside and Section */
 aside,
 section {
   background-color: #d9d9d9;
@@ -93,26 +94,26 @@ section {
   overflow-y: auto; /* 세로 스크롤 추가 */
 }
 
+/* Header Container */
 .header-container {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-end; /* 텍스트와 아이콘 아래 정렬 */
   justify-content: space-between; /* 공간 배분 */
 }
 
+/* Icon Styles */
 .icon-plus {
   font-size: 30px;
   cursor: pointer;
-  margin-bottom: -3px;
+  margin-bottom: -3px; /* 아래로 살짝 내리기 */
 }
 
 .icon-moon {
   font-size: 30px;
-  color: #ffd43b;
-  background-color: black;
-  border-radius: 10px;
-
-  margin: 0px 5px 10px 0px;
+  color: #ffd43b; /* 노란색 */
+  background-color: black; /* 검정 배경 */
+  border-radius: 10px; /* 모서리 둥글게 */
+  margin: 0 5px 10px 0; /* 여백 설정 */
   padding: 5px;
-
   cursor: pointer;
 }
