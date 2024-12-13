@@ -14,37 +14,36 @@ function initEventListeners() {
     document.querySelector('#projectModal .btn-primary').addEventListener('click', handleProjectSubmit);
     document.getElementById('projectModal').addEventListener('hidden.bs.modal', handleProjectModalHidden);
 
-    // 챕터 관련
-    document.querySelector('.chapter-table .btn').addEventListener('click', function(e) {
-        const tbody = document.querySelector('tbody');
-        if (tbody.children.length === 0) {
-            // 첫 번째 항목 추가 시 챕터 1과 1화를 자동 생성
-            handleAddNewChapter(1);
-        } else {
-            // 이후에는 선택 가능한 드롭다운 표시
-            const dropdown = document.createElement('div');
-            dropdown.className = 'dropdown d-inline-block';
-            dropdown.innerHTML = `
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    + 새 항목 추가
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" data-action="chapter">새 챕터</a></li>
-                    <li><a class="dropdown-item" href="#" data-action="episode">새 화</a></li>
-                </ul>
-            `;
+    // 챕터 관련 - 단순화
+    document.querySelector('#addChapterBtn').addEventListener('click', () => {
+        const chapterModal = new bootstrap.Modal(document.getElementById('chapterModal'));
+        resetChapterModal();
+        chapterModal.show();
+    });
+
+    // 새 항목 추가 확인 버튼 이벤트
+    document.querySelector('.confirm-chapter-btn').addEventListener('click', () => {
+        const isNewChapter = document.getElementById('newChapterCheck').checked;
+        const title = document.getElementById('chapterTitleInput').value.trim();
+        const character = document.getElementById('chapterCharacterInput').value.trim();
+        const status = document.getElementById('chapterStatusInput').value;
+        const url = document.getElementById('chapterUrlInput').value.trim();
+
+        if (title) {
+            const tbody = document.querySelector('tbody');
             
-            this.replaceWith(dropdown);
-            
-            // 드롭다운 이벤트 처리
-            dropdown.addEventListener('click', function(e) {
-                if (e.target.matches('[data-action="chapter"]')) {
-                    const nextChapterNum = tbody.querySelectorAll('.chapter-divider').length + 1;
-                    handleAddNewChapter(nextChapterNum);
-                } else if (e.target.matches('[data-action="episode"]')) {
-                    handleAddEpisode();
-                }
-            });
+            if (isNewChapter) {
+                // 새 챕터 추가
+                const nextChapterNum = tbody.querySelectorAll('.chapter-divider').length + 1;
+                handleAddNewChapter(nextChapterNum);
+            }
+
+            // 새 화 추가
+            const episodeNum = getNextEpisodeNumber();
+            const newRow = createChapterElement(episodeNum, title, character, status, url);
+            tbody.appendChild(newRow);
+            attachChapterEvents(newRow);
+            closeModal('chapterModal');
         }
     });
 
@@ -185,7 +184,6 @@ function handleProjectClick(project, name, desc) {
     document.querySelector('.character-list').innerHTML = '';
     document.querySelector('.world-list').innerHTML = '';
     document.querySelector('tbody').innerHTML = '';
-    addDefaultChapter(name);
 }
 
 function handleProjectDelete(project) {
@@ -253,13 +251,20 @@ function handleAddNewChapter(chapterNum) {
         <td colspan="5">
             챕터 ${chapterNum}
         </td>
+        <td>
+            <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
+        </td>
     `;
-    tbody.appendChild(dividerRow);
     
-    // 첫 화 추가
-    const episodeRow = createChapterElement(getNextEpisodeNumber());
-    tbody.appendChild(episodeRow);
-    attachChapterEvents(episodeRow);
+    // 삭제 버튼에 이벤트 리스너 추가
+    dividerRow.querySelector('.delete-btn').addEventListener('click', () => {
+        if (confirm('챕터 구분선을 삭제하시겠습니까?')) {
+            dividerRow.remove();
+            updateChapterNumbers();
+        }
+    });
+    
+    tbody.appendChild(dividerRow);
 }
 
 function handleAddEpisode() {
@@ -298,23 +303,23 @@ function attachDividerEvents(divider) {
     });
 }
 
-function createChapterElement(chapterNum) {
+function createChapterElement(episodeNum, title = '', character = '', status = '작성중', url = '') {
     const newRow = document.createElement('tr');
     newRow.className = 'chapter-row';
+    newRow.style.cursor = 'pointer';  // 커서 스타일 변경
     newRow.innerHTML = `
-        <td>
-            <a href="edit.html" class="text-decoration-none chapter-title">${chapterNum}화 (0자)</a>
-        </td>
-        <td></td>
+        <td>${episodeNum}화</td>
+        <td>${title}</td>
+        <td>${character}</td>
         <td>
             <select class="form-select form-select-sm">
-                <option>작성중</option>
-                <option>수정필요</option>
-                <option>보류</option>
-                <option>발행</option>
+                <option ${status === '작성중' ? 'selected' : ''}>작성중</option>
+                <option ${status === '수정필요' ? 'selected' : ''}>수정필요</option>
+                <option ${status === '보류' ? 'selected' : ''}>보류</option>
+                <option ${status === '발행' ? 'selected' : ''}>발행</option>
             </select>
         </td>
-        <td><button class="btn btn-sm btn-link url-btn">url</button></td>
+        <td><button class="btn btn-sm btn-link url-btn">${url || 'url'}</button></td>
         <td>
             <div class="d-flex gap-2">
                 <button class="btn btn-sm btn-link edit-btn"><i class="bi bi-pencil"></i></button>
@@ -326,6 +331,15 @@ function createChapterElement(chapterNum) {
 }
 
 function attachChapterEvents(row) {
+    // 행 클릭 이벤트
+    row.addEventListener('click', (e) => {
+        // 버튼이나 select 클릭 시에는 이동하지 않음
+        if (!e.target.closest('button') && !e.target.closest('select')) {
+            window.location.href = 'edit.html';  // edit.html로 이동
+        }
+    });
+
+    // 기존 버튼 이벤트
     row.querySelector('.edit-btn').addEventListener('click', () => {
         handleChapterEdit(row);
     });
@@ -338,8 +352,8 @@ function attachChapterEvents(row) {
 function handleChapterEdit(row) {
     const chapterModal = new bootstrap.Modal(document.getElementById('chapterModal'));
     
-    document.getElementById('chapterTitleInput').value = row.cells[0].textContent;
-    document.getElementById('chapterCharacterInput').value = row.cells[1].textContent;
+    document.getElementById('chapterTitleInput').value = row.cells[1].textContent;
+    document.getElementById('chapterCharacterInput').value = row.cells[2].textContent;
     document.getElementById('chapterStatusInput').value = row.querySelector('select').value;
     document.getElementById('chapterUrlInput').value = row.querySelector('.url-btn').textContent;
     
@@ -360,8 +374,8 @@ function updateChapter(row) {
     const url = document.getElementById('chapterUrlInput').value.trim();
 
     if (title) {
-        row.cells[0].innerHTML = `<a href="edit.html" class="text-decoration-none chapter-title">${title}</a>`;
-        row.cells[1].textContent = character;
+        row.cells[1].textContent = title;
+        row.cells[2].textContent = character;
         row.querySelector('select').value = status;
         row.querySelector('.url-btn').textContent = url || 'url';
         closeModal('chapterModal');
@@ -369,55 +383,47 @@ function updateChapter(row) {
 }
 
 function handleChapterDelete(row) {
-    if (confirm('챕터를 삭제하시겠습니까?')) {
-        row.remove();
-        // 챕터 삭제 후 번호 재정렬
-        updateChapterNumbers();
+    if (row.classList.contains('chapter-divider')) {
+        // 챕터 구분선인 경우
+        if (confirm('이 챕터와 포함된 모든 화를 삭제하시겠습니까?')) {
+            let nextElement = row.nextElementSibling;
+            row.remove();
+            
+            // 다음 챕터 구분선이 나올 때까지의 모든 화 삭제
+            while (nextElement && !nextElement.classList.contains('chapter-divider')) {
+                const temp = nextElement.nextElementSibling;
+                nextElement.remove();
+                nextElement = temp;
+            }
+            
+            // 챕터 번호 재정렬
+            updateChapterNumbers();
+        }
+    } else {
+        // 일반 화인 경우
+        if (confirm('이 화를 삭제하시겠습니까?')) {
+            row.remove();
+            updateChapterNumbers();
+        }
     }
 }
 
-// 챕터 번호 업데이트 함수 추가
+// 챕터 번호 업데이트 함수 수정
 function updateChapterNumbers() {
     const tbody = document.querySelector('tbody');
-    const chapters = tbody.querySelectorAll('.chapter-row');
+    let currentChapter = 1;
+    let episodeInChapter = 1;
     
-    chapters.forEach((chapter, index) => {
-        const chapterTitle = chapter.querySelector('.chapter-title');
-        const currentTitle = chapterTitle.textContent;
-        // "(0자)" 부분을 유지하면서 챕터 번호만 업데이트
-        const newTitle = `${index + 1}화 ${currentTitle.split(' ').slice(1).join(' ')}`;
-        chapterTitle.textContent = newTitle;
+    tbody.querySelectorAll('tr').forEach(row => {
+        if (row.classList.contains('chapter-divider')) {
+            row.querySelector('td').textContent = `챕터 ${currentChapter}`;
+            currentChapter++;
+            episodeInChapter = 1;
+        } else {
+            row.cells[0].textContent = `${episodeInChapter}화`;
+            episodeInChapter++;
+        }
     });
-}
-
-function addDefaultChapter(projectName) {
-    const tbody = document.querySelector('tbody');
-    const newRow = document.createElement('tr');
-    newRow.className = 'chapter-row';
-    newRow.innerHTML = `
-        <td>
-            <a href="edit.html" class="text-decoration-none chapter-title">1화 (0자)</a>
-        </td>
-        <td></td>
-        <td>
-            <select class="form-select form-select-sm">
-                <option>작성중</option>
-                <option>수정필요</option>
-                <option>보류</option>
-                <option>발행</option>
-            </select>
-        </td>
-        <td><button class="btn btn-sm btn-link url-btn">url</button></td>
-        <td>
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-link edit-btn"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
-            </div>
-        </td>
-    `;
-
-    attachChapterEvents(newRow);
-    tbody.appendChild(newRow);
 }
 
 // 메모 관련 함수들
@@ -728,4 +734,12 @@ function closeModal(modalId) {
     if (modal) {
         modal.hide();
     }
+}
+
+function resetChapterModal() {
+    document.getElementById('newChapterCheck').checked = false;
+    document.getElementById('chapterTitleInput').value = '';
+    document.getElementById('chapterCharacterInput').value = '';
+    document.getElementById('chapterStatusInput').value = '작성중';
+    document.getElementById('chapterUrlInput').value = '';
 }

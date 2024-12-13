@@ -121,7 +121,7 @@ section {
 }
 
 .table td {
-    border-color: #555;
+    border: none;
 }
 
 .table .chapter-title {
@@ -296,8 +296,8 @@ button {
 /* 챕터 구분선 스타일 */
 .chapter-divider td {
     padding: 0.75rem;
-    background-color: #f8f9fa;
-    text-align: left;
+    background-color: white;
+    text-align: center;
     font-weight: bold;
     border-top: 2px solid #dee2e6;
     border-bottom: 2px solid #dee2e6;
@@ -305,7 +305,102 @@ button {
 }
 
 body.dark-mode .chapter-divider td {
-    background-color: #444;
-    border-color: #555;
-    color: #fff;
+    background-color: white;
+    border-color: #dee2e6;
+    color: #333;
+}
+
+/* 수정/삭제 버튼 기본 숨김 처리 */
+.edit-btn,
+.delete-btn,
+.edit-memo-btn,
+.edit-character-btn,
+.edit-world-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* 부모 요소에 호버 시 버튼 표시 */
+.chapter-row:hover .edit-btn,
+.chapter-row:hover .delete-btn,
+.memo-item:hover .edit-memo-btn,
+.memo-item:hover .delete-btn,
+.character-item:hover .edit-character-btn,
+.character-item:hover .delete-btn,
+.world-item:hover .edit-world-btn,
+.world-item:hover .delete-btn {
+    opacity: 1;
+}
+
+/* url 버튼도 동일하게 처리 */
+.url-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.chapter-row:hover .url-btn {
+    opacity: 1;
+}
+
+/* 챕터 행 스타일 */
+.chapter-row td {
+    border: none;
+}
+
+body.dark-mode .chapter-row td {
+    border: none;
+}
+
+/* 챕터 구분선의 삭제 버튼도 hover 시에만 표시 */
+.chapter-divider .delete-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.chapter-divider:hover .delete-btn {
+    opacity: 1;
+}
+
+/* 새 항목 추가 버튼 스타일 */
+.add-chapter-btn {
+    display: none;
+}
+
+body.dark-mode .add-chapter-btn {
+    background-color: white;
+    color: black;
+}
+
+/* 테이블 스타일 수정 */
+.table th:first-child {  /* 화 열 */
+    width: 10%;
+}
+
+.table th:nth-child(2) {  /* Title 열 */
+    width: 35%;
+}
+
+.table th:nth-child(3) {  /* Character 열 */
+    width: 20%;
+}
+
+.table th:nth-child(4) {  /* Status 열 */
+    width: 15%;
+}
+
+.table th:nth-child(5) {  /* url 열 */
+    width: 15%;
+}
+
+.table th:last-child {  /* 액션 버튼 열 */
+    width: 5%;
+}
+
+/* 행 호버 효과 추가 */
+.chapter-row:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .chapter-row:hover {
+    background-color: rgba(255, 255, 255, 0.05);
 }

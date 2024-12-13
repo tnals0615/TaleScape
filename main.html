@@ -103,6 +103,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>화</th>
                             <th>Title</th>
                             <th>Character</th>
                             <th>Status</th>
@@ -112,7 +113,7 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-                <button class="btn btn-outline-secondary w-100 mt-2">
+                <button class="btn btn-outline-secondary w-100 mt-2" id="addChapterBtn">
                     <i class="bi bi-plus"></i> 새 항목 추가
                 </button>
             </article>
@@ -211,7 +212,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">세���관</h5>
+                    <h5 class="modal-title">세계관</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -227,6 +228,51 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     <button type="button" class="btn btn-primary confirm-world-btn">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 새 항목 추가 모달 -->
+    <div class="modal fade" id="chapterModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">새 항목 추가</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="newChapterCheck">
+                        <label class="form-check-label" for="newChapterCheck">
+                            새 챕터로 시작
+                        </label>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" id="chapterTitleInput">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Character</label>
+                        <input type="text" class="form-control" id="chapterCharacterInput">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="chapterStatusInput">
+                            <option>작성중</option>
+                            <option>수정필요</option>
+                            <option>보류</option>
+                            <option>발행</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">URL</label>
+                        <input type="text" class="form-control" id="chapterUrlInput">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary confirm-chapter-btn">확인</button>
                 </div>
             </div>
         </div>
