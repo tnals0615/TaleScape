@@ -4,59 +4,75 @@ let projectCount = 0;
 // 초기화 함수
 document.addEventListener('DOMContentLoaded', () => {
     initEventListeners();
-    initSectionToggles();
     initTheme();
 });
 
 // 이벤트 리스너 초기화
 function initEventListeners() {
     // 프로젝트 관련
-    document.querySelector('.add-project-btn').addEventListener('click', handleAddProject);
+    document.querySelector('.icon-plus').addEventListener('click', handleAddProject);
     document.querySelector('#projectModal .btn-primary').addEventListener('click', handleProjectSubmit);
     document.getElementById('projectModal').addEventListener('hidden.bs.modal', handleProjectModalHidden);
 
     // 챕터 관련
-    document.querySelector('.add-chapter-btn').addEventListener('click', handleAddChapter);
+    document.querySelector('.chapter-table .btn').addEventListener('click', handleAddChapter);
 
     // 메모 관련
-    document.querySelector('.add-memo-btn').addEventListener('click', handleAddMemo);
+    document.querySelector('#memoSection .btn').addEventListener('click', () => {
+        const memoModal = new bootstrap.Modal(document.getElementById('memoModal'));
+        memoModal.show();
+    });
     document.querySelector('.confirm-memo-btn').addEventListener('click', handleConfirmMemo);
 
     // 캐릭터 관련
-    document.querySelector('.add-character-btn').addEventListener('click', handleAddCharacter);
+    document.querySelector('#characterSection .btn').addEventListener('click', () => {
+        const characterModal = new bootstrap.Modal(document.getElementById('characterModal'));
+        characterModal.show();
+    });
     document.querySelector('.confirm-character-btn').addEventListener('click', handleConfirmCharacter);
 
-    // 세계관 관��
-    document.querySelector('.add-world-btn').addEventListener('click', handleAddWorld);
+    // 세계관 관련
+    document.querySelector('#worldSection .btn').addEventListener('click', () => {
+        const worldModal = new bootstrap.Modal(document.getElementById('worldModal'));
+        worldModal.show();
+    });
     document.querySelector('.confirm-world-btn').addEventListener('click', handleConfirmWorld);
 
     // 테마 관련
-    document.querySelector('.theme-toggle').addEventListener('click', handleThemeToggle);
-}
+    document.getElementById('moon').addEventListener('click', handleThemeToggle);
 
-// 섹션 토글 초기화
-function initSectionToggles() {
-    document.querySelectorAll('.section-header').forEach(header => {
-        header.addEventListener('click', () => {
-            header.classList.toggle('collapsed');
-            const targetId = header.getAttribute('data-bs-target');
-            const content = document.querySelector(targetId);
-            
-            // Bootstrap collapse 인스턴스 가져오기
-            const bsCollapse = bootstrap.Collapse.getInstance(content);
-            if (!bsCollapse) {
-                // collapse 인스턴스가 없으면 새로 생성
-                new bootstrap.Collapse(content);
-            } else {
-                // 있으면 토글
-                bsCollapse.toggle();
+    // 태그 입력 처리
+    document.getElementById('characterTagInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const tagText = this.value.trim();
+            if (tagText) {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'character-tag';
+                tagElement.innerHTML = `#${tagText} <span class="remove-tag">×</span>`;
+                
+                // 태그 삭제 기능
+                tagElement.querySelector('.remove-tag').addEventListener('click', function() {
+                    this.parentElement.remove();
+                });
+                
+                document.getElementById('characterTags').appendChild(tagElement);
+                this.value = '';
             }
-        });
+        }
     });
 
-    // 초기 상태 설정 - 모든 섹션을 접힌 상태로 시작
-    document.querySelectorAll('.section-header').forEach(header => {
-        header.classList.add('collapsed');
+    // 이미지 미리보기
+    document.getElementById('characterImageInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('characterImagePreview');
+                preview.innerHTML = `<img src="${e.target.result}" alt="미리보기" style="max-width: 200px;">`;
+            };
+            reader.readAsDataURL(file);
+        }
     });
 }
 
@@ -84,25 +100,25 @@ function handleProjectSubmit() {
 }
 
 function createProject(projectName, projectDesc) {
-    projectCount++;
     const projectList = document.querySelector('.project-list');
     removeGuideText(projectList);
     
-    const newProject = createProjectElement(projectName, projectCount);
+    const newProject = createProjectElement(projectName);
     attachProjectEvents(newProject, projectName, projectDesc);
     
     projectList.appendChild(newProject);
     closeAndResetProjectModal();
+
+    handleProjectClick(newProject, projectName, projectDesc);
 }
 
 // 프로젝트 관련 유틸리티 함수들
-function createProjectElement(projectName, count) {
+function createProjectElement(projectName) {
     const newProject = document.createElement('li');
     newProject.className = 'project-item';
-    newProject.dataset.projectId = `project-${count}`;
     newProject.innerHTML = `
         <div class="d-flex justify-content-between align-items-center">
-            <span class="project-name cursor-pointer">${count}. ${projectName}</span>
+            <span class="project-name cursor-pointer">${projectName}</span>
             <div>
                 <button class="btn btn-sm btn-link edit-btn"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-trash"></i></button>
@@ -132,8 +148,12 @@ function handleProjectClick(project, name, desc) {
     });
     
     project.classList.add('active');
-    updateMainContent(name, desc);
-    resetSections();
+    document.querySelector('.main-title').textContent = name;
+    document.querySelector('.project-desc').textContent = desc || '프로젝트 설명이 없습니다.';
+    document.querySelector('.memo-list').innerHTML = '';
+    document.querySelector('.character-list').innerHTML = '';
+    document.querySelector('.world-list').innerHTML = '';
+    document.querySelector('tbody').innerHTML = '';
     addDefaultChapter(name);
 }
 
@@ -402,36 +422,49 @@ function handleAddCharacter() {
 
 function handleConfirmCharacter() {
     const name = document.getElementById('characterNameInput').value.trim();
-    const age = document.getElementById('characterAgeInput').value.trim();
-    const personality = document.getElementById('characterPersonalityInput').value.trim();
-    const feature = document.getElementById('characterFeatureInput').value.trim();
-    const memo = document.getElementById('characterMemoInput').value.trim();
+    const profile = document.getElementById('characterProfileInput').value.trim();
+    const desc = document.getElementById('characterDescInput').value.trim();
+    const tags = Array.from(document.getElementById('characterTags').children).map(tag => 
+        tag.textContent.replace('×', '').trim()
+    );
+    const imageUrl = document.getElementById('characterImagePreview').querySelector('img')?.src || '';
 
-    if (name) {
+    if (name) {  // 이름은 필수 입력
         const characterList = document.querySelector('.character-list');
-        const newCharacter = createCharacterElement(name, age, personality, feature, memo);
+        const newCharacter = createCharacterElement(name, profile, desc, tags, imageUrl);
         characterList.appendChild(newCharacter);
         closeModal('characterModal');
     }
 }
 
-function createCharacterElement(name, age, personality, feature, memo) {
+function createCharacterElement(name, profile, desc, tags, imageUrl) {
     const newCharacter = document.createElement('div');
-    newCharacter.className = 'character-item p-3 bg-light rounded mb-2';
+    newCharacter.className = 'character-item';
+    
     newCharacter.innerHTML = `
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <h6 class="mb-1">${name}</h6>
-                <div class="small text-muted">
-                    ${age ? `나이: ${age}<br>` : ''}
-                    ${personality ? `성격: ${personality}<br>` : ''}
-                    ${feature ? `특징: ${feature}<br>` : ''}
-                    ${memo ? `메모: ${memo}` : ''}
+        <div class="character-content">
+            ${imageUrl ? `
+                <div class="character-image">
+                    <img src="${imageUrl}" alt="${name}">
+                </div>
+            ` : ''}
+            <div class="character-header">
+                <h3 class="character-name">${name}</h3>
+                <div class="character-actions">
+                    <button class="edit-character-btn" title="수정">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="delete-btn" title="삭제">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             </div>
-            <div>
-                <button class="btn btn-sm btn-link edit-character-btn"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
+            <div class="character-info">
+                ${profile ? `<div class="character-profile">${profile.replace(/\n/g, '<br>')}</div>` : ''}
+                ${desc ? `<div class="character-desc">${desc.replace(/\n/g, '<br>')}</div>` : ''}
+                <div class="character-tags">
+                    ${tags.map(tag => `<span class="character-tag">${tag}</span>`).join('')}
+                </div>
             </div>
         </div>
     `;
@@ -453,17 +486,42 @@ function attachCharacterEvents(character) {
 function handleCharacterEdit(character) {
     const characterModal = new bootstrap.Modal(document.getElementById('characterModal'));
     
-    const currentName = character.querySelector('h6').textContent;
-    const textContent = character.querySelector('.small.text-muted').textContent;
+    // 현재 데이터 불러오기
+    const name = character.querySelector('.character-name').textContent;
+    const profile = character.querySelector('.character-profile')?.innerHTML.replace(/<br>/g, '\n') || '';
+    const desc = character.querySelector('.character-desc')?.innerHTML.replace(/<br>/g, '\n') || '';
+    const tags = Array.from(character.querySelectorAll('.character-tag')).map(tag => 
+        tag.textContent.replace('#', '').trim()
+    );
+    const imageUrl = character.querySelector('.character-image img')?.src;
+
+    // 모달에 데이터 설정
+    document.getElementById('characterNameInput').value = name;
+    document.getElementById('characterProfileInput').value = profile;
+    document.getElementById('characterDescInput').value = desc;
     
-    document.getElementById('characterNameInput').value = currentName;
-    document.getElementById('characterAgeInput').value = textContent.match(/나이: (.*?)(?:\n|$)/)?.[1] || '';
-    document.getElementById('characterPersonalityInput').value = textContent.match(/성격: (.*?)(?:\n|$)/)?.[1] || '';
-    document.getElementById('characterFeatureInput').value = textContent.match(/특징: (.*?)(?:\n|$)/)?.[1] || '';
-    document.getElementById('characterMemoInput').value = textContent.match(/메모: (.*?)(?:\n|$)/)?.[1] || '';
-    
+    // 태그 설정
+    const tagsContainer = document.getElementById('characterTags');
+    tagsContainer.innerHTML = '';
+    tags.forEach(tag => {
+        const tagElement = document.createElement('span');
+        tagElement.className = 'character-tag';
+        tagElement.innerHTML = `#${tag} <span class="remove-tag">×</span>`;
+        tagElement.querySelector('.remove-tag').addEventListener('click', function() {
+            this.parentElement.remove();
+        });
+        tagsContainer.appendChild(tagElement);
+    });
+
+    // 이미지 미리보기 설정
+    if (imageUrl) {
+        document.getElementById('characterImagePreview').innerHTML = 
+            `<img src="${imageUrl}" alt="미리보기" style="max-width: 200px;">`;
+    }
+
     characterModal.show();
 
+    // 확인 버튼에 수정 이벤트 연결
     const confirmBtn = document.querySelector('.confirm-character-btn');
     const newConfirmBtn = confirmBtn.cloneNode(true);
     confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
@@ -474,19 +532,16 @@ function handleCharacterEdit(character) {
 
 function updateCharacter(character) {
     const name = document.getElementById('characterNameInput').value.trim();
-    const age = document.getElementById('characterAgeInput').value.trim();
-    const personality = document.getElementById('characterPersonalityInput').value.trim();
-    const feature = document.getElementById('characterFeatureInput').value.trim();
-    const memo = document.getElementById('characterMemoInput').value.trim();
+    const profile = document.getElementById('characterProfileInput').value.trim();
+    const desc = document.getElementById('characterDescInput').value.trim();
+    const tags = Array.from(document.getElementById('characterTags').children).map(tag => 
+        tag.textContent.replace('×', '').trim()
+    );
+    const imageUrl = document.getElementById('characterImagePreview').querySelector('img')?.src || '';
 
     if (name) {
-        character.querySelector('h6').textContent = name;
-        character.querySelector('.small.text-muted').innerHTML = `
-            ${age ? `나이: ${age}<br>` : ''}
-            ${personality ? `성격: ${personality}<br>` : ''}
-            ${feature ? `특징: ${feature}<br>` : ''}
-            ${memo ? `메모: ${memo}` : ''}
-        `;
+        const newCharacter = createCharacterElement(name, profile, desc, tags, imageUrl);
+        character.replaceWith(newCharacter);
         closeModal('characterModal');
     }
 }
@@ -498,9 +553,12 @@ function handleCharacterDelete(character) {
 }
 
 function resetCharacterModal() {
-    document.querySelectorAll('#characterModal input, #characterModal textarea').forEach(input => {
-        input.value = '';
-    });
+    document.getElementById('characterNameInput').value = '';
+    document.getElementById('characterProfileInput').value = '';
+    document.getElementById('characterDescInput').value = '';
+    document.getElementById('characterTags').innerHTML = '';
+    document.getElementById('characterImagePreview').innerHTML = '';
+    document.getElementById('characterImageInput').value = '';
 }
 
 // 세계관 관련 함수들
