@@ -217,18 +217,6 @@ function checkEmptyProjectList() {
     }
 }
 
-function updateMainContent(name, desc) {
-    document.querySelector('.main-content h2').textContent = name;
-    document.querySelector('.project-description p').textContent = desc || '프로젝트 설명이 없습니다.';
-}
-
-function resetSections() {
-    document.querySelector('.memo-list').innerHTML = '';
-    document.querySelector('.character-list').innerHTML = '';
-    document.querySelector('.world-list').innerHTML = '';
-    document.querySelector('tbody').innerHTML = '';
-}
-
 function closeAndResetProjectModal() {
     const projectModal = bootstrap.Modal.getInstance(document.getElementById('projectModal'));
     projectModal.hide();
