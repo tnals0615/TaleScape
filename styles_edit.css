@@ -29,15 +29,16 @@ a {
     background-color: white !important;
   }
   
+  /* TinyMCE 에디터 내용 영역 - 항상 하얀색 */
+  .tox-edit-area__iframe .mce-content-body {
+    background-color: white !important;
+    color: black !important;
+  }
+  
   /* Dark Mode - edit.html 전용 */
   body.dark-mode a:link,
   body.dark-mode a:visited,
   body.dark-mode a:hover,
   body.dark-mode a:active {
-    color: white;
-  }
-  
-  body.dark-mode .tox-edit-area__iframe {
-    background-color: #333 !important;
     color: white;
   }

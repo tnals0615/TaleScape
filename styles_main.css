@@ -26,29 +26,33 @@
   
   .table {
     margin-bottom: 0;
-    color: #666;
+    background-color: white !important;
+    color: #666 !important;
   }
   
   .table th {
-    color: #888;
+    color: #888 !important;
+    background-color: white !important;
+    border-bottom: 2px solid #dee2e6 !important;
   }
   
   .table td {
-    border: none;
+    background-color: white !important;
+    border-bottom: 1px solid #eee !important;
   }
   
   .table .chapter-title {
-    color: #666;
+    color: #666 !important;
   }
   
   .table .btn-link {
-    color: #888;
+    color: #888 !important;
     text-decoration: none;
     padding: 0;
   }
   
   .table .btn-link:hover {
-    color: #0d6efd;
+    color: #0d6efd !important;
   }
   
   /* List Item Styles */
@@ -78,9 +82,9 @@
   
   /* Form Elements */
   .form-select {
-    background-color: transparent;
-    color: #666;
-    border: 1px solid #555;
+    background-color: white !important;
+    color: #666 !important;
+    border: 1px solid #dee2e6 !important;
     padding: 4px 8px;
     font-size: 14px;
     width: 120px;
@@ -155,7 +159,33 @@
   
   body.dark-mode .form-control,
   body.dark-mode .form-select {
-    background-color: #222;
-    border-color: #555;
-    color: white;
+    background-color: white !important;
+    border-color: #dee2e6 !important;
+    color: #666 !important;
+  }
+  
+  /* 행 호버 효과도 고정 */
+  .chapter-row:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  /* 챕터 구분선도 고정 색상 */
+  .chapter-divider td {
+    background-color: white !important;
+    color: #333 !important;
+    border-top: 2px solid #666 !important;
+    border-bottom: 2px solid #666 !important;
+    font-weight: bold;
+  }
+  
+  /* 스테이터스 콤보박스 - 항상 밝은 테마 */
+  .table .form-select {
+    background-color: white !important;
+    color: #666 !important;
+    border: 1px solid #dee2e6 !important;
+  }
+  
+  .table .form-select:focus {
+    border-color: #86b7fe !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
   }
