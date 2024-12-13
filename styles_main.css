@@ -1,191 +1,196 @@
 /* Project Description */
 .project-desc {
-    padding: 15px;
-    margin-bottom: 30px;
-    color: #666;
-  }
-  
-  /* Accordion Styles */
-  .accordion-button {
-    background-color: white;
-    color: black;
-  }
-  
-  .accordion-button:not(.collapsed) {
-    background-color: #f8f9fa;
-    color: black;
-  }
-  
-  /* Table Styles */
-  .chapter-table {
-    background-color: transparent;
-    padding: 15px;
-    border-radius: 4px;
-    margin-top: 30px;
-  }
-  
-  .table {
-    margin-bottom: 0;
-    background-color: white !important;
-    color: #666 !important;
-  }
-  
-  .table th {
-    color: #888 !important;
-    background-color: white !important;
-    border-bottom: 2px solid #dee2e6 !important;
-  }
-  
-  .table td {
-    background-color: white !important;
-    border-bottom: 1px solid #eee !important;
-  }
-  
-  .table .chapter-title {
-    color: #666 !important;
-  }
-  
-  .table .btn-link {
-    color: #888 !important;
-    text-decoration: none;
-    padding: 0;
-  }
-  
-  .table .btn-link:hover {
-    color: #0d6efd !important;
-  }
-  
-  /* List Item Styles */
-  .memo-item,
-  .character-item,
-  .world-item {
-    background-color: white;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-  }
-  
-  .memo-content,
-  .character-content,
-  .world-content {
-    color: #666;
-    font-size: 0.9rem;
-  }
-  
-  .character-name,
-  .world-title {
-    font-size: 1rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #333;
-  }
-  
-  /* Form Elements */
-  .form-select {
-    background-color: white !important;
-    color: #666 !important;
-    border: 1px solid #dee2e6 !important;
-    padding: 4px 8px;
-    font-size: 14px;
-    width: 120px;
-    cursor: pointer;
-  }
-  
-  /* Button Visibility */
-  .edit-btn,
-  .delete-btn,
-  .edit-memo-btn,
-  .edit-character-btn,
-  .edit-world-btn,
-  .url-btn {
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-  
-  .chapter-row:hover .edit-btn,
-  .chapter-row:hover .delete-btn,
-  .chapter-row:hover .url-btn,
-  .memo-item:hover .edit-memo-btn,
-  .memo-item:hover .delete-btn,
-  .character-item:hover .edit-character-btn,
-  .character-item:hover .delete-btn,
-  .world-item:hover .edit-world-btn,
-  .world-item:hover .delete-btn,
-  .chapter-divider:hover .delete-btn {
-    opacity: 1;
-  }
-  
-  /* Dark Mode - main.html 전용 */
-  body.dark-mode .accordion-button,
-  body.dark-mode .accordion-button:not(.collapsed),
-  body.dark-mode .accordion-body {
-    background-color: #333;
-    color: white;
-  }
-  
-  body.dark-mode .memo-item,
-  body.dark-mode .character-item,
-  body.dark-mode .world-item {
-    background-color: #333;
-  }
-  
-  body.dark-mode .memo-content,
-  body.dark-mode .character-content,
-  body.dark-mode .world-content {
-    color: #999;
-  }
-  
-  body.dark-mode .character-name,
-  body.dark-mode .world-title {
-    color: white;
-  }
-  
-  /* Modal Styles */
-  .modal-content {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  body.dark-mode .modal-content {
-    background: #333;
-    color: white;
-  }
-  
-  body.dark-mode .modal-header,
-  body.dark-mode .modal-footer {
-    border-color: #555;
-  }
-  
-  body.dark-mode .form-control,
-  body.dark-mode .form-select {
-    background-color: white !important;
-    border-color: #dee2e6 !important;
-    color: #666 !important;
-  }
-  
-  /* 행 호버 효과도 고정 */
-  .chapter-row:hover {
-    background-color: rgba(0, 0, 0, 0.05) !important;
-  }
-  
-  /* 챕터 구분선도 고정 색상 */
-  .chapter-divider td {
-    background-color: white !important;
-    color: #333 !important;
-    border-top: 2px solid #666 !important;
-    border-bottom: 2px solid #666 !important;
-    font-weight: bold;
-  }
-  
-  /* 스테이터스 콤보박스 - 항상 밝은 테마 */
-  .table .form-select {
-    background-color: white !important;
-    color: #666 !important;
-    border: 1px solid #dee2e6 !important;
-  }
-  
-  .table .form-select:focus {
-    border-color: #86b7fe !important;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-  }
+  padding: 15px;
+  margin-bottom: 30px;
+  color: #666;
+}
+
+/* Accordion Styles */
+.accordion-button {
+  background-color: white;
+  color: black;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #f8f9fa;
+  color: black;
+}
+
+/* Table Styles */
+.chapter-table {
+  background-color: transparent;
+  padding: 15px;
+  border-radius: 4px;
+  margin: 30px 0px 0px 0px !important;
+}
+
+.table {
+  margin: 0px !important;
+  background-color: white !important;
+  color: #666 !important;
+}
+
+.table th {
+  color: black !important;
+  font-family: "나눔스퀘어_ac ExtraBold", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: normal !important;
+  background-color: white !important;
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+.table td {
+  font-family: "나눔스퀘어_ac", sans-serif !important;
+  font-size: 16px !important;
+  background-color: white !important;
+  border-bottom: 1px solid #eee !important;
+}
+
+.table .chapter-title {
+  color: #666 !important;
+}
+
+.table .btn-link {
+  color: #888 !important;
+  text-decoration: none;
+  padding: 0;
+}
+
+.table .btn-link:hover {
+  color: #0d6efd !important;
+}
+
+/* List Item Styles */
+.memo-item,
+.character-item,
+.world-item {
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.memo-content,
+.character-content,
+.world-content {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.character-name,
+.world-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+/* Form Elements */
+.form-select {
+  background-color: white !important;
+  color: #666 !important;
+  border: 1px solid #dee2e6 !important;
+  padding: 4px 8px;
+  font-size: 14px;
+  width: 120px;
+  cursor: pointer;
+}
+
+/* Button Visibility */
+.edit-btn,
+.delete-btn,
+.edit-memo-btn,
+.edit-character-btn,
+.edit-world-btn,
+.url-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.chapter-row:hover .edit-btn,
+.chapter-row:hover .delete-btn,
+.chapter-row:hover .url-btn,
+.memo-item:hover .edit-memo-btn,
+.memo-item:hover .delete-btn,
+.character-item:hover .edit-character-btn,
+.character-item:hover .delete-btn,
+.world-item:hover .edit-world-btn,
+.world-item:hover .delete-btn,
+.chapter-divider:hover .delete-btn {
+  opacity: 1;
+}
+
+/* Dark Mode - main.html 전용 */
+body.dark-mode .accordion-button,
+body.dark-mode .accordion-button:not(.collapsed),
+body.dark-mode .accordion-body {
+  background-color: #333;
+  color: white;
+}
+
+body.dark-mode .memo-item,
+body.dark-mode .character-item,
+body.dark-mode .world-item {
+  background-color: #333;
+}
+
+body.dark-mode .memo-content,
+body.dark-mode .character-content,
+body.dark-mode .world-content {
+  color: #999;
+}
+
+body.dark-mode .character-name,
+body.dark-mode .world-title {
+  color: white;
+}
+
+/* Modal Styles */
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .modal-content {
+  background: #333;
+  color: white;
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer {
+  border-color: #555;
+}
+
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+  background-color: white !important;
+  border-color: #dee2e6 !important;
+  color: #666 !important;
+}
+
+/* 행 호버 효과도 고정 */
+.chapter-row:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 챕터 구분선도 고정 색상 */
+.chapter-divider td {
+  background-color: white !important;
+  color: #333 !important;
+  border-top: 2px solid #666 !important;
+  border-bottom: 2px solid #666 !important;
+  font-weight: bold;
+}
+
+/* 스테이터스 콤보박스 - 항상 밝은 테마 */
+.table .form-select {
+  background-color: white !important;
+  color: #666 !important;
+  border: 1px solid #dee2e6 !important;
+}
+
+.table .form-select:focus {
+  border-color: #86b7fe !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}

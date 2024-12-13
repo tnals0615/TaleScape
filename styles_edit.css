@@ -1,44 +1,81 @@
 /* Link Styles - edit.html 전용 */
 a {
-    color: black;
-  }
-  a:link,
-  a:visited,
-  a:hover,
-  a:active {
-    color: black;
-    text-underline-offset: 4px;
-  }
-  
-  /* List Styles - edit.html 전용 */
-  .toggle-list {
-    list-style-type: none;
-    padding: 10px 0 0 10px;
-  }
-  ul {
-    padding: 10px 0 0 20px;
-    margin: 0;
-  }
-  li {
-    margin: 5px 0;
-    cursor: pointer;
-  }
-  
-  /* Editor Styles - edit.html 전용 */
-  .tox-edit-area__iframe {
-    background-color: white !important;
-  }
-  
-  /* TinyMCE 에디터 내용 영역 - 항상 하얀색 */
-  .tox-edit-area__iframe .mce-content-body {
-    background-color: white !important;
-    color: black !important;
-  }
-  
-  /* Dark Mode - edit.html 전용 */
-  body.dark-mode a:link,
-  body.dark-mode a:visited,
-  body.dark-mode a:hover,
-  body.dark-mode a:active {
-    color: white;
-  }
+  color: black;
+}
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: black;
+  text-underline-offset: 4px;
+}
+
+/* List Styles - edit.html 전용 */
+.toggle-list {
+  list-style-type: none;
+  padding: 10px 0 0 10px;
+}
+ul {
+  padding: 10px 0 0 20px;
+  margin: 0;
+}
+li {
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+/* Editor Styles - edit.html 전용 */
+.tox-edit-area__iframe {
+  background-color: white !important;
+}
+
+/* TinyMCE 에디터 내용 영역 - 항상 하얀색 */
+.tox-edit-area__iframe .mce-content-body {
+  background-color: white !important;
+  color: black !important;
+}
+
+/* Dark Mode - edit.html 전용 */
+body.dark-mode a:link,
+body.dark-mode a:visited,
+body.dark-mode a:hover,
+body.dark-mode a:active {
+  color: white;
+}
+
+/* 모달 */
+.hidden {
+  display: none;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: left;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.close-btn {
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+}

@@ -1,11 +1,71 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Result</title>
+    <link rel="stylesheet" href="styles_common.css" />
+    <link rel="stylesheet" href="styles_result.css" />
+    <link rel="stylesheet" href="styles_edit.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
+  </head>
+
+  <body>
+    <div class="header-container">
+      <header class="TaleScape">TaleScape</header>
+      <button id="moon"><i class="fa-solid fa-moon icon-moon"></i></button>
+    </div>
+
+    <hr class="black-divider" />
+
+    <main>
+      <aside>
+        <div class="header-container">
+          <header class="aside-title">Project</header>
+          <button class="icon-plus">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <hr class="black-divider" />
+        <article>
+          <p id="addBtnMsg">
+            <i class="fa-solid fa-plus icon-plus2"></i> 버튼을 눌러
+            프로젝트를<br />생성해주세요
+          </p>
+          <ul class="project-list"></ul>
+        </article>
+      </aside>
+
+      <section>
+        <article class="preview">
+          <div class="left-page">
+            <p>왼쪽 페이지 내용이 여기에 들어갑니다.</p>
+          </div>
+          <div class="right-page">
+            <p>오른쪽 페이지 내용이 여기에 들어갑니다.</p>
+          </div>
+        </article>
+      </section>
+
+      <aside>
+        <header class="aside-title">Tool</header>
+        <hr class="black-divider" />
+        <article>
+          <ul class="toggle-list">
+            <li>▼ 메모</li>
+            <li>▼ 캐릭터 노트</li>
+            <li>▼ 세계관</li>
+            <li>▼ 설정</li>
+          </ul>
+        </article>
+      </aside>
+    </main>
+
+    <script src="script_result.js"></script>
+    <script src="script_common.js"></script>
+  </body>
 </html>
