@@ -292,3 +292,20 @@ button {
     align-items: center;
     justify-content: center;
 }
+
+/* 챕터 구분선 스타일 */
+.chapter-divider td {
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    text-align: left;
+    font-weight: bold;
+    border-top: 2px solid #dee2e6;
+    border-bottom: 2px solid #dee2e6;
+    color: #333;
+}
+
+body.dark-mode .chapter-divider td {
+    background-color: #444;
+    border-color: #555;
+    color: #fff;
+}
