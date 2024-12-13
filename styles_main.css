@@ -1,145 +1,83 @@
-/* Global Styles */
-body {
-    height: 100vh;
-    margin: 0;
-    padding: 20px;
-    overflow: hidden;
-    background-color: white;
-    color: black;
-}
-
-main {
-    display: flex;
-    flex: 1;
-    height: calc(100vh - 100px);
-    overflow: hidden;
-    gap: 20px;
-}
-
-/* Header Styles */
-.header-container {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-}
-
-.TaleScape {
-    font-family: "나눔명조 ExtraBold", sans-serif;
-    font-size: 64px;
-    margin-top: 0;
-    margin-bottom: 20px;
-}
-
-.main-title {
-    font-family: "나눔명조 ExtraBold", sans-serif;
-    font-size: 40px;
-    text-align: center;
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 20px;
-    margin-bottom: 50px;
-}
-
-/* Aside & Section Styles */
-aside {
-    background-color: #d9d9d9;
-    width: 15%;
-    min-width: 200px;
-    height: calc(100% - 70px);
-    padding: 10px;
-    position: relative;
-}
-
-section {
-    flex: 1;
-    background-color: #d9d9d9;
-    height: calc(100% - 70px);
-    padding: 20px;
-    overflow-y: auto;
-}
-
-.aside-title {
-    font-family: "나눔명조 ExtraBold", sans-serif;
-    font-size: 20px;
-}
-
-/* Button Styles */
-.icon-plus {
-    background-color: black;
-    color: white;
-    width: 30px;
-    height: 30px;
-    border-radius: 10px;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.icon-moon {
-    font-size: 30px;
-    color: white;
-    background-color: black;
-    border-radius: 10px;
-    margin: 0 5px 10px 0;
-    padding: 5px;
-}
-
 /* Project Description */
 .project-desc {
     padding: 15px;
     margin-bottom: 30px;
     color: #666;
-}
-
-/* Accordion Styles */
-.accordion-button {
+  }
+  
+  /* Accordion Styles */
+  .accordion-button {
     background-color: white;
     color: black;
-}
-
-.accordion-button:not(.collapsed) {
+  }
+  
+  .accordion-button:not(.collapsed) {
     background-color: #f8f9fa;
     color: black;
-}
-
-/* Table Styles */
-.chapter-table {
+  }
+  
+  /* Table Styles */
+  .chapter-table {
     background-color: transparent;
     padding: 15px;
     border-radius: 4px;
     margin-top: 30px;
-}
-
-.table {
+  }
+  
+  .table {
     margin-bottom: 0;
     color: #666;
-}
-
-.table th {
+  }
+  
+  .table th {
     color: #888;
-}
-
-.table td {
+  }
+  
+  .table td {
     border: none;
-}
-
-.table .chapter-title {
+  }
+  
+  .table .chapter-title {
     color: #666;
-}
-
-.table .btn-link {
+  }
+  
+  .table .btn-link {
     color: #888;
     text-decoration: none;
     padding: 0;
-}
-
-.table .btn-link:hover {
+  }
+  
+  .table .btn-link:hover {
     color: #0d6efd;
-}
-
-/* Form Select Styles */
-.form-select {
+  }
+  
+  /* List Item Styles */
+  .memo-item,
+  .character-item,
+  .world-item {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .memo-content,
+  .character-content,
+  .world-content {
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
+  .character-name,
+  .world-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  
+  /* Form Elements */
+  .form-select {
     background-color: transparent;
     color: #666;
     border: 1px solid #555;
@@ -147,241 +85,77 @@ section {
     font-size: 14px;
     width: 120px;
     cursor: pointer;
-}
-
-/* Item Styles */
-.memo-item,
-.character-item,
-.world-item {
-    background-color: white;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-}
-
-/* Content Styles */
-.memo-content,
-.character-content,
-.world-content {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-/* Title Styles */
-.character-name,
-.world-title {
-    font-size: 1rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #333;
-}
-
-/* Character Item Specific Styles */
-.character-image img {
-    max-width: 200px;
-    border-radius: 4px;
-}
-
-.character-tag {
-    background-color: #f8f9fa;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-}
-
-/* Dark Mode Styles */
-body.dark-mode {
-    background-color: black;
-    color: white;
-}
-
-body.dark-mode aside,
-body.dark-mode section {
-    background-color: #414141;
-}
-
-body.dark-mode .icon-plus,
-body.dark-mode .icon-moon {
-    background-color: white;
-    color: black;
-}
-
-/* Dark Mode Accordion */
-body.dark-mode .accordion-button {
+  }
+  
+  /* Button Visibility */
+  .edit-btn,
+  .delete-btn,
+  .edit-memo-btn,
+  .edit-character-btn,
+  .edit-world-btn,
+  .url-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .chapter-row:hover .edit-btn,
+  .chapter-row:hover .delete-btn,
+  .chapter-row:hover .url-btn,
+  .memo-item:hover .edit-memo-btn,
+  .memo-item:hover .delete-btn,
+  .character-item:hover .edit-character-btn,
+  .character-item:hover .delete-btn,
+  .world-item:hover .edit-world-btn,
+  .world-item:hover .delete-btn,
+  .chapter-divider:hover .delete-btn {
+    opacity: 1;
+  }
+  
+  /* Dark Mode - main.html 전용 */
+  body.dark-mode .accordion-button,
+  body.dark-mode .accordion-button:not(.collapsed),
+  body.dark-mode .accordion-body {
     background-color: #333;
     color: white;
-}
-
-body.dark-mode .accordion-button:not(.collapsed) {
+  }
+  
+  body.dark-mode .memo-item,
+  body.dark-mode .character-item,
+  body.dark-mode .world-item {
     background-color: #333;
-    color: white;
-}
-
-body.dark-mode .accordion-body {
-    background-color: #333;
-    color: white;
-}
-
-/* Dark Mode Items */
-body.dark-mode .memo-item,
-body.dark-mode .character-item,
-body.dark-mode .world-item {
-    background-color: #333;
-}
-
-body.dark-mode .memo-content,
-body.dark-mode .character-content,
-body.dark-mode .world-content {
+  }
+  
+  body.dark-mode .memo-content,
+  body.dark-mode .character-content,
+  body.dark-mode .world-content {
     color: #999;
-}
-
-body.dark-mode .character-name,
-body.dark-mode .world-title {
+  }
+  
+  body.dark-mode .character-name,
+  body.dark-mode .world-title {
     color: white;
-}
-
-/* Modal Styles */
-.modal-content {
+  }
+  
+  /* Modal Styles */
+  .modal-content {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-body.dark-mode .modal-content {
+  }
+  
+  body.dark-mode .modal-content {
     background: #333;
     color: white;
-}
-
-/* 다크모드에서의 스타일도 수정 */
-body.dark-mode .icon-moon {
-    color: black;
-    background-color: white;
-}
-
-/* Button Reset Styles */
-button {
-    border: none;
-    background: none;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-}
-
-/* moon 버튼 특정 스타일 수정 */
-#moon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* 챕터 구분선 스타일 */
-.chapter-divider td {
-    padding: 0.75rem;
-    background-color: white;
-    text-align: center;
-    font-weight: bold;
-    border-top: 2px solid #dee2e6;
-    border-bottom: 2px solid #dee2e6;
-    color: #333;
-}
-
-body.dark-mode .chapter-divider td {
-    background-color: white;
-    border-color: #dee2e6;
-    color: #333;
-}
-
-/* 수정/삭제 버튼 기본 숨김 처리 */
-.edit-btn,
-.delete-btn,
-.edit-memo-btn,
-.edit-character-btn,
-.edit-world-btn {
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-/* 부모 요소에 호버 시 버튼 표시 */
-.chapter-row:hover .edit-btn,
-.chapter-row:hover .delete-btn,
-.memo-item:hover .edit-memo-btn,
-.memo-item:hover .delete-btn,
-.character-item:hover .edit-character-btn,
-.character-item:hover .delete-btn,
-.world-item:hover .edit-world-btn,
-.world-item:hover .delete-btn {
-    opacity: 1;
-}
-
-/* url 버튼도 동일하게 처리 */
-.url-btn {
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.chapter-row:hover .url-btn {
-    opacity: 1;
-}
-
-/* 챕터 행 스타일 */
-.chapter-row td {
-    border: none;
-}
-
-body.dark-mode .chapter-row td {
-    border: none;
-}
-
-/* 챕터 구분선의 삭제 버튼도 hover 시에만 표시 */
-.chapter-divider .delete-btn {
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.chapter-divider:hover .delete-btn {
-    opacity: 1;
-}
-
-/* 새 항목 추가 버튼 스타일 */
-.add-chapter-btn {
-    display: none;
-}
-
-body.dark-mode .add-chapter-btn {
-    background-color: white;
-    color: black;
-}
-
-/* 테이블 스타일 수정 */
-.table th:first-child {  /* 화 열 */
-    width: 10%;
-}
-
-.table th:nth-child(2) {  /* Title 열 */
-    width: 35%;
-}
-
-.table th:nth-child(3) {  /* Character 열 */
-    width: 20%;
-}
-
-.table th:nth-child(4) {  /* Status 열 */
-    width: 15%;
-}
-
-.table th:nth-child(5) {  /* url 열 */
-    width: 15%;
-}
-
-.table th:last-child {  /* 액션 버튼 열 */
-    width: 5%;
-}
-
-/* 행 호버 효과 추가 */
-.chapter-row:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-body.dark-mode .chapter-row:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
+  }
+  
+  body.dark-mode .modal-header,
+  body.dark-mode .modal-footer {
+    border-color: #555;
+  }
+  
+  body.dark-mode .form-control,
+  body.dark-mode .form-select {
+    background-color: #222;
+    border-color: #555;
+    color: white;
+  }
