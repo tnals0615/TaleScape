@@ -81,6 +81,7 @@ section {
     color: white;
     background-color: black;
     border-radius: 10px;
+    margin: 0 5px 10px 0;
     padding: 5px;
 }
 
@@ -104,7 +105,7 @@ section {
 
 /* Table Styles */
 .chapter-table {
-    background-color: white;
+    background-color: transparent;
     padding: 15px;
     border-radius: 4px;
     margin-top: 30px;
@@ -112,18 +113,36 @@ section {
 
 .table {
     margin-bottom: 0;
-    color: black;
+    color: #666;
 }
 
 .table th {
+    color: #888;
+}
+
+.table td {
+    border-color: #555;
+}
+
+.table .chapter-title {
     color: #666;
+}
+
+.table .btn-link {
+    color: #888;
+    text-decoration: none;
+    padding: 0;
+}
+
+.table .btn-link:hover {
+    color: #0d6efd;
 }
 
 /* Form Select Styles */
 .form-select {
-    background-color: white;
-    color: black;
-    border: 1px solid #dee2e6;
+    background-color: transparent;
+    color: #666;
+    border: 1px solid #555;
     padding: 4px 8px;
     font-size: 14px;
     width: 120px;
@@ -138,6 +157,31 @@ section {
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 15px;
+}
+
+/* Content Styles */
+.memo-content,
+.character-content,
+.world-content {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Title Styles */
+.character-name,
+.world-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+/* Item Header with Actions */
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 8px;
 }
 
 /* Character Item Specific Styles */
@@ -186,55 +230,32 @@ body.dark-mode .accordion-body {
     color: white;
 }
 
-/* Dark Mode Table */
-body.dark-mode .chapter-table {
-    background-color: #333;
-}
-
-body.dark-mode .table {
-    color: #999;
-}
-
-body.dark-mode .table th {
-    color: #666;
-}
-
-body.dark-mode .table td {
-    border-color: #444;
-}
-
-body.dark-mode .table .chapter-title {
-    color: white;
-}
-
 /* Dark Mode Items */
 body.dark-mode .memo-item,
 body.dark-mode .character-item,
 body.dark-mode .world-item {
     background-color: #333;
-    color: white;
 }
 
-body.dark-mode .project-desc {
+body.dark-mode .memo-content,
+body.dark-mode .character-content,
+body.dark-mode .world-content {
     color: #999;
+}
+
+body.dark-mode .character-name,
+body.dark-mode .world-title {
+    color: white;
 }
 
 /* Link Styles */
 .table .btn-link {
-    color: #666;
+    color: #888;
     text-decoration: none;
     padding: 0;
 }
 
 .table .btn-link:hover {
-    color: #0d6efd;
-}
-
-body.dark-mode .table .btn-link {
-    color: #999;
-}
-
-body.dark-mode .table .btn-link:hover {
     color: #0d6efd;
 }
 
@@ -248,4 +269,26 @@ body.dark-mode .table .btn-link:hover {
 body.dark-mode .modal-content {
     background: #333;
     color: white;
+}
+
+/* 다크모드에서의 스타일도 수정 */
+body.dark-mode .icon-moon {
+    color: black;
+    background-color: white;
+}
+
+/* Button Reset Styles */
+button {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* moon 버튼 특정 스타일 수정 */
+#moon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

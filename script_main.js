@@ -361,9 +361,9 @@ function handleConfirmMemo() {
 
 function createMemoElement(memoText) {
     const newMemo = document.createElement('div');
-    newMemo.className = 'memo-item p-3 bg-light rounded mb-2';
+    newMemo.className = 'memo-item';
     newMemo.innerHTML = `
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between align-items-start">
             <div class="memo-content">${memoText}</div>
             <div>
                 <button class="btn btn-sm btn-link edit-memo-btn"><i class="bi bi-pencil"></i></button>
@@ -371,7 +371,6 @@ function createMemoElement(memoText) {
             </div>
         </div>
     `;
-
     attachMemoEvents(newMemo);
     return newMemo;
 }
@@ -440,35 +439,29 @@ function handleConfirmCharacter() {
 function createCharacterElement(name, profile, desc, tags, imageUrl) {
     const newCharacter = document.createElement('div');
     newCharacter.className = 'character-item';
-    
     newCharacter.innerHTML = `
-        <div class="character-content">
-            ${imageUrl ? `
-                <div class="character-image">
-                    <img src="${imageUrl}" alt="${name}">
-                </div>
-            ` : ''}
-            <div class="character-header">
-                <h3 class="character-name">${name}</h3>
-                <div class="character-actions">
-                    <button class="edit-character-btn" title="수정">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="delete-btn" title="삭제">
-                        <i class="bi bi-trash"></i>
-                    </button>
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h6 class="character-name">${name}</h6>
+                ${imageUrl ? `
+                    <div class="character-image mb-2">
+                        <img src="${imageUrl}" alt="${name}">
+                    </div>
+                ` : ''}
+                <div class="character-content">
+                    ${profile ? `<div class="character-profile mb-2">${profile.replace(/\n/g, '<br>')}</div>` : ''}
+                    ${desc ? `<div class="character-desc mb-2">${desc.replace(/\n/g, '<br>')}</div>` : ''}
+                    <div class="character-tags">
+                        ${tags.map(tag => `<span class="character-tag">${tag}</span>`).join('')}
+                    </div>
                 </div>
             </div>
-            <div class="character-info">
-                ${profile ? `<div class="character-profile">${profile.replace(/\n/g, '<br>')}</div>` : ''}
-                ${desc ? `<div class="character-desc">${desc.replace(/\n/g, '<br>')}</div>` : ''}
-                <div class="character-tags">
-                    ${tags.map(tag => `<span class="character-tag">${tag}</span>`).join('')}
-                </div>
+            <div>
+                <button class="btn btn-sm btn-link edit-character-btn"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
             </div>
         </div>
     `;
-
     attachCharacterEvents(newCharacter);
     return newCharacter;
 }
@@ -582,12 +575,12 @@ function handleConfirmWorld() {
 
 function createWorldElement(title, content) {
     const newWorld = document.createElement('div');
-    newWorld.className = 'world-item p-3 bg-light rounded mb-2';
+    newWorld.className = 'world-item';
     newWorld.innerHTML = `
         <div class="d-flex justify-content-between align-items-start">
             <div>
-                <h6 class="mb-1">${title}</h6>
-                <div class="small text-muted world-content">${content}</div>
+                <h6 class="world-title">${title}</h6>
+                <div class="world-content">${content}</div>
             </div>
             <div>
                 <button class="btn btn-sm btn-link edit-world-btn"><i class="bi bi-pencil"></i></button>
@@ -595,7 +588,6 @@ function createWorldElement(title, content) {
             </div>
         </div>
     `;
-
     attachWorldEvents(newWorld);
     return newWorld;
 }
