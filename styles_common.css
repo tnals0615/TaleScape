@@ -178,6 +178,21 @@ body.dark-mode ::-webkit-scrollbar-thumb:hover {
   background: #888;
 }
 
+body.dark-mode #projectModal {
+  background-color: #aaaaaa;
+  color: black;
+}
+
+body.dark-mode #projectPlotInput {
+  background-color: #1e1e1e;
+  color: white;
+}
+
+body.dark-mode #projectModal input[type="text"] {
+  background-color: #1e1e1e;
+  color: white;
+}
+
 /* Utility Classes - 공통 */
 .visually-hidden {
   position: absolute;
@@ -208,7 +223,7 @@ body.dark-mode ::-webkit-scrollbar-thumb:hover {
 
 /* ===== 모달 창 자체 ===== */
 #projectModal {
-  background-color: #ffffff; /* 흰색 배경 */
+  background-color: white; /* 흰색 배경 */
   border-radius: 10px;
   padding: 20px;
   width: 400px;
@@ -259,6 +274,7 @@ body.dark-mode ::-webkit-scrollbar-thumb:hover {
 }
 
 #projectPlotInput {
+  background-color: white;
   height: 300px; /* 텍스트 영역 높이 */
   resize: vertical; /* 사용자가 높이 조정 가능 */
   padding: 10px;

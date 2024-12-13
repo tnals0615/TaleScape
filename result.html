@@ -12,6 +12,7 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
+    <script src="script_result.js"></script>
   </head>
 
   <body>
@@ -32,10 +33,7 @@
         </div>
         <hr class="black-divider" />
         <article>
-          <p id="addBtnMsg">
-            <i class="fa-solid fa-plus icon-plus2"></i> 버튼을 눌러
-            프로젝트를<br />생성해주세요
-          </p>
+          <p id="addBtnMsg">+버튼을 눌러 프로젝트를<br />생성해주세요</p>
           <ul class="project-list"></ul>
         </article>
       </aside>
@@ -65,7 +63,32 @@
       </aside>
     </main>
 
-    <script src="script_result.js"></script>
-    <script src="script_common.js"></script>
+    <div id="projectModalContainer" class="hidden">
+      <section id="projectModal">
+        <header>새 프로젝트</header>
+        <hr class="black-divider" />
+        <article>
+          <label for="projectNameInput">프로젝트 제목</label>
+          <input
+            type="text"
+            id="projectNameInput"
+            name="projectNameInput"
+            placeholder="프로젝트 이름을 입력하세요"
+          />
+
+          <label for="projectPlotInput">줄거리</label>
+          <textarea
+            id="projectPlotInput"
+            name="projectPlotInput"
+            placeholder="줄거리를 입력하세요"
+          ></textarea>
+          <div id="buttonContainer">
+            <button id="pModalClose">닫기</button>
+            <button id="pModalApply">확인</button>
+          </div>
+        </article>
+      </section>
+    </div>
   </body>
+  <script src="script_common.js"></script>
 </html>
