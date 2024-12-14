@@ -10,20 +10,6 @@ a:active {
   text-underline-offset: 4px;
 }
 
-/* List Styles - edit.html 전용 */
-.toggle-list {
-  list-style-type: none;
-  padding: 10px 0 0 10px;
-}
-ul {
-  padding: 10px 0 0 20px;
-  margin: 0;
-}
-li {
-  margin: 5px 0;
-  cursor: pointer;
-}
-
 /* Editor Styles - edit.html 전용 */
 .tox-edit-area__iframe {
   background-color: white !important;
@@ -125,35 +111,6 @@ body.dark-mode kbd {
   border-color: #666;
 }
 
-/* 토글 관련 스타일 수정 */
-.toggle-title {
-  cursor: pointer;
-  user-select: none;
-  padding: 5px 0;
-}
-
-.toggle-title:hover {
-  color: #666;
-}
-
-.toggle-content {
-  margin-left: 15px;
-  padding-top: 5px;
-  display: none;  /* 초기 상태는 숨김 */
-}
-
-/* 가이드 항목은 커서 기본값으로 */
-.shortcut-list li {
-  cursor: default;
-}
-
-/* 토글 아이콘 스타일 */
-.toggle-title::first-letter {
-  display: inline-block;
-  width: 15px;
-  transition: transform 0.2s;
-}
-
 /* 본문 섹션 스타일 */
 .content-section {
   margin-bottom: 20px;
@@ -183,7 +140,7 @@ body.dark-mode .content-preview {
 .editor-container {
   position: relative;
   margin-top: 20px;
-  margin-bottom: ２0px;
+  margin-bottom: 20px;
 }
 
 .editor-controls {

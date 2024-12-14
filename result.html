@@ -53,10 +53,33 @@
         <hr class="black-divider" />
         <article>
           <ul class="toggle-list">
-            <li>▼ 메모</li>
-            <li>▼ 캐릭터 노트</li>
-            <li>▼ 세계관</li>
-            <li>▼ 설정</li>
+            <li class="page-link" onclick="location.href='edit.html'">
+              <i class="fas fa-edit"></i> 수정하기
+            </li>
+            <li>
+              <div class="toggle-title">▼ 메모</div>
+              <ul class="toggle-content">
+                <li>메모 내용...</li>
+              </ul>
+            </li>
+            <li>
+              <div class="toggle-title">▼ 캐릭터 노트</div>
+              <ul class="toggle-content">
+                <li>캐릭터 내용...</li>
+              </ul>
+            </li>
+            <li>
+              <div class="toggle-title">▼ 세계관</div>
+              <ul class="toggle-content">
+                <li>세계관 내용...</li>
+              </ul>
+            </li>
+            <li>
+              <div class="toggle-title">▼ 설정</div>
+              <ul class="toggle-content">
+                <li>설정 내용...</li>
+              </ul>
+            </li>
           </ul>
         </article>
       </aside>
@@ -68,7 +91,7 @@
         <hr class="black-divider" />
         <article>
           <label for="projectNameInput">프로젝트 제목</label>
-          <input type="text" id="projectNameInput" name="projectNameInput" placeholder="프로젝트 이름을 입력하세요" />
+          <input type="text" id="projectNameInput" name="projectNameInput" placeholder="프로젝트 이름�� 입력하세요" />
 
           <label for="projectPlotInput">줄거리</label>
           <textarea id="projectPlotInput" name="projectPlotInput" placeholder="줄거리를 입력하세요"></textarea>
