@@ -1,18 +1,58 @@
+// firebase.js에서 Firebase 모듈 가져오기
+import { db, addDoc, collection, getDoc, doc } from "./firebase.js";
+
 // 전역 변수
 let projectCount = 0;
+let projectId = "";
 
 // 초기화 함수
 document.addEventListener('DOMContentLoaded', () => {
     initEventListeners();
-    initTheme();
+    //initTheme();
 });
 
 // 이벤트 리스너 초기화
 function initEventListeners() {
     // 프로젝트 관련
-    document.querySelector('.icon-plus').addEventListener('click', handleAddProject);
-    document.querySelector('#projectModal .btn-primary').addEventListener('click', handleProjectSubmit);
-    document.getElementById('projectModal').addEventListener('hidden.bs.modal', handleProjectModalHidden);
+    //document.querySelector('.icon-plus').addEventListener('click', handleAddProject);
+    //document.querySelector('#projectModal .btn-primary').addEventListener('click', handleProjectSubmit);
+    //document.getElementById('projectModal').addEventListener('hidden.bs.modal', handleProjectModalHidden);
+
+    const projectList = document.querySelector(".project-list");
+    /* 프로젝트 리스트 눌렀을 때 프로젝트 아이디를 가져옴 */
+    projectList.addEventListener("click", async (event) => {
+        
+        const target = event.target;
+
+        if (target.tagName === "LI") {
+            projectId = target.getAttribute("data-id"); // Firestore ID 가져오기
+
+            if (projectId) {
+                try {
+                    const projectRef = collection(db, "project");
+                    const docSnap = await getDoc(doc(projectRef, projectId));
+
+                    if (docSnap.exists()) {
+                        const projectData = docSnap.data();
+                        
+                        const projectNameElement = document.getElementById("projectName");
+                        const projectPlotElement = document.getElementById("projectPlot");
+            
+                        if (projectNameElement && projectPlotElement) {
+                            projectNameElement.textContent = projectData.name || "프로젝트 이름 없음";
+                            projectPlotElement.textContent = projectData.plot || "설명 없음";
+                        }
+
+                    } else {
+                        console.log("No such document!");
+                    }
+                } catch (error) {
+                    console.error("Firestore 데이터 가져오기 중 오류 발생:", error);
+                }
+            }
+        }
+    });
+
 
     // 챕터 관련 - 단순화
     document.querySelector('#addChapterBtn').addEventListener('click', () => {
@@ -69,7 +109,7 @@ function initEventListeners() {
     document.querySelector('.confirm-world-btn').addEventListener('click', handleConfirmWorld);
 
     // 테마 관련
-    document.getElementById('moon').addEventListener('click', handleThemeToggle);
+    //document.getElementById('moon').addEventListener('click', handleThemeToggle);
 
     // 태그 입력 처리
     document.getElementById('characterTagInput').addEventListener('keydown', function(e) {
@@ -107,12 +147,19 @@ function initEventListeners() {
 }
 
 // 테마 초기화
+/*
 function initTheme() {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
         handleThemeToggle();
     }
 }
+*/
+
+
+
+// 프로젝트 관련 유틸리티 함수들
+/*
 
 // 프로젝트 관련 함수들
 function handleAddProject() {
@@ -142,7 +189,6 @@ function createProject(projectName, projectDesc) {
     handleProjectClick(newProject, projectName, projectDesc);
 }
 
-// 프로젝트 관련 유틸리티 함수들
 function createProjectElement(projectName) {
     const newProject = document.createElement('li');
     newProject.className = 'project-item';
@@ -227,6 +273,7 @@ function closeAndResetProjectModal() {
 function handleProjectModalHidden() {
     this.querySelector('input').value = '';
 }
+*/
 
 // 챕터 관련 함수들
 function handleAddNewChapter(chapterNum) {
@@ -731,3 +778,5 @@ function resetChapterModal() {
     document.getElementById('chapterStatusInput').value = '작성중';
     document.getElementById('chapterUrlInput').value = '';
 }
+
+
