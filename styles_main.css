@@ -7,13 +7,27 @@
 
 /* Accordion Styles */
 .accordion-button {
-  background-color: white;
+  background-color: white !important;
   color: black;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
 .accordion-button:not(.collapsed) {
-  background-color: #f8f9fa;
+  background-color: white !important;
   color: black;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.accordion-body {
+  background-color: transparent !important;
+  padding: 1rem;
+}
+
+.accordion-item {
+  background-color: transparent !important;
+  border: none !important;
 }
 
 /* Table Styles */
@@ -64,10 +78,11 @@
 .memo-item,
 .character-item,
 .world-item {
-  background-color: white;
-  border-radius: 8px;
+  background-color: transparent !important;
   padding: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 0;
+  border-bottom: 1px solid #ccc;
+  transition: background-color 0.2s ease;
 }
 
 .memo-content,
@@ -121,17 +136,17 @@
 }
 
 /* Dark Mode - main.html 전용 */
-body.dark-mode .accordion-button,
-body.dark-mode .accordion-button:not(.collapsed),
-body.dark-mode .accordion-body {
-  background-color: #333;
-  color: white;
-}
-
 body.dark-mode .memo-item,
 body.dark-mode .character-item,
 body.dark-mode .world-item {
-  background-color: #333;
+  background-color: transparent !important;
+  border-bottom: 1px solid #555;
+}
+
+body.dark-mode .memo-item:hover,
+body.dark-mode .character-item:hover,
+body.dark-mode .world-item:hover {
+  background-color: rgba(255, 255, 255, 0.03) !important;
 }
 
 body.dark-mode .memo-content,
@@ -191,8 +206,8 @@ body.dark-mode .form-select {
 }
 
 .table .form-select:focus {
-  border-color: #86b7fe !important;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+  border-color: #dee2e6 !important;
+  box-shadow: none !important;
 }
 
 /* Dark Mode - main.html 전용 */
@@ -202,4 +217,69 @@ body.dark-mode .project-desc {
 
 body.dark-mode .project-list .text-muted {
     color: #ccc !important;  /* 가이드 텍스트 색상을 밝게 */
+}
+
+/* 포커스 아웃라인 제거 */
+.accordion-button:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.form-select:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* 모달 관련 포커스 아웃라인 제거 */
+.form-control:focus {
+  box-shadow: none !important;
+  outline: none !important;
+  border-color: #dee2e6 !important;
+}
+
+.modal .btn-close:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Dark Mode - 아코디언 관련 */
+body.dark-mode .accordion-button,
+body.dark-mode .accordion-button:not(.collapsed) {
+  background-color: #333 !important;  /* 다크모드에서는 어두운 경 */
+  color: white !important;  /* 다크모드에서는 흰색 텍스트 */
+  border-bottom: none !important;
+}
+
+body.dark-mode .accordion-body {
+  background-color: transparent !important;
+}
+
+body.dark-mode .accordion-item {
+  background-color: transparent !important;
+}
+
+/* 보더 제거 */
+.memo-item,
+.character-item,
+.world-item {
+  border-radius: 0 !important;
+}
+
+/* 마지막 아이템은 보더 제거 */
+.memo-item:last-child,
+.character-item:last-child,
+.world-item:last-child {
+  border-bottom: none;
+}
+
+/* hover 효과 추가 */
+.memo-item:hover,
+.character-item:hover,
+.world-item:hover {
+  background-color: rgba(0, 0, 0, 0.02) !important;
 }

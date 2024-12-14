@@ -109,6 +109,34 @@ function initEventListeners() {
             reader.readAsDataURL(file);
         }
     });
+
+    // 모달 리셋 이벤트 추가
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', function () {
+            // 모든 입력 필드 초기화
+            this.querySelectorAll('input, textarea, select').forEach(input => {
+                input.value = '';
+            });
+            
+            // 이미지 미리보기 초기화 (캐릭터 모달)
+            const imagePreview = this.querySelector('#characterImagePreview');
+            if (imagePreview) {
+                imagePreview.innerHTML = '';
+            }
+            
+            // 태그 컨테이너 초기화 (캐릭터 모달)
+            const tagsContainer = this.querySelector('#characterTags');
+            if (tagsContainer) {
+                tagsContainer.innerHTML = '';
+            }
+            
+            // 새 챕터 체크박스 초기화 (챕터 모달)
+            const newChapterCheck = this.querySelector('#newChapterCheck');
+            if (newChapterCheck) {
+                newChapterCheck.checked = false;
+            }
+        });
+    });
 }
 
 // 테마 초기화
@@ -721,7 +749,7 @@ function handleThemeToggle() {
     localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
 }
 
-// 유틸리티 함수
+// 유틸��티 함수
 function closeModal(modalId) {
     const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
     if (modal) {
