@@ -40,8 +40,19 @@
 
       <section>
         <header class="main-title">1화. 괴담에 떨어짐</header>
-        <article>▼ 본문</article>
-        <textarea id="wysiwyg-editor">위지위그 에디터를 여기에 추가합니다.</textarea>
+        <div class="content-section">
+          <div class="toggle-title content-toggle">▼ 본문</div>
+          <div class="content-preview toggle-content"></div>
+        </div>
+        <div class="editor-container">
+          <textarea id="wysiwyg-editor">위지위그 에디터를 여기에 추가합니다.</textarea>
+          <div class="editor-controls">
+            <button class="save-btn" style="display: none;">
+              <i class="fas fa-save"></i> 저장
+            </button>
+          </div>
+          <div class="word-counter">글자 수: 0</div>
+        </div>
       </section>
 
       <aside>
@@ -52,7 +63,8 @@
             <li class="shortcut-guide">
               <div class="toggle-title">▼ 단축키 가이드</div>
               <ul class="toggle-content shortcut-list">
-                <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> : 따옴표 추가</li>
+                <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> : 큰따옴표 추가</li>
+                <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd> : 작은따옴표 추가</li>
               </ul>
             </li>
             <li>

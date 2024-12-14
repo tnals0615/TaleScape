@@ -33,6 +33,8 @@ li {
 .tox-edit-area__iframe .mce-content-body {
   background-color: white !important;
   color: black !important;
+  line-height: 1.4 !important;
+  font-size: 16px !important;
 }
 
 /* Dark Mode - edit.html 전용 */
@@ -80,13 +82,6 @@ body.dark-mode a:active {
   cursor: pointer;
 }
 
-/* 단축키 가이드 스타일 수정 */
-.shortcut-guide {
-  /* margin-top: 20px;
-  padding: 10px;
-  border-radius: 4px;
-  background-color: rgba(0, 0, 0, 0.05); */  /* 이 스타일들을 제거 */
-}
 
 .guide-title {
   font-weight: bold;
@@ -114,11 +109,6 @@ kbd {
   border: 1px solid #ccc;
   border-radius: 3px;
   box-shadow: 0 1px 0 rgba(0,0,0,0.2);
-}
-
-/* 다크모드 대응도 수정 */
-body.dark-mode .shortcut-guide {
-  /* background-color: rgba(255, 255, 255, 0.05); */  /* 이 스타일 제거 */
 }
 
 body.dark-mode .guide-title {
@@ -162,4 +152,80 @@ body.dark-mode kbd {
   display: inline-block;
   width: 15px;
   transition: transform 0.2s;
+}
+
+/* 본문 섹션 스타일 */
+.content-section {
+  margin-bottom: 20px;
+}
+
+.content-toggle {
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.content-preview {
+  margin: 10px 0;
+  padding: 15px 0;
+  white-space: pre-wrap;
+  display: none;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+/* 다크모드 대응 */
+body.dark-mode .content-preview {
+  border-color: #444;
+}
+
+/* 에디터 관련 스타일 */
+.editor-container {
+  position: relative;
+  margin-top: 20px;
+  margin-bottom: ２0px;
+}
+
+.editor-controls {
+  position: absolute;
+  bottom: -25px;
+  left: 0;
+  right: 15px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.save-btn {
+  background-color: #6E6E6E;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 14px;
+}
+
+.save-btn:hover {
+  background-color: #595959;
+}
+
+/* 글자 수 카운터 */
+.word-counter {
+  margin-right: auto;
+  font-size: 14px;
+  color: #666;
+  margin-left: 15px;
+}
+
+/* 다크모드 대응 */
+body.dark-mode .word-counter {
+  color: #ccc;
+}
+
+/* 다크모드 대응 */
+body.dark-mode .tox-edit-area__iframe .mce-content-body {
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
 }
