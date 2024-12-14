@@ -79,3 +79,87 @@ body.dark-mode a:active {
   font-size: 20px;
   cursor: pointer;
 }
+
+/* 단축키 가이드 스타일 수정 */
+.shortcut-guide {
+  /* margin-top: 20px;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.05); */  /* 이 스타일들을 제거 */
+}
+
+.guide-title {
+  font-weight: bold;
+  color: #333;
+}
+
+.shortcut-list {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.shortcut-list li {
+  margin: 5px 0;
+  color: #666;
+}
+
+kbd {
+  display: inline-block;
+  padding: 2px 4px;
+  font-size: 12px;
+  font-family: monospace;
+  line-height: 1;
+  color: #666;
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+}
+
+/* 다크모드 대응도 수정 */
+body.dark-mode .shortcut-guide {
+  /* background-color: rgba(255, 255, 255, 0.05); */  /* 이 스타일 제거 */
+}
+
+body.dark-mode .guide-title {
+  color: #fff;
+}
+
+body.dark-mode .shortcut-list li {
+  color: #ccc;
+}
+
+body.dark-mode kbd {
+  color: #fff;
+  background-color: #333;
+  border-color: #666;
+}
+
+/* 토글 관련 스타일 수정 */
+.toggle-title {
+  cursor: pointer;
+  user-select: none;
+  padding: 5px 0;
+}
+
+.toggle-title:hover {
+  color: #666;
+}
+
+.toggle-content {
+  margin-left: 15px;
+  padding-top: 5px;
+  display: none;  /* 초기 상태는 숨김 */
+}
+
+/* 가이드 항목은 커서 기본값으로 */
+.shortcut-list li {
+  cursor: default;
+}
+
+/* 토글 아이콘 스타일 */
+.toggle-title::first-letter {
+  display: inline-block;
+  width: 15px;
+  transition: transform 0.2s;
+}
