@@ -194,3 +194,12 @@ body.dark-mode .form-select {
   border-color: #86b7fe !important;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
 }
+
+/* Dark Mode - main.html 전용 */
+body.dark-mode .project-desc {
+    color: #ccc;  /* 프로젝트 설명 텍스트 색상을 밝게 */
+}
+
+body.dark-mode .project-list .text-muted {
+    color: #ccc !important;  /* 가이드 텍스트 색상을 밝게 */
+}

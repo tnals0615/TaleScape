@@ -9,10 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 이벤트 리스너 초기화
 function initEventListeners() {
-    // 프로젝트 관련
+    // 프로젝트 추가 버튼
     document.querySelector('.icon-plus').addEventListener('click', handleAddProject);
-    document.querySelector('#projectModal .btn-primary').addEventListener('click', handleProjectSubmit);
-    document.getElementById('projectModal').addEventListener('hidden.bs.modal', handleProjectModalHidden);
+    
+    // 프로젝트 모달 버튼들
+    document.getElementById('pModalApply').addEventListener('click', handleProjectSubmit);
+    document.getElementById('pModalClose').addEventListener('click', () => {
+        const modalContainer = document.getElementById('projectModalContainer');
+        modalContainer.classList.add('hidden');
+    });
 
     // 챕터 관련 - 단순화
     document.querySelector('#addChapterBtn').addEventListener('click', () => {
@@ -116,16 +121,16 @@ function initTheme() {
 
 // 프로젝트 관련 함수들
 function handleAddProject() {
-    const projectModal = new bootstrap.Modal(document.getElementById('projectModal'));
-    projectModal.show();
+    const modalContainer = document.getElementById('projectModalContainer');
+    modalContainer.classList.remove('hidden');
 }
 
 function handleProjectSubmit() {
     const projectName = document.querySelector('#projectNameInput').value.trim();
-    const projectDesc = document.querySelector('#projectDescInput').value.trim();
+    const projectPlot = document.querySelector('#projectPlotInput').value.trim();
     
     if (projectName) {
-        createProject(projectName, projectDesc);
+        createProject(projectName, projectPlot);
     }
 }
 
@@ -194,10 +199,10 @@ function handleProjectDelete(project) {
 }
 
 function handleProjectEdit(project, name, desc) {
-    const projectModal = new bootstrap.Modal(document.getElementById('projectModal'));
+    const modalContainer = document.getElementById('projectModalContainer');
     document.querySelector('#projectNameInput').value = name;
-    document.querySelector('#projectDescInput').value = desc;
-    projectModal.show();
+    document.querySelector('#projectPlotInput').value = desc;
+    modalContainer.classList.remove('hidden');
 }
 
 function removeGuideText(projectList) {
@@ -218,10 +223,10 @@ function checkEmptyProjectList() {
 }
 
 function closeAndResetProjectModal() {
-    const projectModal = bootstrap.Modal.getInstance(document.getElementById('projectModal'));
-    projectModal.hide();
+    const modalContainer = document.getElementById('projectModalContainer');
+    modalContainer.classList.add('hidden');
     document.querySelector('#projectNameInput').value = '';
-    document.querySelector('#projectDescInput').value = '';
+    document.querySelector('#projectPlotInput').value = '';
 }
 
 function handleProjectModalHidden() {

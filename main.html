@@ -122,29 +122,22 @@
     <!-- Bootstrap 모달 사용 -->
     <!-- 기존 모달 코드 유지 -->
     <!-- 프로젝트 모달 -->
-    <div class="modal fade" id="projectModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">새 프로젝트</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div id="projectModalContainer" class="hidden">
+        <section id="projectModal">
+            <header>새 프로젝트</header>
+            <hr class="black-divider" />
+            <article>
+                <label for="projectNameInput">프로젝트 제목</label>
+                <input type="text" id="projectNameInput" name="projectNameInput" placeholder="프로젝트 이름을 입력하세요" />
+
+                <label for="projectPlotInput">줄거리</label>
+                <textarea id="projectPlotInput" name="projectPlotInput" placeholder="줄거리를 입력하세요"></textarea>
+                <div id="buttonContainer">
+                    <button id="pModalClose">닫기</button>
+                    <button id="pModalApply">확인</button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">프로젝트 제목</label>
-                        <input type="text" class="form-control" id="projectNameInput" placeholder="프로젝트 이름을 입력하세요">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">프로젝트 설명</label>
-                        <textarea class="form-control" id="projectDescInput" rows="3" placeholder="프로젝트 설명을 입력하세요"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn btn-primary">확인</button>
-                </div>
-            </div>
-        </div>
+            </article>
+        </section>
     </div>
 
     <!-- 메모 모달 -->
@@ -194,7 +187,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">태그</label>
-                        <input type="text" class="form-control" id="characterTagInput" placeholder="태그를 입력하고 Enter를 누르세요">
+                        <input type="text" class="form-control" id="characterTagInput" placeholder="태그를 입력���고 Enter를 누르세요">
                         <div id="characterTags" class="mt-2 d-flex flex-wrap gap-2"></div>
                     </div>
                 </div>
