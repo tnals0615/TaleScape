@@ -56,8 +56,17 @@
 .table td {
   font-family: "나눔스퀘어_ac", sans-serif !important;
   font-size: 16px !important;
+  text-align: center;
   background-color: white !important;
   border-bottom: 1px solid #eee !important;
+}
+
+/* 챕터 구분선 스타일 */
+.chapter-divider td {
+  font-weight: bold !important;
+  color: #333 !important;
+  padding: 12px !important;
+  border-bottom: 2px solid #cccccc !important;
 }
 
 .table .chapter-title {

@@ -364,6 +364,9 @@ body.dark-mode #projectModal input[type="text"] {
 }
 
 /* 다크모드 대응 */
-body.dark-mode .page-link:hover {
+body.dark-mode .page-link {
   color: #fff;
+}
+body.dark-mode .toggle-title:hover {
+  color: #d0d0d0;
 }
