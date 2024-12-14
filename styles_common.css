@@ -1,0 +1,317 @@
+/* Global Styles */
+body {
+  height: 100vh;
+  margin: 0;
+  padding: 20px;
+  overflow: hidden;
+  background-color: white;
+  color: black;
+}
+
+main {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+}
+
+/* Divider - 공통 */
+.black-divider {
+  border: none;
+  border-top: 2px solid black;
+}
+
+/* Title Styles - 공통 */
+.TaleScape {
+  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-size: 64px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.aside-title {
+  margin-top: 10px;
+  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-size: 20px;
+}
+
+.main-title {
+  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-size: 40px;
+  text-align: center;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 20px;
+  margin-bottom: 50px;
+}
+
+/* Layout: Aside and Section - 공통 */
+aside,
+section {
+  background-color: #d9d9d9;
+  height: calc(100% - 70px);
+  padding: 10px;
+  position: relative;
+  box-sizing: border-box;
+  margin: 20px 0;
+  font-family: "나눔스퀘어_ac", sans-serif;
+}
+
+aside {
+  width: 15%;
+  min-width: 200px;
+  font-size: 16px;
+}
+
+#addBtnMsg {
+  text-align: center;
+}
+
+section {
+  width: 100%;
+  margin: 20px 20px;
+  padding: 30px 20px 10px;
+  font-size: 20px;
+  overflow-y: auto;
+}
+
+/* Header Container - 공통 */
+.header-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+/* Button & Icon Styles - 공통 */
+button {
+  font-family: "나눔스퀘어_ac", sans-serif;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.icon-plus {
+  font-size: 20px;
+  color: white;
+  background-color: black;
+  border-radius: 10px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: -3px;
+}
+
+.icon-plus2 {
+  font-size: 16px;
+  color: white;
+  background-color: black;
+  border-radius: 5px;
+  width: 20px;
+  height: 20px;
+  padding-top: 2px;
+}
+
+.icon-moon {
+  font-size: 30px;
+  color: white;
+  background-color: black;
+  border-radius: 10px;
+  margin: 0 5px 10px 0;
+  padding: 5px;
+}
+
+/* Dark Mode - 공통 */
+body.dark-mode {
+  background-color: black;
+  color: white;
+}
+
+body.dark-mode aside,
+body.dark-mode section {
+  background-color: #414141;
+}
+
+body.dark-mode .icon-moon,
+body.dark-mode .icon-plus,
+body.dark-mode .icon-plus2 {
+  color: black;
+  background-color: white;
+}
+
+body.dark-mode .black-divider {
+  border-top: 2px solid white;
+}
+
+/* Scrollbar Styles - 공통 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark Mode Scrollbar - 공통 */
+body.dark-mode ::-webkit-scrollbar-track {
+  background: #333;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #666;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+body.dark-mode #projectModal {
+  background-color: #aaaaaa;
+  color: black;
+}
+
+body.dark-mode #projectPlotInput {
+  background-color: #1e1e1e;
+  color: white;
+}
+
+body.dark-mode #projectModal input[type="text"] {
+  background-color: #1e1e1e;
+  color: white;
+}
+
+/* Utility Classes - 공통 */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===== 모달 전체 배경 ===== */
+#projectModalContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정 배경 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9998; /* 모달 아래 다른 요소보다 위에 표시 */
+  padding: 20px;
+}
+
+/* ===== 모달 창 자체 ===== */
+#projectModal {
+  background-color: white; /* 흰색 배경 */
+  border-radius: 10px;
+  padding: 20px;
+  width: 400px;
+  height: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 9999; /* 반투명 배경보다 위에 표시 */
+}
+
+/* ===== 숨김 클래스 ===== */
+.hidden {
+  display: none; /* 모달을 기본적으로 숨김 */
+  visibility: hidden;
+}
+
+/* ===== 모달 내부 스타일 ===== */
+#projectModal header {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#projectModal .black-divider {
+  margin: 10px 0;
+  border-top: 2px solid black;
+}
+
+#projectModal article {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* ===== 입력 필드 ===== */
+#projectModal label {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#projectModal input[type="text"],
+#projectPlotInput {
+  font-family: "나눔스퀘어_ac", sans-serif;
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 전체 크기 */
+}
+
+#projectPlotInput {
+  background-color: white;
+  height: 300px; /* 텍스트 영역 높이 */
+  resize: vertical; /* 사용자가 높이 조정 가능 */
+  padding: 10px;
+}
+
+/* ===== 버튼 스타일 ===== */
+#buttonContainer {
+  display: flex;
+  justify-content: flex-end; /* 버튼을 오른쪽으로 정렬 */
+  gap: 8px; /* 버튼 간격을 좁게 설정 */
+  position: absolute; /* 모달 내부 오른쪽 하단에 위치 */
+  bottom: 20px; /* 하단 여백 */
+  right: 20px; /* 오른쪽 여백 */
+}
+
+#buttonContainer button {
+  padding: 8px 12px; /* 버튼 크기를 조금 더 작게 조정 */
+  font-size: 14px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ===== 버튼 색상 ===== */
+#pModalClose {
+  background-color: #6e6e6e; /* 닫기 버튼 빨간색 */
+}
+
+#pModalClose:hover {
+  background-color: #a71d2a; /* 닫기 버튼 호버 효과 */
+}
+
+#pModalApply {
+  background-color: #6e6e6e; /* 확인 버튼 파란색 */
+}
+
+#pModalApply:hover {
+  background-color: #0056b3; /* 확인 버튼 호버 효과 */
+}
