@@ -122,23 +122,68 @@ function initEventListeners() {
     // 모달 리셋 이벤트
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('hidden.bs.modal', function () {
+            // 기존 입력값 초기화
             this.querySelectorAll('input, textarea, select').forEach(input => {
                 input.value = '';
             });
             
+            // 이미지 미리보기 초기화
             const imagePreview = this.querySelector('#characterImagePreview');
             if (imagePreview) {
                 imagePreview.innerHTML = '';
             }
             
+            // 태그 초기화
             const tagsContainer = this.querySelector('#characterTags');
             if (tagsContainer) {
                 tagsContainer.innerHTML = '';
             }
             
+            // 새 챕터 체크박스 초기화
             const newChapterCheck = this.querySelector('#newChapterCheck');
             if (newChapterCheck) {
                 newChapterCheck.checked = false;
+            }
+
+            // 확인 버튼 이벤트 리스너 초기화
+            const confirmBtn = this.querySelector('.confirm-character-btn, .confirm-memo-btn, .confirm-world-btn, .confirm-chapter-btn');
+            if (confirmBtn) {
+                const newConfirmBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+                
+                // 기본 이벤트 리스너 다시 연결
+                if (newConfirmBtn.classList.contains('confirm-character-btn')) {
+                    newConfirmBtn.addEventListener('click', handleConfirmCharacter);
+                } else if (newConfirmBtn.classList.contains('confirm-memo-btn')) {
+                    newConfirmBtn.addEventListener('click', handleConfirmMemo);
+                } else if (newConfirmBtn.classList.contains('confirm-world-btn')) {
+                    newConfirmBtn.addEventListener('click', handleConfirmWorld);
+                } else if (newConfirmBtn.classList.contains('confirm-chapter-btn')) {
+                    newConfirmBtn.addEventListener('click', () => {
+                        const isNewChapter = document.getElementById('newChapterCheck').checked;
+                        const chapterName = document.getElementById('chapterNameInput').value.trim();
+                        const title = document.getElementById('chapterTitleInput').value.trim();
+                        const character = document.getElementById('chapterCharacterInput').value.trim();
+                        const status = document.getElementById('chapterStatusInput').value;
+                        const url = document.getElementById('chapterUrlInput').value.trim();
+
+                        if (title) {
+                            const tbody = document.querySelector('tbody');
+                            
+                            if (isNewChapter) {
+                                const nextChapterNum = tbody.querySelectorAll('.chapter-divider').length + 1;
+                                const newDivider = createChapterDivider(nextChapterNum, chapterName);
+                                tbody.appendChild(newDivider);
+                            }
+
+                            const episodeNum = getNextEpisodeNumber();
+                            const newRow = createChapterElement(episodeNum, title, character, status, url);
+                            tbody.appendChild(newRow);
+                            attachChapterEvents(newRow);
+                            closeModal('chapterModal');
+                        }
+                    });
+                }
             }
         });
     });
@@ -588,31 +633,27 @@ function handleCharacterEdit(character) {
             `<img src="${imageUrl}" alt="미리보기" style="max-width: 200px;">`;
     }
 
-    characterModal.show();
-
-    // 확인 버튼에 수정 이벤트 연결
+    // 기존 확인 버튼의 이벤트 리스너를 모두 제거하고 새로운 버튼으로 교체
     const confirmBtn = document.querySelector('.confirm-character-btn');
     const newConfirmBtn = confirmBtn.cloneNode(true);
     confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+    
+    // 수정용 이벤트 리스너 추가
     newConfirmBtn.addEventListener('click', () => {
-        updateCharacter(character);
+        const updatedCharacter = createCharacterElement(
+            document.getElementById('characterNameInput').value.trim(),
+            document.getElementById('characterProfileInput').value.trim(),
+            document.getElementById('characterDescInput').value.trim(),
+            Array.from(document.getElementById('characterTags').children).map(tag => 
+                tag.textContent.replace('×', '').trim()
+            ),
+            document.getElementById('characterImagePreview').querySelector('img')?.src || ''
+        );
+        character.replaceWith(updatedCharacter);
+        characterModal.hide();
     });
-}
 
-function updateCharacter(character) {
-    const name = document.getElementById('characterNameInput').value.trim();
-    const profile = document.getElementById('characterProfileInput').value.trim();
-    const desc = document.getElementById('characterDescInput').value.trim();
-    const tags = Array.from(document.getElementById('characterTags').children).map(tag => 
-        tag.textContent.replace('×', '').trim()
-    );
-    const imageUrl = document.getElementById('characterImagePreview').querySelector('img')?.src || '';
-
-    if (name) {
-        const newCharacter = createCharacterElement(name, profile, desc, tags, imageUrl);
-        character.replaceWith(newCharacter);
-        closeModal('characterModal');
-    }
+    characterModal.show();
 }
 
 function handleCharacterDelete(character) {
