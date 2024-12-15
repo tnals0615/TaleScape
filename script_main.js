@@ -307,7 +307,7 @@ function createChapterElement(episodeNum, title = '', character = '', status = '
 }
 
 function attachChapterEvents(row) {
-    // 행 클릭 이벤���
+    // 행 클릭 이벤트
     row.addEventListener('click', (e) => {
         // 버튼이나 select 클릭 시에는 이동하지 않음
         if (!e.target.closest('button') && !e.target.closest('select')) {
@@ -333,6 +333,11 @@ function handleChapterEdit(row) {
     document.getElementById('chapterStatusInput').value = row.querySelector('select').value;
     document.getElementById('chapterUrlInput').value = row.querySelector('.url-btn').textContent;
     
+    // 챕터 이름 입력란 초기화
+    document.getElementById('newChapterCheck').checked = false;
+    document.getElementById('chapterNameGroup').style.display = 'none';
+    document.getElementById('chapterNameInput').value = '';
+    
     chapterModal.show();
 
     const confirmBtn = document.querySelector('.confirm-chapter-btn');
@@ -349,6 +354,7 @@ function updateChapter(row) {
     const status = document.getElementById('chapterStatusInput').value;
     const url = document.getElementById('chapterUrlInput').value.trim();
     const isNewChapter = document.getElementById('newChapterCheck').checked;
+    const chapterName = document.getElementById('chapterNameInput').value.trim();
 
     if (title) {
         const tbody = document.querySelector('tbody');
@@ -356,7 +362,7 @@ function updateChapter(row) {
         if (isNewChapter) {
             // 새 챕터 구분선을 현재 행 앞에 추가
             const nextChapterNum = tbody.querySelectorAll('.chapter-divider').length + 1;
-            const dividerRow = createChapterDivider(nextChapterNum);
+            const dividerRow = createChapterDivider(nextChapterNum, chapterName);
             row.parentNode.insertBefore(dividerRow, row);
         }
 
@@ -385,7 +391,9 @@ function updateChapterNumbers() {
     
     tbody.querySelectorAll('tr').forEach(row => {
         if (row.classList.contains('chapter-divider')) {
-            row.querySelector('td').textContent = `챕터 ${currentChapter}`;
+            const currentText = row.querySelector('td').textContent;
+            const chapterName = currentText.includes(':') ? ': ' + currentText.split(':')[1].trim() : '';
+            row.querySelector('td').textContent = `챕터 ${currentChapter}${chapterName}`;
             currentChapter++;
             episodeInChapter = 1;
         } else {
@@ -775,8 +783,14 @@ function handleChapterDividerEdit(dividerRow, chapterNum, currentName) {
     
     newConfirmBtn.addEventListener('click', () => {
         const newName = input.value.trim();
-        dividerRow.querySelector('td').textContent = `챕터 ${chapterNum}${newName ? ': ' + newName : ''}`;
+        // 현재 챕터 번호를 다시 계산
+        const allDividers = document.querySelectorAll('.chapter-divider');
+        const currentIndex = Array.from(allDividers).indexOf(dividerRow) + 1;
+        
+        dividerRow.querySelector('td').textContent = `챕터 ${currentIndex}${newName ? ': ' + newName : ''}`;
         editModal.hide();
+        // 모든 챕터 번호 업데이트
+        updateChapterNumbers();
     });
     
     editModal.show();
