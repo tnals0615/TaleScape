@@ -1,5 +1,5 @@
 // firebase.js에서 Firebase 모듈 가져오기
-import { db, addDoc, collection, getDoc, doc } from "./firebase.js";
+import { db, addDoc, collection, getDoc, doc, onSnapshot, query, orderBy, where } from "./firebase.js";
 
 // 전역 변수
 let projectCount = 0;
@@ -42,6 +42,11 @@ function initEventListeners() {
                             projectNameElement.textContent = projectData.name || "프로젝트 이름 없음";
                             projectPlotElement.textContent = projectData.plot || "설명 없음";
                         }
+
+                        loadWorldBuildingData();
+                        loadCharacterData();
+                        loadMemoData();
+                        //loadEpisodeData();
 
                     } else {
                         console.log("No such document!");
@@ -102,7 +107,8 @@ function initEventListeners() {
 
             // 새 화 추가
             const episodeNum = getNextEpisodeNumber();
-            const newRow = createChapterElement(episodeNum, epiTitle, epiCharacter, epiStatus, epiUrl, episodeId);
+            const newRow = createEpisodeElement(episodeNum, epiTitle, epiCharacter, epiStatus, epiUrl, episodeId);
+            //const newRow = createEpisodeElement(episodeNum, epiChapter, epiTitle, epiCharacter, epiStatus, epiUrl, episodeId);
             tbody.appendChild(newRow);
             attachChapterEvents(newRow);
             closeModal('chapterModal');
@@ -324,7 +330,7 @@ function handleAddNewChapter(chapterNum) {
 
 function handleAddEpisode() {
     const tbody = document.querySelector('tbody');
-    const newRow = createChapterElement(getNextEpisodeNumber());
+    const newRow = createEpisodeElement(getNextEpisodeNumber());
     attachChapterEvents(newRow);
     tbody.appendChild(newRow);
 }
@@ -358,13 +364,13 @@ function attachDividerEvents(divider) {
     });
 }
 
-function createChapterElement(episodeNum, epiTitle = '', epiCharacter = '', epiStatus = '작성중', epiUrl = '', episodeId = '') {
+function createEpisodeElement(episodeNum, epiTitle = '', epiCharacter = '', epiStatus = '작성중', epiUrl = '', episodeId = '') {
     const newRow = document.createElement('tr');
     newRow.className = 'chapter-row';
     newRow.style.cursor = 'pointer';  // 커서 스타일 변경
     newRow.innerHTML = `
         <td>${episodeNum}화</td>
-        <td class="title-cell">${epiTitle}</td>
+        <td class="title-cell">${epiTitle}</td> <!-- 제목 -->
         <td>${epiCharacter}</td>
         <td>
             <select class="form-select form-select-sm">
@@ -503,22 +509,37 @@ function handleAddMemo() {
     memoModal.show();
 }
 
-function handleConfirmMemo() {
-    const memoText = document.getElementById('memoInput').value.trim();
-    if (memoText) {
-        const memoList = document.querySelector('.memo-list');
-        const newMemo = createMemoElement(memoText);
-        memoList.appendChild(newMemo);
+async function handleConfirmMemo() {
+    //const memoTitle = document.getElementById('memoTitleInput').value.trim();
+    const memoContent = document.getElementById('memoInput').value.trim();
+
+    try {
+        const docRef = await addDoc(collection(db, "memo"), {
+            project_id: projectId,
+            //title: memoTitle,
+            content: memoContent
+        });
+    
+        console.log("Memo's document written with ID: ", docRef.id);
+    
+    } catch (error) {
+        console.error("Firestore 추가 중 오류 발생: ", error);
+        alert("메모를 추가하는 중 문제가 발생했습니다.");
+    };
+
+    if (memoContent) { //memoTitle이 있으면으로  ㄱㄱ
+        const newMemo = createMemoElement(memoContent);
+        //const newMemo = createMemoElement(title,content);
         closeModal('memoModal');
     }
 }
 
-function createMemoElement(memoText) {
+function createMemoElement(memoContent) {
     const newMemo = document.createElement('div');
     newMemo.className = 'memo-item';
     newMemo.innerHTML = `
         <div class="d-flex justify-content-between align-items-start">
-            <div class="memo-content">${memoText}</div>
+            <div class="memo-content">${memoContent}</div>
             <div>
                 <button class="btn btn-sm btn-link edit-memo-btn"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
@@ -601,10 +622,8 @@ async function handleConfirmCharacter() {
       }
 
     if (characterName) {  // 이름은 필수 입력
-        const characterList = document.querySelector('.character-list');
         const newCharacter = createCharacterElement(characterName, characterProfile, characterDesc,
             characterTags, characterImageUrl);
-        characterList.appendChild(newCharacter);
         closeModal('characterModal');
     }
 }
@@ -753,9 +772,7 @@ async function handleConfirmWorld() {
       }
     
     if (worldTitle && worldContent) {
-        const worldList = document.querySelector('.world-list');
         const newWorld = createWorldElement(worldTitle, worldContent);
-        worldList.appendChild(newWorld);
         closeModal('worldModal');
     }
 }
@@ -847,4 +864,81 @@ function resetChapterModal() {
     document.getElementById('chapterUrlInput').value = '';
 }
 
+function loadData(collectionName, listSelector, createElementCallback, errorMessage) {
+    try {
+        const q = query(
+            collection(db, collectionName),
+            where("project_id", "==", projectId) // 특정 project_id로 필터링
+        );
 
+        // 실시간 업데이트
+        onSnapshot(q, (snapshot) => {
+            const listElement = document.querySelector(listSelector);
+            if (!listElement) {
+                console.error(`${listSelector} 요소를 찾을 수 없습니다.`);
+                return;
+            }
+
+            // 기존 리스트 초기화 (중복 추가 방지)
+            listElement.innerHTML = "";
+
+            // 스냅샷 순회하며 데이터 추가
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const newElement = createElementCallback(data);
+                listElement.appendChild(newElement); // 화면에 요소 추가
+            });
+
+            console.log(`실시간 ${collectionName} 데이터:`, snapshot.docs.map((doc) => doc.data()));
+        });
+    } catch (error) {
+        console.error(`데이터 로드 중 오류 발생:`, error);
+        alert(errorMessage);
+    }
+}
+
+function loadMemoData() {
+    loadData(
+        "memo", 
+        ".memo-list", 
+        (data) => createMemoElement(data.content),
+        //(data) => createMemoElement(data.title, data.content),
+        "메모 데이터를 불러오는 중 문제가 발생했습니다."
+    );
+}
+
+function loadCharacterData() {
+    loadData(
+        "character", 
+        ".character-list", 
+        (data) => createCharacterElement(data.name, data.profile, data.desc, data.tags, data.imageUrl), // 요소 생성 콜백
+        "캐릭터 데이터를 불러오는 중 문제가 발생했습니다." 
+    );
+}
+
+function loadWorldBuildingData() {
+    loadData(
+        "worldBuilding", // Firestore 컬렉션 이름
+        ".world-list", // 데이터가 추가될 DOM 요소
+        (data) => createWorldElement(data.title, data.content), // 요소 생성 콜백
+        "세계관 데이터를 불러오는 중 문제가 발생했습니다." // 오류 메시지
+    );
+}
+
+function loadEpisodeData() {
+    loadData(
+        "episode",
+        "tbody",
+        (data) => createEpisodeElement(
+            data.num,
+            //data.chapter,
+            data.title,
+            data.character,
+            data.status,
+            data.url,
+            data.id
+        ),
+        "에피소드 데이터를 불러오는 중 문제가 발생했습니다."
+    );
+    //const newRow = createEpisodeElement(episodeNum, epiChapter, epiTitle, epiCharacter, epiStatus, epiUrl, episodeId);
+}

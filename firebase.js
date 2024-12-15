@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 // export한것만 쓸 수 있음.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
-import { getFirestore, addDoc, collection, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+import { getFirestore, addDoc, collection, getDoc, doc, getDocs, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -17,4 +17,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export { db, addDoc, collection, getDoc, doc };
+export { db, addDoc, collection, getDoc, doc, getDocs, onSnapshot, query, orderBy, where };
