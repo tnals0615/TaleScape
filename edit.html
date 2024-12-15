@@ -1,198 +1,81 @@
-/* Project Description */
-/*
-.project-desc {
-  padding: 15px;
-  margin-bottom: 30px;
-  color: #666;
-}
-*/
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EDIT</title>
 
-/* Accordion Styles */
-.accordion-button {
-  background-color: white;
-  color: black;
-}
+    <link rel="stylesheet" href="styles_common.css" />
+    <link rel="stylesheet" href="styles_edit.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
 
-.accordion-button:not(.collapsed) {
-  background-color: #f8f9fa;
-  color: black;
-}
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
+    <script src="script_edit.js"></script>
 
-/* Table Styles */
-.chapter-table {
-  background-color: transparent;
-  padding: 15px;
-  border-radius: 4px;
-  margin: 30px 0px 0px 0px !important;
-}
+  </head>
+  <body>
+    <div class="header-container">
+      <header class="TaleScape">TaleScape</header>
+      <button id="moon"><i class="fa-solid fa-moon icon-moon"></i></button>
+    </div>
 
-.table {
-  margin: 0px !important;
-  background-color: white !important;
-  color: #666 !important;
-}
+    <hr class="black-divider" />
 
-.table th {
-  color: black !important;
-  font-family: "나눔스퀘어_ac ExtraBold", sans-serif !important;
-  font-size: 16px !important;
-  font-weight: normal !important;
-  background-color: white !important;
-  border-bottom: 2px solid #dee2e6 !important;
-}
+    <main>
+      <aside>
+        <div class="header-container">
+          <header class="aside-title">Project</header>
+          <button class="icon-plus">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <hr class="black-divider" />
+        <article>
+          <p id="addBtnMsg">+버튼을 눌러 프로젝트를<br />생성해주세요</p>
+          <ul class="project-list"></ul>
+        </article>
+      </aside>
 
-.table td {
-  font-family: "나눔스퀘어_ac", sans-serif !important;
-  font-size: 16px !important;
-  background-color: white !important;
-  border-bottom: 1px solid #eee !important;
-}
+      <section>
+        <header class="main-title">1화. 괴담에 떨어짐</header>
+        <article>▼ 본문</article>
+        <textarea id="wysiwyg-editor">위지위그 에디터를 여기에 추가합니다.</textarea>
+      </section>
 
-.table .chapter-title {
-  color: #666 !important;
-}
+      <aside>
+        <header class="aside-title">Tool</header>
+        <hr class="black-divider" />
+        <article>
+          <ul class="toggle-list">
+            <li>▼ 메모</li>
+            <li>▼ 캐릭터 노트</li>
+            <li>▼ 세계관</li>
+            <li>▼ 설정</li>
+          </ul>
+        </article>
+      </aside>
+    </main>
 
-.table .btn-link {
-  color: #888 !important;
-  text-decoration: none;
-  padding: 0;
-}
+    <div id="projectModalContainer" class="hidden">
+      <section id="projectModal">
+        <header>새 프로젝트</header>
+        <hr class="black-divider" />
+        <article>
+          <label for="projectNameInput">프로젝트 제목</label>
+          <input type="text" id="projectNameInput" name="projectNameInput" placeholder="프로젝트 이름을 입력하세요" />
 
-.table .btn-link:hover {
-  color: #0d6efd !important;
-}
+          <label for="projectPlotInput">줄거리</label>
+          <textarea id="projectPlotInput" name="projectPlotInput" placeholder="줄거리를 입력하세요"></textarea>
+          <div id="buttonContainer">
+            <button id="pModalClose">닫기</button>
+            <button id="pModalApply">확인</button>
+          </div>
+        </article>
+      </section>
+    </div>
 
-/* List Item Styles */
-.memo-item,
-.character-item,
-.world-item {
-  background-color: white;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
-}
-
-.memo-content,
-.character-content,
-.world-content {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.character-name,
-.world-title {
-  font-size: 1rem;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-/* Form Elements */
-.form-select {
-  background-color: white !important;
-  color: #666 !important;
-  border: 1px solid #dee2e6 !important;
-  padding: 4px 8px;
-  font-size: 14px;
-  width: 120px;
-  cursor: pointer;
-}
-
-/* Button Visibility */
-.edit-btn,
-.delete-btn,
-.edit-memo-btn,
-.edit-character-btn,
-.edit-world-btn,
-.url-btn {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.chapter-row:hover .edit-btn,
-.chapter-row:hover .delete-btn,
-.chapter-row:hover .url-btn,
-.memo-item:hover .edit-memo-btn,
-.memo-item:hover .delete-btn,
-.character-item:hover .edit-character-btn,
-.character-item:hover .delete-btn,
-.world-item:hover .edit-world-btn,
-.world-item:hover .delete-btn,
-.chapter-divider:hover .delete-btn {
-  opacity: 1;
-}
-
-/* Dark Mode - main.html 전용 */
-body.dark-mode .accordion-button,
-body.dark-mode .accordion-button:not(.collapsed),
-body.dark-mode .accordion-body {
-  background-color: #333;
-  color: white;
-}
-
-body.dark-mode .memo-item,
-body.dark-mode .character-item,
-body.dark-mode .world-item {
-  background-color: #333;
-}
-
-body.dark-mode .memo-content,
-body.dark-mode .character-content,
-body.dark-mode .world-content {
-  color: #999;
-}
-
-body.dark-mode .character-name,
-body.dark-mode .world-title {
-  color: white;
-}
-
-/* Modal Styles */
-.modal-content {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-body.dark-mode .modal-content {
-  background: #333;
-  color: white;
-}
-
-body.dark-mode .modal-header,
-body.dark-mode .modal-footer {
-  border-color: #555;
-}
-
-body.dark-mode .form-control,
-body.dark-mode .form-select {
-  background-color: white !important;
-  border-color: #dee2e6 !important;
-  color: #666 !important;
-}
-
-/* 행 호버 효과도 고정 */
-.chapter-row:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-/* 챕터 구분선도 고정 색상 */
-.chapter-divider td {
-  background-color: white !important;
-  color: #333 !important;
-  border-top: 2px solid #666 !important;
-  border-bottom: 2px solid #666 !important;
-  font-weight: bold;
-}
-
-/* 스테이터스 콤보박스 - 항상 밝은 테마 */
-.table .form-select {
-  background-color: white !important;
-  color: #666 !important;
-  border: 1px solid #dee2e6 !important;
-}
-
-.table .form-select:focus {
-  border-color: #86b7fe !important;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-}
+  </body>
+  <script type="module" src="script_common.js"></script>
+</html>

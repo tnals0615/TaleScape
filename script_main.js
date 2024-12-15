@@ -62,14 +62,18 @@ function initEventListeners() {
     });
 
     // 새 항목 추가 확인 버튼 이벤트
-    document.querySelector('.confirm-chapter-btn').addEventListener('click', () => {
-        const isNewChapter = document.getElementById('newChapterCheck').checked;
-        const title = document.getElementById('chapterTitleInput').value.trim();
-        const character = document.getElementById('chapterCharacterInput').value.trim();
-        const status = document.getElementById('chapterStatusInput').value;
-        const url = document.getElementById('chapterUrlInput').value.trim();
+    document.querySelector('.confirm-chapter-btn').addEventListener('click', async () => {
+        const isNewChapter = document.getElementById('newChapterCheck').checked;// 체크??
 
-        if (title) {
+        //const epiChapter = document.getElementById('chapterNameInput').checked;// 챕터명 입력으로 바꾸고 88행 chapter: epiChapter 주석 해제좀
+        const epiTitle = document.getElementById('chapterTitleInput').value.trim();
+        const epiCharacter = document.getElementById('chapterCharacterInput').value.trim();
+        const epiStatus = document.getElementById('chapterStatusInput').value;
+        const epiUrl = document.getElementById('chapterUrlInput').value.trim();
+        
+        let episodeId = "";
+
+        if (epiTitle) {
             const tbody = document.querySelector('tbody');
             
             if (isNewChapter) {
@@ -78,9 +82,27 @@ function initEventListeners() {
                 handleAddNewChapter(nextChapterNum);
             }
 
+                try {
+                    const docRef = await addDoc(collection(db, "episode"), {
+                        project_id: projectId,
+                        //chapter: epiChapter,
+                        title: epiTitle,
+                        character: epiCharacter,
+                        status: epiStatus,
+                        url: epiUrl
+                    });
+    
+                    console.log("Episode's document written with ID: ", docRef.id);
+                    episodeId = docRef.id;
+    
+                } catch (error) {
+                    console.error("Firestore 추가 중 오류 발생: ", error);
+                    alert("캐릭터를 추가하는 중 문제가 발생했습니다.");
+            }
+
             // 새 화 추가
             const episodeNum = getNextEpisodeNumber();
-            const newRow = createChapterElement(episodeNum, title, character, status, url);
+            const newRow = createChapterElement(episodeNum, epiTitle, epiCharacter, epiStatus, epiUrl, episodeId);
             tbody.appendChild(newRow);
             attachChapterEvents(newRow);
             closeModal('chapterModal');
@@ -336,23 +358,23 @@ function attachDividerEvents(divider) {
     });
 }
 
-function createChapterElement(episodeNum, title = '', character = '', status = '작성중', url = '') {
+function createChapterElement(episodeNum, epiTitle = '', epiCharacter = '', epiStatus = '작성중', epiUrl = '', episodeId = '') {
     const newRow = document.createElement('tr');
     newRow.className = 'chapter-row';
     newRow.style.cursor = 'pointer';  // 커서 스타일 변경
     newRow.innerHTML = `
         <td>${episodeNum}화</td>
-        <td>${title}</td>
-        <td>${character}</td>
+        <td class="title-cell">${epiTitle}</td>
+        <td>${epiCharacter}</td>
         <td>
             <select class="form-select form-select-sm">
-                <option ${status === '작성중' ? 'selected' : ''}>작성중</option>
-                <option ${status === '수정필요' ? 'selected' : ''}>수정필요</option>
-                <option ${status === '보류' ? 'selected' : ''}>보류</option>
-                <option ${status === '발행' ? 'selected' : ''}>발행</option>
+                <option ${epiStatus === '작성중' ? 'selected' : ''}>작성중</option>
+                <option ${epiStatus === '수정필요' ? 'selected' : ''}>수정필요</option>
+                <option ${epiStatus === '보류' ? 'selected' : ''}>보류</option>
+                <option ${epiStatus === '발행' ? 'selected' : ''}>발행</option>
             </select>
         </td>
-        <td><button class="btn btn-sm btn-link url-btn">${url || 'url'}</button></td>
+        <td><button class="btn btn-sm btn-link url-btn">${epiUrl || 'url'}</button></td>
         <td>
             <div class="d-flex gap-2">
                 <button class="btn btn-sm btn-link edit-btn"><i class="bi bi-pencil"></i></button>
@@ -360,6 +382,13 @@ function createChapterElement(episodeNum, title = '', character = '', status = '
             </div>
         </td>
     `;
+
+    // "episode-id" 속성 부여
+    const titleCell = newRow.querySelector('.title-cell'); // .title-cell 클래스 선택
+    if (titleCell && episodeId) {
+        titleCell.setAttribute('episode-id', episodeId);
+    }
+
     return newRow;
 }
 
@@ -368,9 +397,17 @@ function attachChapterEvents(row) {
     row.addEventListener('click', (e) => {
         // 버튼이나 select 클릭 시에는 이동하지 않음
         if (!e.target.closest('button') && !e.target.closest('select')) {
-            window.location.href = 'edit.html';  // edit.html로 이동
+            // title-cell의 episode-id 속성 가져오기
+            const titleCell = row.querySelector('.title-cell');
+            const episodeId = titleCell?.getAttribute('episode-id');
+
+            if (episodeId) {
+                // edit.html로 episodeId를 쿼리 파라미터로 전달
+                window.location.href = `edit.html?episode-id=${encodeURIComponent(episodeId)}`;
+            }
         }
     });
+
 
     // 기존 버튼 이벤트
     row.querySelector('.edit-btn').addEventListener('click', () => {
@@ -536,18 +573,37 @@ function handleAddCharacter() {
     characterModal.show();
 }
 
-function handleConfirmCharacter() {
-    const name = document.getElementById('characterNameInput').value.trim();
-    const profile = document.getElementById('characterProfileInput').value.trim();
-    const desc = document.getElementById('characterDescInput').value.trim();
-    const tags = Array.from(document.getElementById('characterTags').children).map(tag => 
+async function handleConfirmCharacter() {
+    const characterName = document.getElementById('characterNameInput').value.trim();
+    const characterProfile = document.getElementById('characterProfileInput').value.trim();
+    const characterDesc = document.getElementById('characterDescInput').value.trim();
+    const characterTags = Array.from(document.getElementById('characterTags').children).map(tag => 
         tag.textContent.replace('×', '').trim()
     );
-    const imageUrl = document.getElementById('characterImagePreview').querySelector('img')?.src || '';
+    const characterImageUrl = document.getElementById('characterImagePreview').querySelector('img')?.src || '';
 
-    if (name) {  // 이름은 필수 입력
+
+    try {
+        const docRef = await addDoc(collection(db, "character"), {
+            project_id: projectId,
+            name: characterName,
+            profile: characterProfile,
+            desc: characterDesc,
+            tags: characterTags,
+            imageUrl: characterImageUrl
+        });
+    
+        console.log("Character's document written with ID: ", docRef.id);
+    
+      } catch (error) {
+        console.error("Firestore 추가 중 오류 발생: ", error);
+        alert("캐릭터를 추가하는 중 문제가 발생했습니다.");
+      }
+
+    if (characterName) {  // 이름은 필수 입력
         const characterList = document.querySelector('.character-list');
-        const newCharacter = createCharacterElement(name, profile, desc, tags, imageUrl);
+        const newCharacter = createCharacterElement(characterName, characterProfile, characterDesc,
+            characterTags, characterImageUrl);
         characterList.appendChild(newCharacter);
         closeModal('characterModal');
     }
