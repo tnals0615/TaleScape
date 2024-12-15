@@ -392,3 +392,14 @@ body.dark-mode .modal .form-label {
 body.dark-mode .modal .btn-close {
   filter: invert(1) grayscale(100%) brightness(200%);
 }
+
+.memo-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+body.dark-mode .memo-title {
+    color: white;
+}

@@ -307,7 +307,7 @@ function createChapterElement(episodeNum, title = '', character = '', status = '
 }
 
 function attachChapterEvents(row) {
-    // 행 클릭 이벤트
+    // 행 클릭 이벤���
     row.addEventListener('click', (e) => {
         // 버튼이나 select 클릭 시에는 이동하지 않음
         if (!e.target.closest('button') && !e.target.closest('select')) {
@@ -405,21 +405,25 @@ function handleAddMemo() {
 }
 
 function handleConfirmMemo() {
+    const memoTitle = document.getElementById('memoTitleInput').value.trim();
     const memoText = document.getElementById('memoInput').value.trim();
     if (memoText) {
         const memoList = document.querySelector('.memo-list');
-        const newMemo = createMemoElement(memoText);
+        const newMemo = createMemoElement(memoTitle, memoText);
         memoList.appendChild(newMemo);
         closeModal('memoModal');
     }
 }
 
-function createMemoElement(memoText) {
+function createMemoElement(memoTitle, memoText) {
     const newMemo = document.createElement('div');
     newMemo.className = 'memo-item';
     newMemo.innerHTML = `
         <div class="d-flex justify-content-between align-items-start">
-            <div class="memo-content">${memoText}</div>
+            <div>
+                ${memoTitle ? `<h6 class="memo-title">${memoTitle}</h6>` : ''}
+                <div class="memo-content">${memoText}</div>
+            </div>
             <div>
                 <button class="btn btn-sm btn-link edit-memo-btn"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
@@ -442,7 +446,11 @@ function attachMemoEvents(memo) {
 
 function handleMemoEdit(memo) {
     const memoModal = new bootstrap.Modal(document.getElementById('memoModal'));
-    document.getElementById('memoInput').value = memo.querySelector('.memo-content').textContent;
+    const title = memo.querySelector('.memo-title')?.textContent || '';
+    const content = memo.querySelector('.memo-content').textContent;
+    
+    document.getElementById('memoTitleInput').value = title;
+    document.getElementById('memoInput').value = content;
     memoModal.show();
 
     const confirmBtn = document.querySelector('.confirm-memo-btn');
@@ -454,9 +462,12 @@ function handleMemoEdit(memo) {
 }
 
 function updateMemo(memo) {
-    const updatedText = document.getElementById('memoInput').value.trim();
-    if (updatedText) {
-        memo.querySelector('.memo-content').textContent = updatedText;
+    const title = document.getElementById('memoTitleInput').value.trim();
+    const content = document.getElementById('memoInput').value.trim();
+    
+    if (content) {
+        const newMemo = createMemoElement(title, content);
+        memo.replaceWith(newMemo);
         closeModal('memoModal');
     }
 }
