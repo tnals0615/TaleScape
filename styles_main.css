@@ -159,13 +159,14 @@ body.dark-mode .world-title {
 .chapter-row:hover .edit-btn,
 .chapter-row:hover .delete-btn,
 .chapter-row:hover .url-btn,
+.chapter-divider:hover .edit-btn,
+.chapter-divider:hover .delete-btn,
 .memo-item:hover .edit-memo-btn,
 .memo-item:hover .delete-btn,
 .character-item:hover .edit-character-btn,
 .character-item:hover .delete-btn,
 .world-item:hover .edit-world-btn,
-.world-item:hover .delete-btn,
-.chapter-divider:hover .delete-btn {
+.world-item:hover .delete-btn {
   opacity: 1;
 }
 
