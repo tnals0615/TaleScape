@@ -68,9 +68,8 @@ function initEventListeners() {
 
     // 새 항목 추가 확인 버튼 이벤트
     document.querySelector('.confirm-chapter-btn').addEventListener('click', async () => {
-        const isNewChapter = document.getElementById('newChapterCheck').checked;// 체크??
-
-        //const epiChapter = document.getElementById('chapterNameInput').checked;// 챕터명 입력으로 바꾸고 챕터 추가 부분에 chapter: epiChapter 주석 해제좀
+        const isNewChapter = document.getElementById('newChapterCheck').checked;
+        const epiChapter = document.getElementById('chapterNameInput').checked;
         const epiTitle = document.getElementById('chapterTitleInput').value.trim();
         const epiCharacter = document.getElementById('chapterCharacterInput').value.trim();
         const epiStatus = document.getElementById('chapterStatusInput').value;
@@ -90,7 +89,7 @@ function initEventListeners() {
                 try {
                     const docRef = await addDoc(collection(db, "episode"), {
                         project_id: projectId,
-                        //chapter: epiChapter,
+                        chapter: epiChapter,
                         title: epiTitle,
                         character: epiCharacter,
                         status: epiStatus,
@@ -107,7 +106,6 @@ function initEventListeners() {
 
             // 새 화 추가
             const episodeNum = getNextEpisodeNumber();
-            const newRow = createEpisodeElement(episodeNum, epiTitle, epiCharacter, epiStatus, epiUrl, episodeId);
             //const newRow = createEpisodeElement(episodeNum, epiChapter, epiTitle, epiCharacter, epiStatus, epiUrl, episodeId);
             tbody.appendChild(newRow);
             attachChapterEvents(newRow);
@@ -364,7 +362,7 @@ function attachDividerEvents(divider) {
     });
 }
 
-function createEpisodeElement(episodeNum, epiTitle = '', epiCharacter = '', epiStatus = '작성중', epiUrl = '', episodeId = '') {
+function createEpisodeElement(episodeNum, epiChapter = '', epiTitle = '', epiCharacter = '', epiStatus = '작성중', epiUrl = '', episodeId = '') {
     const newRow = document.createElement('tr');
     newRow.className = 'chapter-row';
     newRow.style.cursor = 'pointer';  // 커서 스타일 변경
@@ -510,14 +508,14 @@ function handleAddMemo() {
 }
 
 async function handleConfirmMemo() {
-    //const memoTitle = document.getElementById('memoTitleInput').value.trim();
+    const memoTitle = document.getElementById('memoTitleInput').value.trim();
     const memoContent = document.getElementById('memoInput').value.trim();
 
     let memoId = "";
     try {
         const docRef = await addDoc(collection(db, "memo"), {
             project_id: projectId,
-            //title: memoTitle,
+            title: memoTitle,
             content: memoContent
         });
     
@@ -530,18 +528,20 @@ async function handleConfirmMemo() {
     };
 
     if (memoContent) { //memoTitle이 있으면으로  ㄱㄱ
-        const newMemo = createMemoElement(memoId, memoContent);
-        //const newMemo = createMemoElement(memoId, memoTitle, memoContent);
+        const newMemo = createMemoElement(memoId, memoTitle, memoContent);
         closeModal('memoModal');
     }
 }
 
-function createMemoElement(memoId, memoContent) {
+function createMemoElement(memoId, memoTitle, memoContent) {
     const newMemo = document.createElement('div');
     newMemo.className = 'memo-item';
     newMemo.innerHTML = `
         <div class="d-flex justify-content-between align-items-start">
-            <div class="memo-content">${memoContent}</div>
+            <div>
+                ${memoTitle ? `<h6 class="memo-title">${memoTitle}</h6>` : ''}
+                <div class="memo-content">${memoContent}</div>
+            </div>
             <div>
                 <button class="btn btn-sm btn-link edit-memo-btn"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
@@ -782,7 +782,6 @@ async function handleConfirmWorld() {
       }
     
     if (worldTitle && worldContent) {
-        //const newWorld = createWorldElement(worldTitle, worldContent);
         const newWorld = createWorldElement(worldId, worldTitle, worldContent);
         closeModal('worldModal');
     }
@@ -803,7 +802,6 @@ function createWorldElement( worldId, title, content) {
             </div>
         </div>
     `;
-    //attachWorldEvents(newWorld);
     attachWorldEvents(newWorld, worldId);
     return newWorld;
 }
@@ -878,6 +876,7 @@ function resetChapterModal() {
     document.getElementById('chapterUrlInput').value = '';
 }
 
+// 데이터 로드드
 function loadData(collectionName, listSelector, createElementCallback, errorMessage) {
     try {
         const q = query(
@@ -915,8 +914,7 @@ function loadMemoData() {
     loadData(
         "memo",
         ".memo-list",
-        (data) => createMemoElement(data.id, data.content),
-        //(data) => createMemoElement(data.id, data.title, data.content),
+        (data) => createMemoElement(data.id, data.title, data.content),
         "메모 데이터를 불러오는 중 문제가 발생했습니다."
     );
 }
@@ -944,17 +942,16 @@ function loadEpisodeData() {
         "episode",
         "tbody",
         (data) => createEpisodeElement(
-            data.num,
-            //data.chapter,
+            data.id,
+            //data.num,
+            data.chapter,
             data.title,
             data.character,
             data.status,
             data.url,
-            data.id
         ),
         "에피소드 데이터를 불러오는 중 문제가 발생했습니다."
     );
-    //const newRow = createEpisodeElement(episodeNum, epiChapter, epiTitle, epiCharacter, epiStatus, epiUrl, episodeId);
 }
 
 
@@ -967,7 +964,6 @@ async function handleDelete(collectionName, id) {
         await deleteDoc(docRef);
 
         console.log(`${collectionName} 문서가 성공적으로 삭제되었습니다.`);
-        alert(`${collectionName} 항목이 성공적으로 삭제되었습니다.`);
     } catch (error) {
         console.error(`${collectionName} 삭제 중 오류 발생:`, error);
         alert(`${collectionName} 항목 삭제에 실패했습니다.`);
