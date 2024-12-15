@@ -149,7 +149,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <textarea class="form-control" id="memoInput" rows="5" placeholder="메모 내용을 입력하세요"></textarea>
+                    <div class="mb-3">
+                        <label class="form-label">제목</label>
+                        <input type="text" class="form-control" id="memoTitleInput" placeholder="메모 제목을 입력하세요(선택사항)">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">내용</label>
+                        <textarea class="form-control" id="memoInput" rows="5" placeholder="메모 내용을 입력하세요"></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
@@ -240,6 +247,11 @@
                             새 챕터로 시작
                         </label>
                     </div>
+                    <!-- 챕터 이름 입력 (기본적으로 숨겨져 있음) -->
+                    <div class="mb-3" id="chapterNameGroup" style="display: none;">
+                        <label class="form-label">챕터 이름</label>
+                        <input type="text" class="form-control" id="chapterNameInput">
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Title</label>
                         <input type="text" class="form-control" id="chapterTitleInput">
@@ -265,6 +277,28 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     <button type="button" class="btn btn-primary confirm-chapter-btn">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 챕터 수정 모달 추가 -->
+    <div class="modal fade" id="editChapterModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">챕터 수정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">챕터 이름</label>
+                        <input type="text" class="form-control" id="editChapterNameInput">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" id="confirmEditChapter">확인</button>
                 </div>
             </div>
         </div>

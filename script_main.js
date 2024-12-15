@@ -39,6 +39,7 @@ function initEventListeners() {
     // 새 항목 추가 확인
     document.querySelector('.confirm-chapter-btn').addEventListener('click', () => {
         const isNewChapter = document.getElementById('newChapterCheck').checked;
+        const chapterName = document.getElementById('chapterNameInput').value.trim();
         const title = document.getElementById('chapterTitleInput').value.trim();
         const character = document.getElementById('chapterCharacterInput').value.trim();
         const status = document.getElementById('chapterStatusInput').value;
@@ -50,7 +51,7 @@ function initEventListeners() {
             if (isNewChapter) {
                 // 새 챕터 추가
                 const nextChapterNum = tbody.querySelectorAll('.chapter-divider').length + 1;
-                const newDivider = createChapterDivider(nextChapterNum);
+                const newDivider = createChapterDivider(nextChapterNum, chapterName);
                 tbody.appendChild(newDivider);
             }
 
@@ -140,6 +141,11 @@ function initEventListeners() {
                 newChapterCheck.checked = false;
             }
         });
+    });
+
+    document.getElementById('newChapterCheck').addEventListener('change', function() {
+        const chapterNameGroup = document.getElementById('chapterNameGroup');
+        chapterNameGroup.style.display = this.checked ? 'block' : 'none';
     });
 }
 
@@ -327,6 +333,11 @@ function handleChapterEdit(row) {
     document.getElementById('chapterStatusInput').value = row.querySelector('select').value;
     document.getElementById('chapterUrlInput').value = row.querySelector('.url-btn').textContent;
     
+    // 챕터 이름 입력란 초기화
+    document.getElementById('newChapterCheck').checked = false;
+    document.getElementById('chapterNameGroup').style.display = 'none';
+    document.getElementById('chapterNameInput').value = '';
+    
     chapterModal.show();
 
     const confirmBtn = document.querySelector('.confirm-chapter-btn');
@@ -343,6 +354,7 @@ function updateChapter(row) {
     const status = document.getElementById('chapterStatusInput').value;
     const url = document.getElementById('chapterUrlInput').value.trim();
     const isNewChapter = document.getElementById('newChapterCheck').checked;
+    const chapterName = document.getElementById('chapterNameInput').value.trim();
 
     if (title) {
         const tbody = document.querySelector('tbody');
@@ -350,7 +362,7 @@ function updateChapter(row) {
         if (isNewChapter) {
             // 새 챕터 구분선을 현재 행 앞에 추가
             const nextChapterNum = tbody.querySelectorAll('.chapter-divider').length + 1;
-            const dividerRow = createChapterDivider(nextChapterNum);
+            const dividerRow = createChapterDivider(nextChapterNum, chapterName);
             row.parentNode.insertBefore(dividerRow, row);
         }
 
@@ -379,7 +391,9 @@ function updateChapterNumbers() {
     
     tbody.querySelectorAll('tr').forEach(row => {
         if (row.classList.contains('chapter-divider')) {
-            row.querySelector('td').textContent = `챕터 ${currentChapter}`;
+            const currentText = row.querySelector('td').textContent;
+            const chapterName = currentText.includes(':') ? ': ' + currentText.split(':')[1].trim() : '';
+            row.querySelector('td').textContent = `챕터 ${currentChapter}${chapterName}`;
             currentChapter++;
             episodeInChapter = 1;
         } else {
@@ -399,21 +413,25 @@ function handleAddMemo() {
 }
 
 function handleConfirmMemo() {
+    const memoTitle = document.getElementById('memoTitleInput').value.trim();
     const memoText = document.getElementById('memoInput').value.trim();
     if (memoText) {
         const memoList = document.querySelector('.memo-list');
-        const newMemo = createMemoElement(memoText);
+        const newMemo = createMemoElement(memoTitle, memoText);
         memoList.appendChild(newMemo);
         closeModal('memoModal');
     }
 }
 
-function createMemoElement(memoText) {
+function createMemoElement(memoTitle, memoText) {
     const newMemo = document.createElement('div');
     newMemo.className = 'memo-item';
     newMemo.innerHTML = `
         <div class="d-flex justify-content-between align-items-start">
-            <div class="memo-content">${memoText}</div>
+            <div>
+                ${memoTitle ? `<h6 class="memo-title">${memoTitle}</h6>` : ''}
+                <div class="memo-content">${memoText}</div>
+            </div>
             <div>
                 <button class="btn btn-sm btn-link edit-memo-btn"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
@@ -436,7 +454,11 @@ function attachMemoEvents(memo) {
 
 function handleMemoEdit(memo) {
     const memoModal = new bootstrap.Modal(document.getElementById('memoModal'));
-    document.getElementById('memoInput').value = memo.querySelector('.memo-content').textContent;
+    const title = memo.querySelector('.memo-title')?.textContent || '';
+    const content = memo.querySelector('.memo-content').textContent;
+    
+    document.getElementById('memoTitleInput').value = title;
+    document.getElementById('memoInput').value = content;
     memoModal.show();
 
     const confirmBtn = document.querySelector('.confirm-memo-btn');
@@ -448,9 +470,12 @@ function handleMemoEdit(memo) {
 }
 
 function updateMemo(memo) {
-    const updatedText = document.getElementById('memoInput').value.trim();
-    if (updatedText) {
-        memo.querySelector('.memo-content').textContent = updatedText;
+    const title = document.getElementById('memoTitleInput').value.trim();
+    const content = document.getElementById('memoInput').value.trim();
+    
+    if (content) {
+        const newMemo = createMemoElement(title, content);
+        memo.replaceWith(newMemo);
         closeModal('memoModal');
     }
 }
@@ -709,21 +734,25 @@ function closeModal(modalId) {
 
 function resetChapterModal() {
     document.getElementById('newChapterCheck').checked = false;
+    document.getElementById('chapterNameGroup').style.display = 'none';  // 챕터 이름 입력칸 숨김
     document.getElementById('chapterTitleInput').value = '';
     document.getElementById('chapterCharacterInput').value = '';
     document.getElementById('chapterStatusInput').value = '작성중';
     document.getElementById('chapterUrlInput').value = '';
 }
 
-function createChapterDivider(chapterNum) {
+function createChapterDivider(chapterNum, chapterName = '') {
     const dividerRow = document.createElement('tr');
     dividerRow.className = 'chapter-divider';
     dividerRow.innerHTML = `
         <td colspan="5">
-            챕터 ${chapterNum}
+            챕터 ${chapterNum}${chapterName ? ': ' + chapterName : ''}
         </td>
         <td>
-            <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-link edit-btn"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
+            </div>
         </td>
     `;
     
@@ -734,6 +763,35 @@ function createChapterDivider(chapterNum) {
             updateChapterNumbers();
         }
     });
+
+    // 편집 버튼에 이벤트 리스너 추가
+    dividerRow.querySelector('.edit-btn').addEventListener('click', () => {
+        handleChapterDividerEdit(dividerRow, chapterNum, chapterName);
+    });
     
     return dividerRow;
+}
+
+function handleChapterDividerEdit(dividerRow, chapterNum, currentName) {
+    const editModal = new bootstrap.Modal(document.getElementById('editChapterModal'));
+    const input = document.getElementById('editChapterNameInput');
+    input.value = currentName;
+    
+    const confirmBtn = document.getElementById('confirmEditChapter');
+    const newConfirmBtn = confirmBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+    
+    newConfirmBtn.addEventListener('click', () => {
+        const newName = input.value.trim();
+        // 현재 챕터 번호를 다시 계산
+        const allDividers = document.querySelectorAll('.chapter-divider');
+        const currentIndex = Array.from(allDividers).indexOf(dividerRow) + 1;
+        
+        dividerRow.querySelector('td').textContent = `챕터 ${currentIndex}${newName ? ': ' + newName : ''}`;
+        editModal.hide();
+        // 모든 챕터 번호 업데이트
+        updateChapterNumbers();
+    });
+    
+    editModal.show();
 }

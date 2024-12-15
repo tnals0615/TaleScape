@@ -159,13 +159,14 @@ body.dark-mode .world-title {
 .chapter-row:hover .edit-btn,
 .chapter-row:hover .delete-btn,
 .chapter-row:hover .url-btn,
+.chapter-divider:hover .edit-btn,
+.chapter-divider:hover .delete-btn,
 .memo-item:hover .edit-memo-btn,
 .memo-item:hover .delete-btn,
 .character-item:hover .edit-character-btn,
 .character-item:hover .delete-btn,
 .world-item:hover .edit-world-btn,
-.world-item:hover .delete-btn,
-.chapter-divider:hover .delete-btn {
+.world-item:hover .delete-btn {
   opacity: 1;
 }
 
@@ -390,4 +391,15 @@ body.dark-mode .modal .form-label {
 /* 다크모드 버튼 스타일 */
 body.dark-mode .modal .btn-close {
   filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.memo-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+body.dark-mode .memo-title {
+    color: white;
 }
