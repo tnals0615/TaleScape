@@ -1,5 +1,6 @@
 // firebase.js에서 export한것만 가져올 수 있다.
 import { db, addDoc, collection, getDoc, doc, onSnapshot, query, orderBy, updateDoc, deleteDoc } from "./firebase.js";
+import { loadMemoData, loadCharacterData, loadWorldBuildingData, loadEpisodeData } from './script_main.js';
 
 // 전역 변수
 let projectId = "";
@@ -17,15 +18,14 @@ const addBtnMsg = document.getElementById("addBtnMsg");
 
 // 요소 존재 여부 확인
 if (  !iconMoon ||  !modalContainer ||  !openButton ||  !closeButton ||  !applyButton ||  !projectNameInput ||  !projectPlotInput) {
-  console.error("필수 DOM 요소 중 하나가 누락되었습니다. 코드 로직을 확인하세요.");
+  console.error("필수 DOM 요소 중 하나가 누락되었습���다. 코드 로직을 확인하세요.");
 }
 
-// 다크 모드 토글
-iconMoon?.addEventListener("click", () => {
-  const body = document.querySelector('body');
-  body.classList.toggle("dark-mode");
-  // 다크모드 상태 저장
-  localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+// 다크 모드 토글 이벤트 리스너
+document.getElementById("moon")?.addEventListener("click", () => {
+    const body = document.querySelector('body');
+    body.classList.toggle("dark-mode");
+    localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
 });
 
 // 모달 열기
@@ -76,7 +76,7 @@ applyButton?.addEventListener("click", async () => {
     alert("프로젝트가 성공적으로 추가되었습니다!");
   } catch (error) {
     console.error("Firestore 추가 중 오류 발생: ", error);
-    alert("프로젝트를 추가하는 중 문제가 발생했습니다.");
+    alert("프로젝트를 추가하는 중 문제가 발생했���니다.");
   }
 });
 
@@ -240,7 +240,7 @@ function attachProjectEvents(project, docId) {
     // 삭제 버튼 이벤트
     project.querySelector('.delete-project-btn').addEventListener('click', async (e) => {
         e.stopPropagation();
-        if (confirm('프로젝트�� 삭제하시겠습니까?')) {
+        if (confirm('프로젝트를 삭제하시겠습니까?')) {
             try {
                 await deleteDoc(doc(db, "project", docId));
                 project.remove();
@@ -266,12 +266,7 @@ async function handleProjectClick(project, clickedProjectId) {
         const docSnap = await getDoc(projectRef);
 
         if (docSnap.exists()) {
-            const data = docSnap.data();
-            
-            // 전역 변수 projectId 업데이트
-            projectId = clickedProjectId;
-            
-            // localStorage에 저장
+            projectId = clickedProjectId;  // 전역 변수 설정
             localStorage.setItem('currentProjectId', clickedProjectId);
             
             // 모든 프로젝트에서 active 클래스 제거
@@ -293,8 +288,8 @@ async function handleProjectClick(project, clickedProjectId) {
             const mainTitle = document.querySelector('.main-title');
             const projectDesc = document.querySelector('.project-desc');
             if (mainTitle && projectDesc) {
-                mainTitle.textContent = data.name || "프로젝트 이름 없음";
-                projectDesc.textContent = data.plot || "설명 없음";
+                mainTitle.textContent = docSnap.data().name || "프로젝트 이름 없음";
+                projectDesc.textContent = docSnap.data().plot || "설명 없음";
                 
                 // 데이터 로드
                 loadMemoData();
