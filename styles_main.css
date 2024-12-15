@@ -403,3 +403,22 @@ body.dark-mode .modal .btn-close {
 body.dark-mode .memo-title {
     color: white;
 }
+
+/* 챕터 구분선 호버 효과 */
+.chapter-divider .chapter-actions button {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.chapter-divider:hover .chapter-actions button {
+    opacity: 1;
+}
+
+/* 챕터 구분선 버튼 스타일 */
+.chapter-actions button {
+    padding: 0 4px;
+}
+
+.chapter-actions button:hover {
+    color: #0d6efd;
+}
