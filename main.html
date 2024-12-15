@@ -9,8 +9,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles_common.css">
     <link rel="stylesheet" href="styles_main.css">
+    
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-    <script src="script_main.js"></script>
+    <script type="module" src="script_main.js"></script>
 </head>
 <body>
     <header class="header-container">
@@ -22,25 +25,22 @@
 
     <main>
         <aside>
-            <div class="header-container">
-                <header class="aside-title">Project</header>
-                <button class="icon-plus">
-                    <i class="bi bi-plus"></i>
-                </button>
-            </div>
-            <hr class="black-divider">
-            <article>
-                <ul class="project-list">
-                    <li class="text-muted text-center mt-3">
-                        <small>+ 버튼을 눌러 프로젝트를 생성해주세요</small>
-                    </li>
-                </ul>
-            </article>
-        </aside>
+        <div class="header-container">
+          <header class="aside-title">Project</header>
+          <button class="icon-plus">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <hr class="black-divider" />
+        <article>
+          <p id="addBtnMsg">+버튼을 눌러 프로젝트를<br />생성해주세요</p>
+          <ul class="project-list"></ul>
+        </article>
+      </aside>
 
         <section>
-            <header class="main-title">예시 페이지</header>
-            <article class="project-desc">프로젝트의 설명이 입력되는 부분입니다.</article>
+            <header class="main-title" id="projectName">예시 페이지</header>
+            <article id="projectPlot">프로젝트의 설명이 입력되는 부분입니다.</article>
 
             <article>
                 <!-- Bootstrap Accordion 사용 -->
@@ -123,23 +123,22 @@
     <!-- 기존 모달 코드 유지 -->
     <!-- 프로젝트 모달 -->
     <div id="projectModalContainer" class="hidden">
-        <section id="projectModal">
-            <header>새 프로젝트</header>
-            <hr class="black-divider" />
-            <article>
-                <label for="projectNameInput">프로젝트 제목</label>
-                <input type="text" id="projectNameInput" name="projectNameInput" placeholder="프로젝트 이름을 입력하세요" />
+      <section id="projectModal">
+        <header>새 프로젝트</header>
+        <hr class="black-divider" />
+        <article>
+          <label for="projectNameInput">프로젝트 제목</label>
+          <input type="text" id="projectNameInput" name="projectNameInput" placeholder="프로젝트 이름을 입력하세요" />
 
-                <label for="projectPlotInput">줄거리</label>
-                <textarea id="projectPlotInput" name="projectPlotInput" placeholder="줄거리를 입력하세요"></textarea>
-                <div id="buttonContainer">
-                    <button id="pModalClose">닫기</button>
-                    <button id="pModalApply">확인</button>
-                </div>
-            </article>
-        </section>
+          <label for="projectPlotInput">줄거리</label>
+          <textarea id="projectPlotInput" name="projectPlotInput" placeholder="줄거리를 입력하세요"></textarea>
+          <div id="buttonContainer">
+            <button id="pModalClose">닫기</button>
+            <button id="pModalApply">확인</button>
+          </div>
+        </article>
+      </section>
     </div>
-
     <!-- 메모 모달 -->
     <div class="modal fade" id="memoModal">
         <div class="modal-dialog">
@@ -175,15 +174,15 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">이름</label>
-                        <input type="text" class="form-control" id="characterNameInput" placeholder="캐릭터 이름을 입력하세요">
+                        <input type="text" class="form-control" id="characterNameInput">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">프로필</label>
-                        <textarea class="form-control" id="characterProfileInput" rows="5" placeholder="캐릭터 프로필을 입력하세요"></textarea>
+                        <textarea class="form-control" id="characterProfileInput" rows="5"></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">설명</label>
-                        <textarea class="form-control" id="characterDescInput" rows="3" placeholder="캐릭터 설명을 입력하세요"></textarea>
+                        <textarea class="form-control" id="characterDescInput" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">태그</label>
@@ -270,4 +269,5 @@
         </div>
     </div>
 </body>
+<script type="module" src="script_common.js"></script>
 </html>

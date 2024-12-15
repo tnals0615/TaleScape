@@ -1,42 +1,67 @@
-// ===============================
-// 초기화 관련
-// ===============================
-let projectCount = 0;
+// firebase.js에서 Firebase 모듈 가져오기
+import { db, addDoc, collection, getDoc, doc } from "./firebase.js";
 
+// 전역 변수
+let projectCount = 0;
+let projectId = "";
+
+// 초기화 함수
 document.addEventListener('DOMContentLoaded', () => {
     initEventListeners();
-    initTheme();
+    //initTheme();
 });
 
-function initTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        handleThemeToggle();
-    }
-}
-
-// ===============================
 // 이벤트 리스너 초기화
-// ===============================
 function initEventListeners() {
-    // 프로젝트 추가 버튼
-    document.querySelector('.icon-plus').addEventListener('click', handleAddProject);
-    
-    // 프로젝트 모달 버튼들
-    document.getElementById('pModalApply').addEventListener('click', handleProjectSubmit);
-    document.getElementById('pModalClose').addEventListener('click', () => {
-        const modalContainer = document.getElementById('projectModalContainer');
-        modalContainer.classList.add('hidden');
+    // 프로젝트 관련
+    //document.querySelector('.icon-plus').addEventListener('click', handleAddProject);
+    //document.querySelector('#projectModal .btn-primary').addEventListener('click', handleProjectSubmit);
+    //document.getElementById('projectModal').addEventListener('hidden.bs.modal', handleProjectModalHidden);
+
+    const projectList = document.querySelector(".project-list");
+    /* 프로젝트 리스트 눌렀을 때 프로젝트 아이디를 가져옴 */
+    projectList.addEventListener("click", async (event) => {
+        
+        const target = event.target;
+
+        if (target.tagName === "LI") {
+            projectId = target.getAttribute("data-id"); // Firestore ID 가져오기
+
+            if (projectId) {
+                try {
+                    const projectRef = collection(db, "project");
+                    const docSnap = await getDoc(doc(projectRef, projectId));
+
+                    if (docSnap.exists()) {
+                        const projectData = docSnap.data();
+                        
+                        const projectNameElement = document.getElementById("projectName");
+                        const projectPlotElement = document.getElementById("projectPlot");
+            
+                        if (projectNameElement && projectPlotElement) {
+                            projectNameElement.textContent = projectData.name || "프로젝트 이름 없음";
+                            projectPlotElement.textContent = projectData.plot || "설명 없음";
+                        }
+
+                    } else {
+                        console.log("No such document!");
+                    }
+                } catch (error) {
+                    console.error("Firestore 데이터 가져오기 중 오류 발생:", error);
+                }
+            }
+        }
     });
 
-    // 챕터 관련
+
+    // 챕터 관련 - 단순화
     document.querySelector('#addChapterBtn').addEventListener('click', () => {
         const chapterModal = new bootstrap.Modal(document.getElementById('chapterModal'));
         resetChapterModal();
         chapterModal.show();
     });
 
-    // 새 항목 추가 확인
+    // 새 항목 추가 확인 버튼 이벤트
     document.querySelector('.confirm-chapter-btn').addEventListener('click', () => {
         const isNewChapter = document.getElementById('newChapterCheck').checked;
         const title = document.getElementById('chapterTitleInput').value.trim();
@@ -50,8 +75,7 @@ function initEventListeners() {
             if (isNewChapter) {
                 // 새 챕터 추가
                 const nextChapterNum = tbody.querySelectorAll('.chapter-divider').length + 1;
-                const newDivider = createChapterDivider(nextChapterNum);
-                tbody.appendChild(newDivider);
+                handleAddNewChapter(nextChapterNum);
             }
 
             // 새 화 추가
@@ -63,19 +87,21 @@ function initEventListeners() {
         }
     });
 
-    // 메모, 캐릭터, 세계관 관련
+    // 메모 관련
     document.querySelector('#memoSection .btn').addEventListener('click', () => {
         const memoModal = new bootstrap.Modal(document.getElementById('memoModal'));
         memoModal.show();
     });
     document.querySelector('.confirm-memo-btn').addEventListener('click', handleConfirmMemo);
 
+    // 캐릭터 관련
     document.querySelector('#characterSection .btn').addEventListener('click', () => {
         const characterModal = new bootstrap.Modal(document.getElementById('characterModal'));
         characterModal.show();
     });
     document.querySelector('.confirm-character-btn').addEventListener('click', handleConfirmCharacter);
 
+    // 세계관 관련
     document.querySelector('#worldSection .btn').addEventListener('click', () => {
         const worldModal = new bootstrap.Modal(document.getElementById('worldModal'));
         worldModal.show();
@@ -83,7 +109,7 @@ function initEventListeners() {
     document.querySelector('.confirm-world-btn').addEventListener('click', handleConfirmWorld);
 
     // 테마 관련
-    document.getElementById('moon').addEventListener('click', handleThemeToggle);
+    //document.getElementById('moon').addEventListener('click', handleThemeToggle);
 
     // 태그 입력 처리
     document.getElementById('characterTagInput').addEventListener('keydown', function(e) {
@@ -95,6 +121,7 @@ function initEventListeners() {
                 tagElement.className = 'character-tag';
                 tagElement.innerHTML = `#${tagText} <span class="remove-tag">×</span>`;
                 
+                // 태그 삭제 기능
                 tagElement.querySelector('.remove-tag').addEventListener('click', function() {
                     this.parentElement.remove();
                 });
@@ -117,46 +144,33 @@ function initEventListeners() {
             reader.readAsDataURL(file);
         }
     });
-
-    // 모달 리셋 이벤트
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('hidden.bs.modal', function () {
-            this.querySelectorAll('input, textarea, select').forEach(input => {
-                input.value = '';
-            });
-            
-            const imagePreview = this.querySelector('#characterImagePreview');
-            if (imagePreview) {
-                imagePreview.innerHTML = '';
-            }
-            
-            const tagsContainer = this.querySelector('#characterTags');
-            if (tagsContainer) {
-                tagsContainer.innerHTML = '';
-            }
-            
-            const newChapterCheck = this.querySelector('#newChapterCheck');
-            if (newChapterCheck) {
-                newChapterCheck.checked = false;
-            }
-        });
-    });
 }
 
-// ===============================
+// 테마 초기화
+/*
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        handleThemeToggle();
+    }
+}
+*/
+
+// 프로젝트 관련 유틸리티 함수들
+/*
+
 // 프로젝트 관련 함수들
-// ===============================
 function handleAddProject() {
-    const modalContainer = document.getElementById('projectModalContainer');
-    modalContainer.classList.remove('hidden');
+    const projectModal = new bootstrap.Modal(document.getElementById('projectModal'));
+    projectModal.show();
 }
 
 function handleProjectSubmit() {
     const projectName = document.querySelector('#projectNameInput').value.trim();
-    const projectPlot = document.querySelector('#projectPlotInput').value.trim();
+    const projectDesc = document.querySelector('#projectDescInput').value.trim();
     
     if (projectName) {
-        createProject(projectName, projectPlot);
+        createProject(projectName, projectDesc);
     }
 }
 
@@ -224,10 +238,10 @@ function handleProjectDelete(project) {
 }
 
 function handleProjectEdit(project, name, desc) {
-    const modalContainer = document.getElementById('projectModalContainer');
+    const projectModal = new bootstrap.Modal(document.getElementById('projectModal'));
     document.querySelector('#projectNameInput').value = name;
-    document.querySelector('#projectPlotInput').value = desc;
-    modalContainer.classList.remove('hidden');
+    document.querySelector('#projectDescInput').value = desc;
+    projectModal.show();
 }
 
 function removeGuideText(projectList) {
@@ -248,19 +262,44 @@ function checkEmptyProjectList() {
 }
 
 function closeAndResetProjectModal() {
-    const modalContainer = document.getElementById('projectModalContainer');
-    modalContainer.classList.add('hidden');
+    const projectModal = bootstrap.Modal.getInstance(document.getElementById('projectModal'));
+    projectModal.hide();
     document.querySelector('#projectNameInput').value = '';
-    document.querySelector('#projectPlotInput').value = '';
+    document.querySelector('#projectDescInput').value = '';
 }
 
 function handleProjectModalHidden() {
     this.querySelector('input').value = '';
 }
+*/
 
-// ===============================
 // 챕터 관련 함수들
-// ===============================
+function handleAddNewChapter(chapterNum) {
+    const tbody = document.querySelector('tbody');
+    
+    // 챕터 구분선 추가
+    const dividerRow = document.createElement('tr');
+    dividerRow.className = 'chapter-divider';
+    dividerRow.innerHTML = `
+        <td colspan="5">
+            챕터 ${chapterNum}
+        </td>
+        <td>
+            <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
+        </td>
+    `;
+    
+    // 삭제 버튼에 이벤트 리스너 추가
+    dividerRow.querySelector('.delete-btn').addEventListener('click', () => {
+        if (confirm('챕터 구분선을 삭제하시겠습니까?')) {
+            dividerRow.remove();
+            updateChapterNumbers();
+        }
+    });
+    
+    tbody.appendChild(dividerRow);
+}
+
 function handleAddEpisode() {
     const tbody = document.querySelector('tbody');
     const newRow = createChapterElement(getNextEpisodeNumber());
@@ -271,6 +310,30 @@ function handleAddEpisode() {
 function getNextEpisodeNumber() {
     const tbody = document.querySelector('tbody');
     return tbody.querySelectorAll('.chapter-row').length + 1;
+}
+
+function attachDividerEvents(divider) {
+    divider.querySelector('.edit-btn').addEventListener('click', () => {
+        const text = divider.querySelector('span').textContent;
+        const newText = prompt('챕터 이름을 입력하세요:', text);
+        if (newText !== null) {
+            divider.querySelector('span').textContent = newText;
+        }
+    });
+
+    divider.querySelector('.delete-btn').addEventListener('click', () => {
+        if (confirm('이 챕터와 관련 항목들을 모두 삭제하시겠습니까?')) {
+            let nextElement = divider.nextElementSibling;
+            divider.remove();
+            
+            // 다음 챕터 구분선이 나올 때까지 항목들 삭제
+            while (nextElement && !nextElement.classList.contains('chapter-divider')) {
+                const temp = nextElement.nextElementSibling;
+                nextElement.remove();
+                nextElement = temp;
+            }
+        }
+    });
 }
 
 function createChapterElement(episodeNum, title = '', character = '', status = '작성중', url = '') {
@@ -342,36 +405,43 @@ function updateChapter(row) {
     const character = document.getElementById('chapterCharacterInput').value.trim();
     const status = document.getElementById('chapterStatusInput').value;
     const url = document.getElementById('chapterUrlInput').value.trim();
-    const isNewChapter = document.getElementById('newChapterCheck').checked;
 
     if (title) {
-        const tbody = document.querySelector('tbody');
-        
-        if (isNewChapter) {
-            // 새 챕터 구분선을 현재 행 앞에 추가
-            const nextChapterNum = tbody.querySelectorAll('.chapter-divider').length + 1;
-            const dividerRow = createChapterDivider(nextChapterNum);
-            row.parentNode.insertBefore(dividerRow, row);
-        }
-
-        // 행 내용 업데이트
         row.cells[1].textContent = title;
         row.cells[2].textContent = character;
         row.querySelector('select').value = status;
         row.querySelector('.url-btn').textContent = url || 'url';
-        
-        updateChapterNumbers(); // 챕터 번호 업데이트
         closeModal('chapterModal');
     }
 }
 
 function handleChapterDelete(row) {
-    if (confirm('이 화를 삭제하시겠습니까?')) {
-        row.remove();
-        updateChapterNumbers();
+    if (row.classList.contains('chapter-divider')) {
+        // 챕터 구분선인 경우
+        if (confirm('이 챕터와 포함된 모든 화를 삭제하시겠습니까?')) {
+            let nextElement = row.nextElementSibling;
+            row.remove();
+            
+            // 다음 챕터 구분선이 나올 때까지의 모든 화 삭제
+            while (nextElement && !nextElement.classList.contains('chapter-divider')) {
+                const temp = nextElement.nextElementSibling;
+                nextElement.remove();
+                nextElement = temp;
+            }
+            
+            // 챕터 번호 재정렬
+            updateChapterNumbers();
+        }
+    } else {
+        // 일반 화인 경우
+        if (confirm('이 화를 삭제하시겠습니까?')) {
+            row.remove();
+            updateChapterNumbers();
+        }
     }
 }
 
+// 챕터 번호 업데이트 함수 수정
 function updateChapterNumbers() {
     const tbody = document.querySelector('tbody');
     let currentChapter = 1;
@@ -389,9 +459,7 @@ function updateChapterNumbers() {
     });
 }
 
-// ===============================
 // 메모 관련 함수들
-// ===============================
 function handleAddMemo() {
     const memoModal = new bootstrap.Modal(document.getElementById('memoModal'));
     document.getElementById('memoInput').value = '';
@@ -461,9 +529,7 @@ function handleMemoDelete(memo) {
     }
 }
 
-// ===============================
 // 캐릭터 관련 함수들
-// ===============================
 function handleAddCharacter() {
     const characterModal = new bootstrap.Modal(document.getElementById('characterModal'));
     resetCharacterModal();
@@ -605,9 +671,7 @@ function resetCharacterModal() {
     document.getElementById('characterImageInput').value = '';
 }
 
-// ===============================
 // 세계관 관련 함수들
-// ===============================
 function handleAddWorld() {
     const worldModal = new bootstrap.Modal(document.getElementById('worldModal'));
     resetWorldModal();
@@ -697,9 +761,7 @@ function handleThemeToggle() {
     localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
 }
 
-// ===============================
 // 유틸리티 함수
-// ===============================
 function closeModal(modalId) {
     const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
     if (modal) {
@@ -715,25 +777,4 @@ function resetChapterModal() {
     document.getElementById('chapterUrlInput').value = '';
 }
 
-function createChapterDivider(chapterNum) {
-    const dividerRow = document.createElement('tr');
-    dividerRow.className = 'chapter-divider';
-    dividerRow.innerHTML = `
-        <td colspan="5">
-            챕터 ${chapterNum}
-        </td>
-        <td>
-            <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-x-lg"></i></button>
-        </td>
-    `;
-    
-    // 삭제 버튼에 이벤트 리스너 추가
-    dividerRow.querySelector('.delete-btn').addEventListener('click', () => {
-        if (confirm('챕터 구분선을 삭제하시겠습니까?')) {
-            dividerRow.remove();
-            updateChapterNumbers();
-        }
-    });
-    
-    return dividerRow;
-}
+
