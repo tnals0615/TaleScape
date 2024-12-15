@@ -666,13 +666,92 @@ function createCharacterElement(characterId, name, profile, desc, tags, imageUrl
 
 function attachCharacterEvents(character, characterId) {
     character.querySelector('.edit-character-btn').addEventListener('click', () => {
-        handleCharacterEdit(character);
+        handleCharacterEdit(characterId);
     });
 
     character.querySelector('.delete-btn').addEventListener('click', () => {
         handleDelete("character", characterId);
     });
 }
+
+function handleCharacterEdit(characterId) {
+    const characterModal = new bootstrap.Modal(document.getElementById('characterModal'));
+
+    // Firestore에서 캐릭터 데이터 가져오기
+    const docRef = doc(db, "character", characterId);
+
+    getDoc(docRef).then((docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+
+            // 입력 필드에 Firestore 데이터 채우기
+            document.getElementById('characterNameInput').value = data.name || '';
+            document.getElementById('characterProfileInput').value = data.profile || '';
+            document.getElementById('characterDescInput').value = data.desc || '';
+            
+            // 태그 채우기
+            const tagsContainer = document.getElementById('characterTags');
+            tagsContainer.innerHTML = (data.tags || [])
+                .map(tag => `<span class="character-tag">${tag} <span class="remove-tag">×</span></span>`)
+                .join('');
+            tagsContainer.querySelectorAll('.remove-tag').forEach(tag =>
+                tag.addEventListener('click', function () {
+                    this.parentElement.remove();
+                })
+            );
+
+            // 이미지 미리보기 설정
+            const previewContainer = document.getElementById('characterImagePreview');
+            previewContainer.innerHTML = data.imageUrl
+                ? `<img src="${data.imageUrl}" alt="미리보기" style="max-width: 200px;">`
+                : '';
+
+            // 모달 표시
+            characterModal.show();
+        } else {
+            console.error("해당 캐릭터 데이터를 찾을 수 없습니다.");
+            alert("캐릭터 데이터를 불러오는 중 문제가 발생했습니다.");
+        }
+    }).catch((error) => {
+        console.error("Firestore에서 캐릭터 데이터 가져오기 중 오류 발생:", error);
+        alert("캐릭터 데이터를 불러오는 중 오류가 발생했습니다.");
+    });
+
+    // 확인 버튼 이벤트 설정
+    const confirmBtn = document.querySelector('.confirm-character-btn');
+    const newConfirmBtn = confirmBtn.cloneNode(true); // 기존 이벤트 제거용 복제
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+    newConfirmBtn.addEventListener('click', async () => {
+        const updatedData = {
+            name: document.getElementById('characterNameInput').value.trim(),
+            profile: document.getElementById('characterProfileInput').value.trim(),
+            desc: document.getElementById('characterDescInput').value.trim(),
+            tags: Array.from(document.getElementById('characterTags').children).map(tag =>
+                tag.textContent.replace('×', '').trim()
+            ),
+            imageUrl: document.getElementById('characterImagePreview').querySelector('img')?.src || '',
+        };
+
+        if (updatedData.name) {
+            try {
+                // Firestore 업데이트
+                await updateDoc(docRef, updatedData);
+
+                console.log(`Character with ID: ${characterId} has been updated.`);
+                alert("캐릭터가 성공적으로 수정되었습니다.");
+                closeModal('characterModal'); // 모달 닫기
+            } catch (error) {
+                console.error("캐릭터 수정 중 오류 발생:", error);
+                alert("캐릭터 수정에 실패했습니다.");
+            }
+        } else {
+            alert("캐릭터 이름은 필수 항목입니다.");
+        }
+    });
+}
+
+/*
 
 function handleCharacterEdit(character) {
     const characterModal = new bootstrap.Modal(document.getElementById('characterModal'));
@@ -737,7 +816,6 @@ function updateCharacter(character) {
     }
 }
 
-/*
 function handleCharacterDelete(character) {
     if (confirm('캐릭터를 삭제하시겠습니까?')) {
         character.remove();
@@ -808,7 +886,7 @@ function createWorldElement( worldId, title, content) {
 
 function attachWorldEvents(world, worldId) {
     world.querySelector('.edit-world-btn').addEventListener('click', () => {
-        handleWorldEdit(world);
+        handleWorldEdit(worldId);
     });
 
     world.querySelector('.delete-btn').addEventListener('click', () => {
@@ -816,6 +894,61 @@ function attachWorldEvents(world, worldId) {
     });
 }
 
+function handleWorldEdit(worldId) {
+    const worldModal = new bootstrap.Modal(document.getElementById('worldModal'));
+
+    // Firestore에서 기존 데이터 가져오기
+    const docRef = doc(db, "worldBuilding", worldId);
+
+    getDoc(docRef).then((docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+
+            // 모달에 데이터 채우기
+            document.getElementById('worldTitleInput').value = data.title || '';
+            document.getElementById('worldContentInput').value = data.content || '';
+
+            // 모달 표시
+            worldModal.show();
+
+            // 확인 버튼 이벤트 설정
+            const confirmBtn = document.querySelector('.confirm-world-btn');
+            const newConfirmBtn = confirmBtn.cloneNode(true); // 기존 이벤트 제거용 복제
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+            newConfirmBtn.addEventListener('click', async () => {
+                const title = document.getElementById('worldTitleInput').value.trim();
+                const content = document.getElementById('worldContentInput').value.trim();
+
+                if (title && content) {
+                    try {
+                        // Firestore 데이터 업데이트
+                        await updateDoc(docRef, { title, content });
+
+                        console.log(`World with ID: ${worldId} has been updated.`);
+                        alert("세계관이 성공적으로 수정되었습니다.");
+
+                        // 모달 닫기
+                        closeModal('worldModal');
+                    } catch (error) {
+                        console.error("세계관 수정 중 오류 발생:", error);
+                        alert("세계관 수정에 실패했습니다.");
+                    }
+                } else {
+                    alert("제목과 내용을 모두 입력해주세요.");
+                }
+            });
+        } else {
+            console.error("해당 세계관 데이터를 찾을 수 없습니다.");
+            alert("세계관 데이터를 불러오는 중 문제가 발생했습니다.");
+        }
+    }).catch((error) => {
+        console.error("Firestore에서 세계관 데이터 가져오기 중 오류 발생:", error);
+        alert("세계관 데이터를 불러오는 중 오류가 발생했습니다.");
+    });
+}
+
+/*
 function handleWorldEdit(world) {
     const worldModal = new bootstrap.Modal(document.getElementById('worldModal'));
     document.getElementById('worldTitleInput').value = world.querySelector('h6').textContent;
@@ -830,6 +963,7 @@ function handleWorldEdit(world) {
     });
 }
 
+
 function updateWorld(world) {
     const title = document.getElementById('worldTitleInput').value.trim();
     const content = document.getElementById('worldContentInput').value.trim();
@@ -840,6 +974,7 @@ function updateWorld(world) {
         closeModal('worldModal');
     }
 }
+*/
 
 /*
 function handleWorldDelete(world) {
