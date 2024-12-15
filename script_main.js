@@ -1,5 +1,5 @@
 // firebase.js에서 Firebase 모듈 가져오기
-import { db, addDoc, collection, getDoc, doc, onSnapshot, query, orderBy, where } from "./firebase.js";
+import { db, addDoc, collection, getDoc, doc, onSnapshot, query, orderBy, where, updateDoc, deleteDoc } from "./firebase.js";
 
 // 전역 변수
 let projectCount = 0;
@@ -513,6 +513,7 @@ async function handleConfirmMemo() {
     //const memoTitle = document.getElementById('memoTitleInput').value.trim();
     const memoContent = document.getElementById('memoInput').value.trim();
 
+    let memoId = "";
     try {
         const docRef = await addDoc(collection(db, "memo"), {
             project_id: projectId,
@@ -521,6 +522,7 @@ async function handleConfirmMemo() {
         });
     
         console.log("Memo's document written with ID: ", docRef.id);
+        memoId = docRef.id;
     
     } catch (error) {
         console.error("Firestore 추가 중 오류 발생: ", error);
@@ -528,13 +530,13 @@ async function handleConfirmMemo() {
     };
 
     if (memoContent) { //memoTitle이 있으면으로  ㄱㄱ
-        const newMemo = createMemoElement(memoContent);
-        //const newMemo = createMemoElement(title,content);
+        const newMemo = createMemoElement(memoId, memoContent);
+        //const newMemo = createMemoElement(memoId, memoTitle, memoContent);
         closeModal('memoModal');
     }
 }
 
-function createMemoElement(memoContent) {
+function createMemoElement(memoId, memoContent) {
     const newMemo = document.createElement('div');
     newMemo.className = 'memo-item';
     newMemo.innerHTML = `
@@ -546,17 +548,17 @@ function createMemoElement(memoContent) {
             </div>
         </div>
     `;
-    attachMemoEvents(newMemo);
+    attachMemoEvents(newMemo, memoId);
     return newMemo;
 }
 
-function attachMemoEvents(memo) {
+function attachMemoEvents(memo, memoId) {
     memo.querySelector('.edit-memo-btn').addEventListener('click', () => {
         handleMemoEdit(memo);
     });
 
     memo.querySelector('.delete-btn').addEventListener('click', () => {
-        handleMemoDelete(memo);
+        handleDelete("memo", memoId);
     });
 }
 
@@ -581,11 +583,13 @@ function updateMemo(memo) {
     }
 }
 
+/*
 function handleMemoDelete(memo) {
     if (confirm('메모를 삭제하시겠습니까?')) {
         memo.remove();
     }
 }
+*/
 
 // 캐릭터 관련 함수들
 function handleAddCharacter() {
@@ -603,6 +607,7 @@ async function handleConfirmCharacter() {
     );
     const characterImageUrl = document.getElementById('characterImagePreview').querySelector('img')?.src || '';
 
+    let characterId = "";
 
     try {
         const docRef = await addDoc(collection(db, "character"), {
@@ -615,6 +620,7 @@ async function handleConfirmCharacter() {
         });
     
         console.log("Character's document written with ID: ", docRef.id);
+        characterId = docRef.id;
     
       } catch (error) {
         console.error("Firestore 추가 중 오류 발생: ", error);
@@ -622,13 +628,13 @@ async function handleConfirmCharacter() {
       }
 
     if (characterName) {  // 이름은 필수 입력
-        const newCharacter = createCharacterElement(characterName, characterProfile, characterDesc,
+        const newCharacter = createCharacterElement(characterId, characterName, characterProfile, characterDesc,
             characterTags, characterImageUrl);
         closeModal('characterModal');
     }
 }
 
-function createCharacterElement(name, profile, desc, tags, imageUrl) {
+function createCharacterElement(characterId, name, profile, desc, tags, imageUrl) {
     const newCharacter = document.createElement('div');
     newCharacter.className = 'character-item';
     newCharacter.innerHTML = `
@@ -654,17 +660,17 @@ function createCharacterElement(name, profile, desc, tags, imageUrl) {
             </div>
         </div>
     `;
-    attachCharacterEvents(newCharacter);
+    attachCharacterEvents(newCharacter, characterId);
     return newCharacter;
 }
 
-function attachCharacterEvents(character) {
+function attachCharacterEvents(character, characterId) {
     character.querySelector('.edit-character-btn').addEventListener('click', () => {
         handleCharacterEdit(character);
     });
 
     character.querySelector('.delete-btn').addEventListener('click', () => {
-        handleCharacterDelete(character);
+        handleDelete("character", characterId);
     });
 }
 
@@ -731,11 +737,13 @@ function updateCharacter(character) {
     }
 }
 
+/*
 function handleCharacterDelete(character) {
     if (confirm('캐릭터를 삭제하시겠습니까?')) {
         character.remove();
     }
 }
+*/
 
 function resetCharacterModal() {
     document.getElementById('characterNameInput').value = '';
@@ -756,6 +764,7 @@ function handleAddWorld() {
 async function handleConfirmWorld() {
     const worldTitle = document.getElementById('worldTitleInput').value.trim();
     const worldContent = document.getElementById('worldContentInput').value.trim();
+    let worldId = "";
 
     try {
         const docRef = await addDoc(collection(db, "worldBuilding"), {
@@ -765,6 +774,7 @@ async function handleConfirmWorld() {
         });
     
         console.log("WorldBuilding's document written with ID: ", docRef.id);
+        worldId = docRef.id;
     
       } catch (error) {
         console.error("Firestore 추가 중 오류 발생: ", error);
@@ -772,12 +782,13 @@ async function handleConfirmWorld() {
       }
     
     if (worldTitle && worldContent) {
-        const newWorld = createWorldElement(worldTitle, worldContent);
+        //const newWorld = createWorldElement(worldTitle, worldContent);
+        const newWorld = createWorldElement(worldId, worldTitle, worldContent);
         closeModal('worldModal');
     }
 }
 
-function createWorldElement(title, content) {
+function createWorldElement( worldId, title, content) {
     const newWorld = document.createElement('div');
     newWorld.className = 'world-item';
     newWorld.innerHTML = `
@@ -792,17 +803,18 @@ function createWorldElement(title, content) {
             </div>
         </div>
     `;
-    attachWorldEvents(newWorld);
+    //attachWorldEvents(newWorld);
+    attachWorldEvents(newWorld, worldId);
     return newWorld;
 }
 
-function attachWorldEvents(world) {
+function attachWorldEvents(world, worldId) {
     world.querySelector('.edit-world-btn').addEventListener('click', () => {
         handleWorldEdit(world);
     });
 
     world.querySelector('.delete-btn').addEventListener('click', () => {
-        handleWorldDelete(world);
+        handleDelete("worldBuilding", worldId);
     });
 }
 
@@ -831,11 +843,13 @@ function updateWorld(world) {
     }
 }
 
+/*
 function handleWorldDelete(world) {
     if (confirm('세계관을 삭제하시겠습니까?')) {
         world.remove();
     }
 }
+*/
 
 function resetWorldModal() {
     document.getElementById('worldTitleInput').value = '';
@@ -884,12 +898,12 @@ function loadData(collectionName, listSelector, createElementCallback, errorMess
 
             // 스냅샷 순회하며 데이터 추가
             snapshot.forEach((doc) => {
-                const data = doc.data();
-                const newElement = createElementCallback(data);
+                const dataWithId = { id: doc.id, ...doc.data() };
+                const newElement = createElementCallback(dataWithId);
                 listElement.appendChild(newElement); // 화면에 요소 추가
             });
 
-            console.log(`실시간 ${collectionName} 데이터:`, snapshot.docs.map((doc) => doc.data()));
+            console.log(`실시간 ${collectionName} 데이터:`, snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
         });
     } catch (error) {
         console.error(`데이터 로드 중 오류 발생:`, error);
@@ -899,10 +913,10 @@ function loadData(collectionName, listSelector, createElementCallback, errorMess
 
 function loadMemoData() {
     loadData(
-        "memo", 
-        ".memo-list", 
-        (data) => createMemoElement(data.content),
-        //(data) => createMemoElement(data.title, data.content),
+        "memo",
+        ".memo-list",
+        (data) => createMemoElement(data.id, data.content),
+        //(data) => createMemoElement(data.id, data.title, data.content),
         "메모 데이터를 불러오는 중 문제가 발생했습니다."
     );
 }
@@ -911,7 +925,7 @@ function loadCharacterData() {
     loadData(
         "character", 
         ".character-list", 
-        (data) => createCharacterElement(data.name, data.profile, data.desc, data.tags, data.imageUrl), // 요소 생성 콜백
+        (data) => createCharacterElement(data.id, data.name, data.profile, data.desc, data.tags, data.imageUrl), // 요소 생성 콜백
         "캐릭터 데이터를 불러오는 중 문제가 발생했습니다." 
     );
 }
@@ -920,7 +934,7 @@ function loadWorldBuildingData() {
     loadData(
         "worldBuilding", // Firestore 컬렉션 이름
         ".world-list", // 데이터가 추가될 DOM 요소
-        (data) => createWorldElement(data.title, data.content), // 요소 생성 콜백
+        (data) => createWorldElement(data.id, data.title, data.content), // 요소 생성 콜백
         "세계관 데이터를 불러오는 중 문제가 발생했습니다." // 오류 메시지
     );
 }
@@ -941,4 +955,21 @@ function loadEpisodeData() {
         "에피소드 데이터를 불러오는 중 문제가 발생했습니다."
     );
     //const newRow = createEpisodeElement(episodeNum, epiChapter, epiTitle, epiCharacter, epiStatus, epiUrl, episodeId);
+}
+
+
+async function handleDelete(collectionName, id) {
+    try {
+        // Firestore에서 특정 컬렉션의 문서 참조
+        const docRef = doc(db, collectionName, id);
+
+        // 문서 삭제
+        await deleteDoc(docRef);
+
+        console.log(`${collectionName} 문서가 성공적으로 삭제되었습니다.`);
+        alert(`${collectionName} 항목이 성공적으로 삭제되었습니다.`);
+    } catch (error) {
+        console.error(`${collectionName} 삭제 중 오류 발생:`, error);
+        alert(`${collectionName} 항목 삭제에 실패했습니다.`);
+    }
 }
