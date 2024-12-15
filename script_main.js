@@ -65,7 +65,7 @@ function initEventListeners() {
     document.querySelector('.confirm-chapter-btn').addEventListener('click', async () => {
         const isNewChapter = document.getElementById('newChapterCheck').checked;// 체크??
 
-        //const epiChapter = document.getElementById('chapterNameInput').checked;// 챕터명 입력으로 바꾸고 88행 chapter: epiChapter 주석 해제좀
+        //const epiChapter = document.getElementById('chapterNameInput').checked;// 챕터명 입력으로 바꾸고 챕터 추가 부분에 chapter: epiChapter 주석 해제좀
         const epiTitle = document.getElementById('chapterTitleInput').value.trim();
         const epiCharacter = document.getElementById('chapterCharacterInput').value.trim();
         const epiStatus = document.getElementById('chapterStatusInput').value;
@@ -734,13 +734,27 @@ function handleAddWorld() {
     worldModal.show();
 }
 
-function handleConfirmWorld() {
-    const title = document.getElementById('worldTitleInput').value.trim();
-    const content = document.getElementById('worldContentInput').value.trim();
+async function handleConfirmWorld() {
+    const worldTitle = document.getElementById('worldTitleInput').value.trim();
+    const worldContent = document.getElementById('worldContentInput').value.trim();
+
+    try {
+        const docRef = await addDoc(collection(db, "worldBuilding"), {
+            project_id: projectId,
+            title: worldTitle,
+            content: worldContent
+        });
     
-    if (title && content) {
+        console.log("WorldBuilding's document written with ID: ", docRef.id);
+    
+      } catch (error) {
+        console.error("Firestore 추가 중 오류 발생: ", error);
+        alert("세계관을 추가하는 중 문제가 발생했습니다.");
+      }
+    
+    if (worldTitle && worldContent) {
         const worldList = document.querySelector('.world-list');
-        const newWorld = createWorldElement(title, content);
+        const newWorld = createWorldElement(worldTitle, worldContent);
         worldList.appendChild(newWorld);
         closeModal('worldModal');
     }
