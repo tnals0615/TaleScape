@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     try {
                         // 클립보드에 복사
                         navigator.clipboard.writeText(shareUrl).then(() => {
-                            alert('링크가 클립보드에 복사되었습니다.\n이 링크로 웹소설처럼 내용을 볼 수 있습니다.');
+                            alert('링크가 클립보드에 복사되었습니다.');
                         });
                     } catch (err) {
                         console.error('클립보드 복사 실패:', err);
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 alert("에피소드 데이터를 불러올 수 없습니다.");
             }
         } catch (error) {
-            console.error("에피소드 데이터 로드 중 ��류:", error);
+            console.error("에피소드 데이터 로드 중 오류:", error);
             alert("에피소드 데이터를 불러오는 중 문제가 발생했습니다.");
         }
     }
