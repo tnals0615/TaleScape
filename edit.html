@@ -3,19 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>EDIT</title>
     <link rel="stylesheet" href="styles_common.css" />
     <link rel="stylesheet" href="styles_edit.css" />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
-    <script src="script_edit.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce-i18n@23.1.23/langs/ko_KR.js"></script>
+    <script type="module" src="tinymce.js"></script>
+    <script type="module" src="script_edit.js"></script>
+
   </head>
   <body>
     <div class="header-container">
-      <header class="TaleScape">TaleScape</header>
+      <header class="TaleScape" id="TaleScape">TaleScape</header>
       <button id="moon"><i class="fa-solid fa-moon icon-moon"></i></button>
     </div>
 
@@ -30,18 +34,27 @@
           </button>
         </div>
         <hr class="black-divider" />
-        <article>
-          <p id="addBtnMsg">+버튼을 눌러 프로젝트를<br />생성해주세요</p>
+        <article id="projectContainer">
           <ul class="project-list"></ul>
         </article>
       </aside>
 
       <section>
-        <header class="main-title">1화. 괴담에 떨어짐</header>
-        <article>▼ 본문</article>
-        <textarea id="wysiwyg-editor">
-위지위그 에디터를 여기에 추가합니다.</textarea
-        >
+        <header class="main-title">n화. 타이틀</header>
+        <div class="content-section">
+          <div class="toggle-title content-toggle">▼ 본문</div>
+          <div class="content-preview toggle-content"></div>
+        </div>
+        <div class="editor-container">
+          <textarea id="wysiwyg-editor"></textarea>
+          <div class="editor-controls">
+            <button class="save-btn" style="display: none;">
+              <i class="fas fa-save"></i> 저장
+            </button>
+          </div>
+          <br>
+          <div class="word-counter">글자 수: 0</div>
+        </div>
       </section>
 
       <aside>
@@ -49,10 +62,38 @@
         <hr class="black-divider" />
         <article>
           <ul class="toggle-list">
-            <li>▼ 메모</li>
-            <li>▼ 캐릭터 노트</li>
-            <li>▼ 세계관</li>
-            <li>▼ 설정</li>
+            <!-- onclick 속성을 제거하고 id 추가 -->
+            <li class="page-link" id="resultButton">
+              <i class="fas fa-book-open"></i> 결과 보기
+            </li>
+            <li class="shortcut-guide">
+              <div class="toggle-title">▼ 단축키 가이드</div>
+              <ul class="toggle-content shortcut-list">
+                <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> : 큰따옴표 추가</li>
+                <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd> : 작은따옴표 추가</li>
+              </ul>
+            </li>
+            <li>
+              <div class="toggle-title">▼ 메모</div>
+              <ul class="toggle-content memo-list">
+              </ul>
+            </li>
+            <li>
+              <div class="toggle-title">▼ 캐릭터 노트</div>
+              <ul class="toggle-content character-list">
+              </ul>
+            </li>
+            <li>
+              <div class="toggle-title">▼ 세계관</div>
+              <ul class="toggle-content world-list">
+              </ul>
+            </li>
+            <li>
+              <div class="toggle-title">▼ 설정</div>
+              <ul class="toggle-content">
+                <li>설정 내용...</li>
+              </ul>
+            </li>
           </ul>
         </article>
       </aside>
@@ -64,19 +105,10 @@
         <hr class="black-divider" />
         <article>
           <label for="projectNameInput">프로젝트 제목</label>
-          <input
-            type="text"
-            id="projectNameInput"
-            name="projectNameInput"
-            placeholder="프로젝트 이름을 입력하세요"
-          />
+          <input type="text" id="projectNameInput" name="projectNameInput" placeholder="프로젝트 이름을 입력하세요" />
 
           <label for="projectPlotInput">줄거리</label>
-          <textarea
-            id="projectPlotInput"
-            name="projectPlotInput"
-            placeholder="줄거리를 입력하세요"
-          ></textarea>
+          <textarea id="projectPlotInput" name="projectPlotInput" placeholder="줄거리를 입력하세요"></textarea>
           <div id="buttonContainer">
             <button id="pModalClose">닫기</button>
             <button id="pModalApply">확인</button>
@@ -84,7 +116,7 @@
         </article>
       </section>
     </div>
-  </body>
 
-  <script src="script_common.js"></script>
+  </body>
+  <script type="module" src="script_common.js"></script>
 </html>

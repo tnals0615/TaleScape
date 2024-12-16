@@ -10,31 +10,6 @@ a:active {
   text-underline-offset: 4px;
 }
 
-/* List Styles - edit.html 전용 */
-.toggle-list {
-  list-style-type: none;
-  padding: 10px 0 0 10px;
-}
-ul {
-  padding: 10px 0 0 20px;
-  margin: 0;
-}
-li {
-  margin: 5px 0;
-  cursor: pointer;
-}
-
-/* Editor Styles - edit.html 전용 */
-.tox-edit-area__iframe {
-  background-color: white !important;
-}
-
-/* TinyMCE 에디터 내용 영역 - 항상 하얀색 */
-.tox-edit-area__iframe .mce-content-body {
-  background-color: white !important;
-  color: black !important;
-}
-
 /* Dark Mode - edit.html 전용 */
 body.dark-mode a:link,
 body.dark-mode a:visited,
@@ -79,3 +54,143 @@ body.dark-mode a:active {
   font-size: 20px;
   cursor: pointer;
 }
+
+
+.guide-title {
+  font-weight: bold;
+  color: #333;
+}
+
+.shortcut-list {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.shortcut-list li {
+  margin: 5px 0;
+  color: #666;
+}
+
+kbd {
+  display: inline-block;
+  padding: 2px 4px;
+  font-size: 12px;
+  font-family: monospace;
+  line-height: 1;
+  color: #666;
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+}
+
+body.dark-mode .guide-title {
+  color: #fff;
+}
+
+body.dark-mode .shortcut-list li {
+  color: #ccc;
+}
+
+body.dark-mode kbd {
+  color: #fff;
+  background-color: #333;
+  border-color: #666;
+}
+
+/* 본문 섹션 스타일 */
+.content-section {
+  margin-bottom: 20px;
+}
+
+.content-toggle {
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.content-preview {
+  margin: 10px 0;
+  padding: 15px 0;
+  white-space: pre-wrap;
+  display: none;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+/* 다크모드 대응 */
+body.dark-mode .content-preview {
+  border-color: #444;
+}
+
+/* 에디터 관련 스타일 */
+.editor-container {
+  position: relative;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.editor-controls {
+  position: absolute;
+  bottom: -25px;
+  left: 0;
+  right: 15px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.save-btn {
+  background-color: #6E6E6E;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 14px;
+}
+
+.save-btn:hover {
+  background-color: #595959;
+}
+
+/* 글자 수 카운터 */
+.word-counter {
+  margin-right: auto;
+  font-size: 14px;
+  color: #666;
+  margin-left: 15px;
+}
+
+/* 다크모드 대응 */
+body.dark-mode .word-counter {
+  color: #ccc;
+}
+
+/* 에디터 내부 스타일 */
+.dialogue {
+    margin-left: 20px;
+    color: #2c3e50;
+}
+
+.narration {
+    color: #34495e;
+}
+
+.thought {
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+.scene-break {
+    border: none;
+    border-top: 3px dotted #bdc3c7;
+    margin: 20px 0;
+}
+
+/* 다크모드 대응 */
+body.dark-mode .dialogue { color: #ecf0f1; }
+body.dark-mode .narration { color: #bdc3c7; }
+body.dark-mode .thought { color: #95a5a6; }
+

@@ -9,12 +9,16 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles_common.css">
     <link rel="stylesheet" href="styles_main.css">
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-    <script src="script_main.js"></script>
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="script_common.js"></script>
+    <script type="module" src="script_main.js"></script>
 </head>
 <body>
     <header class="header-container">
-        <header class="TaleScape">TaleScape</header>
+        <header class="TaleScape" id="TaleScape">TaleScape</header>
         <button id="moon"><i class="fa-solid fa-moon icon-moon"></i></button>
     </header>
 
@@ -29,18 +33,15 @@
                 </button>
             </div>
             <hr class="black-divider">
-            <article>
+            <article id="projectContainer">
                 <ul class="project-list">
-                    <li class="text-muted text-center mt-3">
-                        <small>+ 버튼을 눌러 프로젝트를 생성해주세요</small>
-                    </li>
                 </ul>
             </article>
         </aside>
 
         <section>
-            <header class="main-title">예시 페이지</header>
-            <article class="project-desc">프로젝트의 설명이 입력되는 부분입니다.</article>
+            <header class="main-title"></header>
+            <article class="project-desc"></article>
 
             <article>
                 <!-- Bootstrap Accordion 사용 -->
@@ -122,29 +123,22 @@
     <!-- Bootstrap 모달 사용 -->
     <!-- 기존 모달 코드 유지 -->
     <!-- 프로젝트 모달 -->
-    <div class="modal fade" id="projectModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">새 프로젝트</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div id="projectModalContainer" class="hidden">
+        <section id="projectModal">
+            <header>새 프로젝트</header>
+            <hr class="black-divider" />
+            <article>
+                <label for="projectNameInput">프로젝트 제목</label>
+                <input type="text" id="projectNameInput" name="projectNameInput" placeholder="프로젝트 이름을 입력하세요" />
+
+                <label for="projectPlotInput">줄거리</label>
+                <textarea id="projectPlotInput" name="projectPlotInput" placeholder="줄거리를 입력하세요"></textarea>
+                <div id="buttonContainer">
+                    <button id="pModalClose">닫기</button>
+                    <button id="pModalApply">확인</button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">프로젝트 제목</label>
-                        <input type="text" class="form-control" id="projectNameInput" placeholder="프로젝트 이름을 입력하세요">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">프로젝트 설명</label>
-                        <textarea class="form-control" id="projectDescInput" rows="3" placeholder="프로젝트 설명을 입력하세요"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn btn-primary">확인</button>
-                </div>
-            </div>
-        </div>
+            </article>
+        </section>
     </div>
 
     <!-- 메모 모달 -->
@@ -152,11 +146,19 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
+                    <!-- id memoTitleInput로 해줘 -->
                     <h5 class="modal-title">메모</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <textarea class="form-control" id="memoInput" rows="5" placeholder="메모 내용을 입력하세요"></textarea>
+                    <div class="mb-3">
+                        <label class="form-label">제목</label>
+                        <input type="text" class="form-control" id="memoTitleInput" placeholder="메모 제목을 입력하세요(선택사항)">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">내용</label>
+                        <textarea class="form-control" id="memoInput" rows="5" placeholder="메모 내용을 입력하세요"></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
@@ -182,15 +184,15 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">이름</label>
-                        <input type="text" class="form-control" id="characterNameInput">
+                        <input type="text" class="form-control" id="characterNameInput" placeholder="캐릭터 이름을 입력하세요">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">프로필</label>
-                        <textarea class="form-control" id="characterProfileInput" rows="5"></textarea>
+                        <textarea class="form-control" id="characterProfileInput" rows="5" placeholder="캐릭터 프로필을 입력하세요"></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">설명</label>
-                        <textarea class="form-control" id="characterDescInput" rows="3"></textarea>
+                        <textarea class="form-control" id="characterDescInput" rows="3" placeholder="캐릭터 설명을 입력하세요"></textarea>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">태그</label>
@@ -247,6 +249,11 @@
                             새 챕터로 시작
                         </label>
                     </div>
+                    <!-- 챕터 이름 입력 (기본적으로 숨겨져 있음) -->
+                    <div class="mb-3" id="chapterNameGroup" style="display: none;">
+                        <label class="form-label">챕터 이름</label>
+                        <input type="text" class="form-control" id="chapterNameInput">
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Title</label>
                         <input type="text" class="form-control" id="chapterTitleInput">
@@ -272,6 +279,28 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     <button type="button" class="btn btn-primary confirm-chapter-btn">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 챕터 수정 모달 추가 -->
+    <div class="modal fade" id="editChapterModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">챕터 수정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">챕터 이름</label>
+                        <input type="text" class="form-control" id="editChapterNameInput">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" id="confirmEditChapter">확인</button>
                 </div>
             </div>
         </div>

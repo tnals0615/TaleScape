@@ -27,3 +27,7 @@ body.dark-mode .preview {
   color: black;
   background-color: #aaaaaa;
 }
+
+#resultTitle{
+  font-size: 25px !important;  
+}
