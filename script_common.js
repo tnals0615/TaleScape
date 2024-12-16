@@ -1,5 +1,5 @@
 // firebase.js에서 export한것만 가져올 수 있다.
-import { db, addDoc, collection, getDoc, doc, onSnapshot, query, orderBy, updateDoc, deleteDoc } from "./firebase.js";
+import { db, addDoc, collection, getDoc, doc, onSnapshot, query, orderBy, updateDoc, deleteDoc, getDocs, where } from "./firebase.js";
 import { loadMemoData, loadCharacterData, loadWorldBuildingData, loadEpisodeData } from './script_main.js';
 
 // 전역 변수
@@ -59,18 +59,11 @@ applyButton?.addEventListener("click", async () => {
   }
 
   try {
-    const docRef = await addDoc(collection(db, "project"), {
+    await addDoc(collection(db, "project"), {
       name: projectName,
       plot: projectPlot,
       createdAt: new Date(),
     });
-
-    console.log("Document written with ID: ", docRef.id);
-
-    // 안내 메시지 제거
-    if (addBtnMsg) {
-      addBtnMsg.remove();
-    }
 
     // 입력 필드 초기화 및 모달 닫기
     projectNameInput.value = "";
@@ -165,96 +158,31 @@ function createProjectElement(projectName, docId) {
     return newProject;
 }
 
-function attachProjectEvents(project, docId) {
-    // 프로젝트 클릭 이벤트 - 전체 li에 이벤트 추가
-    project.addEventListener('click', (e) => {
-        // 버튼 클릭은 무시
-        if (!e.target.closest('.project-actions')) {
-            const projectId = project.getAttribute('data-id');
-            if (projectId) {
-                handleProjectClick(project, projectId);
-            }
+function attachProjectEvents(listItem, projectId) {
+    // 프로젝트 클릭 이벤트
+    listItem.addEventListener('click', (e) => {
+        if (!e.target.closest('.delete-project-btn') && !e.target.closest('.edit-project-btn')) {
+            handleProjectClick(listItem, projectId);
         }
     });
-    
-    // 수정 버튼 이벤트
-    project.querySelector('.edit-project-btn').addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const projectId = project.getAttribute('data-id');
-        if (!projectId) return;
-        
-        try {
-            const projectRef = doc(db, "project", projectId);
-            const docSnap = await getDoc(projectRef);
-            
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                document.getElementById('projectNameInput').value = data.name;
-                document.getElementById('projectPlotInput').value = data.plot;
-                
-                const modal = document.getElementById('projectModalContainer');
-                modal.classList.remove('hidden');
-                
-                // 확인 버튼에 임시 이벤트 리스너 추가
-                const applyBtn = document.getElementById('pModalApply');
-                const newApplyBtn = applyBtn.cloneNode(true);
-                applyBtn.parentNode.replaceChild(newApplyBtn, applyBtn);
-                
-                newApplyBtn.addEventListener('click', async () => {
-                    const newName = document.getElementById('projectNameInput').value.trim();
-                    const newPlot = document.getElementById('projectPlotInput').value.trim();
-                    
-                    if (newName) {
-                        try {
-                            await updateDoc(projectRef, {
-                                name: newName,
-                                plot: newPlot
-                            });
-                            
-                            project.textContent = newName; // textContent 업데이트
-                            // 수정/삭제 버튼 다시 추가
-                            const actionButtons = document.createElement('div');
-                            actionButtons.className = 'project-actions';
-                            actionButtons.innerHTML = `
-                                <button class="edit-project-btn" title="수정"><i class="bi bi-pencil"></i></button>
-                                <button class="delete-project-btn" title="삭제"><i class="bi bi-trash"></i></button>
-                            `;
-                            project.appendChild(actionButtons);
-                            
-                            modal.classList.add('hidden');
-                            
-                            // 현재 페이지가 main.html인 경우에만 추가 업데이트
-                            if (window.location.pathname.includes('main.html')) {
-                                document.querySelector('.main-title').textContent = newName;
-                                document.querySelector('.project-desc').textContent = newPlot;
-                            }
-                        } catch (error) {
-                            console.error("프로젝트 수정 중 오류 발생:", error);
-                            alert("프로젝트 수정에 실패했습니다.");
-                        }
-                    }
-                });
-            }
-        } catch (error) {
-            console.error("프로젝트 데이터 로드 중 오류 발생:", error);
-            alert("프로젝트 데이터를 불러오는 중 문제가 발생했습니다.");
-        }
-    });
-    
+
     // 삭제 버튼 이벤트
-    project.querySelector('.delete-project-btn').addEventListener('click', async (e) => {
-        e.stopPropagation();
-        if (confirm('프로젝트를 삭제하시겠습니까?')) {
-            try {
-                await deleteDoc(doc(db, "project", docId));
-                project.remove();
-                checkEmptyProjectList();
-            } catch (error) {
-                console.error("프로젝트 삭제 중 오류 발생:", error);
-                alert("프로젝트 삭제에 실패했습니다.");
-            }
-        }
-    });
+    const deleteBtn = listItem.querySelector('.delete-project-btn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 이벤트 버블링 방지
+            handleProjectDelete(projectId);
+        });
+    }
+
+    // 수정 버튼 이벤트
+    const editBtn = listItem.querySelector('.edit-project-btn');
+    if (editBtn) {
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 이벤트 버블링 방지
+            handleProjectEdit(listItem, projectId);
+        });
+    }
 }
 
 function checkEmptyProjectList() {
@@ -305,5 +233,201 @@ async function handleProjectClick(project, clickedProjectId) {
     } catch (error) {
         console.error("프로젝트 데이터 로드 중 오류 발생:", error);
         // 에러 메시지 표시하지 않음
+    }
+}
+
+// 프로젝트 삭제 처리 함수
+async function handleProjectDelete(projectId) {
+    if (confirm('프로젝트를 삭제하시겠습니까?\n관련된 모든 메모, 캐릭터, 세계관, 에피소드가 함께 삭제됩니다.')) {
+        try {
+            // 1. 에피소드 내용 삭제
+            const episodeQuery = query(
+                collection(db, "episode"),
+                where("project_id", "==", projectId)
+            );
+            const episodeSnapshot = await getDocs(episodeQuery);
+            
+            // 에피소드 내용 삭제
+            for (const episodeDoc of episodeSnapshot.docs) {
+                const episodeContentRef = doc(db, "episode_content", episodeDoc.id);
+                try {
+                    await deleteDoc(episodeContentRef);
+                    console.log("에피소드 내용이 삭제되었습니다:", episodeDoc.id);
+                } catch (error) {
+                    console.error("에피소드 내용 삭제 중 오류:", error);
+                }
+            }
+
+            // 2. 관련된 모든 하위 데이터 삭제
+            const collections = ["memo", "character", "worldBuilding", "episode"];
+            
+            for (const collectionName of collections) {
+                try {
+                    const q = query(
+                        collection(db, collectionName),
+                        where("project_id", "==", projectId)
+                    );
+                    
+                    const querySnapshot = await getDocs(q);
+                    console.log(`${collectionName} 문서 수:`, querySnapshot.size); // 디버깅용
+                    
+                    for (const docSnapshot of querySnapshot.docs) {
+                        await deleteDoc(docSnapshot.ref);
+                        console.log(`${collectionName} 문서 삭제됨:`, docSnapshot.id);
+                    }
+                    
+                    console.log(`${collectionName} 컬렉션의 관련 문서들이 삭제되었습니다.`);
+                } catch (error) {
+                    console.error(`${collectionName} 삭제 중 오류:`, error);
+                }
+            }
+            
+            // 3. 프로젝트 문서 삭제
+            await deleteDoc(doc(db, "project", projectId));
+            console.log("프로젝트 문서가 삭제되었습니다:", projectId);
+            
+            // 4. UI 업데이트
+            document.querySelector(`[data-id="${projectId}"]`)?.remove();
+            
+            // 5. 현재 선택된 프로젝트가 삭제된 경우 UI 초기화
+            if (projectId === localStorage.getItem('currentProjectId')) {
+                localStorage.removeItem('currentProjectId');
+                resetMainUI();
+            }
+
+            console.log("프로젝트와 관련 데이터가 모두 삭제되었습니다.");
+        } catch (error) {
+            console.error("프로젝트 삭제 중 오류:", error);
+            alert("프로젝트 삭제에 실패했습니다.");
+        }
+    }
+}
+
+// 메인 UI 초기화
+function resetMainUI() {
+    // 현재 페이지 확인
+    const isMainPage = window.location.pathname.includes('main.html');
+    
+    if (isMainPage) {
+        // main.html 페이지일 때의 초기화
+        document.querySelector('.main-title').textContent = "프로젝트를 선택하세요";
+        document.querySelector('.project-desc').textContent = "";
+        document.querySelector('.memo-list').innerHTML = '';
+        document.querySelector('.character-list').innerHTML = '';
+        document.querySelector('.world-list').innerHTML = '';
+        document.querySelector('tbody').innerHTML = '';
+        document.querySelector('.accordion').style.display = 'none';
+        document.querySelector('.chapter-table').style.display = 'none';
+    } else {
+        // edit.html 또는 result.html 페이지일 때의 초기화
+        window.location.href = 'main.html'; // 메인 페이지로 리다이렉트
+    }
+}
+
+// 프로젝트 선택 이벤트 핸들러
+async function handleProjectSelect(projectId) {
+    try {
+        const projectRef = doc(db, "project", projectId);
+        const docSnap = await getDoc(projectRef);
+
+        if (docSnap.exists()) {
+            // localStorage에 현재 선택된 프로젝트 ID 저장
+            localStorage.setItem('currentProjectId', projectId);
+            
+            const data = docSnap.data();
+            
+            // 현재 페이지에 따른 처리
+            const isMainPage = window.location.pathname.includes('main.html');
+            if (isMainPage) {
+                // main.html에서의 처리
+                document.querySelector('.main-title').textContent = data.name;
+                document.querySelector('.project-desc').textContent = data.plot || '';
+                document.querySelector('.accordion').style.display = 'block';
+                document.querySelector('.chapter-table').style.display = 'block';
+                
+                // 데이터 로드
+                loadMemoData();
+                loadCharacterData();
+                loadWorldBuildingData();
+                loadEpisodeData();
+            }
+        }
+    } catch (error) {
+        console.error("프로젝트 선택 중 오류:", error);
+        alert("프로젝트 데이터를 ���러오는데 실패했습니다.");
+    }
+}
+
+// 프로젝트 수정 처리 함수
+async function handleProjectEdit(listItem, projectId) {
+    try {
+        const projectRef = doc(db, "project", projectId);
+        const docSnap = await getDoc(projectRef);
+        
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            
+            // 입력 필드에 기존 데이터 설정
+            projectNameInput.value = data.name;
+            projectPlotInput.value = data.plot;
+            
+            // 모달 표시
+            modalContainer.classList.remove('hidden');
+            
+            // 이벤트 리스너 설정을 위한 버튼 참조
+            const confirmButton = document.getElementById("pModalApply");
+            const cancelButton = document.getElementById("pModalClose");
+            
+            // 이벤트 리스너 제거
+            const newConfirmButton = confirmButton.cloneNode(true);
+            const newCancelButton = cancelButton.cloneNode(true);
+            
+            if (confirmButton.parentNode && cancelButton.parentNode) {
+                confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+                cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+            }
+            
+            // 닫기 버튼 이벤트
+            newCancelButton.addEventListener('click', () => {
+                modalContainer.classList.add('hidden');
+                projectNameInput.value = '';
+                projectPlotInput.value = '';
+            });
+            
+            // 수정 확인 버튼 이벤트
+            newConfirmButton.addEventListener('click', async () => {
+                const newName = projectNameInput.value.trim();
+                const newPlot = projectPlotInput.value.trim();
+                
+                if (newName && newPlot) {
+                    if (newName.length > 50) {
+                        alert("프로젝트 이름은 50자를 초과할 수 없습니다.");
+                        return;
+                    }
+
+                    try {
+                        await updateDoc(projectRef, {
+                            name: newName,
+                            plot: newPlot,
+                            lastModified: new Date()
+                        });
+                        
+                        modalContainer.classList.add('hidden');
+                        projectNameInput.value = '';
+                        projectPlotInput.value = '';
+                        
+                        console.log("프로젝트가 수정되었습니다.");
+                    } catch (error) {
+                        console.error("프로젝트 수정 중 오류:", error);
+                        alert("프로젝트 수정에 실패했습니다.");
+                    }
+                } else {
+                    alert("모든 필드를 입력해주세요.");
+                }
+            });
+        }
+    } catch (error) {
+        console.error("프로젝트 데이터 로드 중 오류:", error);
+        alert("프로젝트 데이터를 불러올 수 없습니다.");
     }
 }
