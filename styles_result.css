@@ -1,33 +1,79 @@
 .preview {
   display: flex;
-  width: 95%; /* 책 전체 너비 */
-  height: 98%; /* 책 높이 */
-  margin: auto auto; /* 페이지 중앙 정렬 */
-  background-color: white; /* 책 배경 흰색 */
-  border-radius: 5px; /* 모서리 둥글게 */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 그림자 */
+  width: 95%;
+  height: 98%;
+  margin: auto auto;
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   font-size: 16px;
   font-family: "나눔명조", sans-serif;
   overflow: hidden;
+  perspective: 2000px;
+  position: relative; /* 추가 */
 }
 
-.left-page,
-.right-page {
-  flex: 1; /* 양쪽 페이지 동일한 비율로 */
-  padding: 20px; /* 내부 여백 */
-  border-right: 1px solid #ddd; /* 왼쪽 페이지와 오른쪽 페이지 분리선 */
-  box-sizing: border-box; /* 패딩 포함 크기 계산 */
-}
-
-.right-page {
-  border-right: none; /* 오른쪽 페이지는 분리선 제거 */
-}
-
-body.dark-mode .preview {
+body.dark-mode .preview{
   color: black;
   background-color: #aaaaaa;
 }
 
-#resultTitle{
-  font-size: 25px !important;  
+/* 고정된 분리선 추가 */
+.preview::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background-color: #ddd;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.left-page,
+.right-page {
+  flex: 1;
+  padding: 20px;
+  position: relative;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* 나머지 스타일은 그대로 유지 */
+
+/* 오른쪽 페이지 넘김 애니메이션 */
+@keyframes flipRightPage {
+    0% {
+        transform: rotateY(0deg);
+        transform-origin: left;
+    }
+    100% {
+        transform: rotateY(-180deg);
+        transform-origin: left;
+    }
+}
+
+/* 새 페이지 나타나는 애니메이션 */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* 오른쪽 페이지에만 3D 효과 적용 */
+.right-page {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+
+.right-page.flip-page {
+    animation: flipRightPage 1.0s ease-in-out;
+}
+
+.page-appear {
+    animation: fadeIn 0.6s ease-in-out;
 }
