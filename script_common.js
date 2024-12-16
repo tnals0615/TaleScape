@@ -21,6 +21,10 @@ if (  !iconMoon ||  !modalContainer ||  !openButton ||  !closeButton ||  !applyB
   console.error("필수 DOM 요소 중 하나가 누락되었습니다. 코드 로직을 확인하세요.");
 }
 
+document.getElementById("TaleScape").addEventListener("click", function() {
+            window.location.href = "main.html"; // Redirect to main.html
+        });
+
 // 다크 모드 토글 이벤트 리스너
 document.getElementById("moon")?.addEventListener("click", () => {
     const body = document.querySelector('body');
