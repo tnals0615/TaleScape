@@ -1,55 +1,3 @@
-import { db, doc, getDoc, updateDoc } from "./firebase.js";
-
-let currentEpisodeId = null;
-
-document.addEventListener('DOMContentLoaded', async function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const episodeId = urlParams.get('episode-id');
-    const episodeNumber = urlParams.get('episode-number');
-    
-    if (episodeId) {
-        currentEpisodeId = episodeId;
-        try {
-            const docRef = doc(db, "episode", episodeId);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                
-                const displayNumber = episodeNumber || data.episode_number || '?';
-                document.querySelector('.main-title').textContent = 
-                    `${displayNumber}화. ${data.title}`;
-                
-                if (data.content) {
-                    tinymce.get('wysiwyg-editor').setContent(data.content);
-                }
-            } else {
-                console.log("에피소드를 찾을 수 없습니다!");
-                alert("에피소드 데이터를 불러올 수 없습니���.");
-            }
-        } catch (error) {
-            console.error("에피소드 데이터 로드 중 오류:", error);
-            alert("에피소드 데이터를 불러오는 중 문제가 발생했습니다.");
-        }
-    }
-
-    const toggleTitles = document.querySelectorAll('.toggle-title');
-    
-    toggleTitles.forEach(title => {
-        title.addEventListener('click', function() {
-            const content = this.nextElementSibling;
-            const isExpanded = content.style.display === 'block';
-            content.style.display = isExpanded ? 'none' : 'block';
-            
-            const arrow = this.textContent.trim().charAt(0);
-            this.textContent = this.textContent.replace(
-                arrow,
-                isExpanded ? '▼' : '▶'
-            );
-        });
-    });
-});
-/*
 tinymce.init({
     selector: "#wysiwyg-editor",
     menubar: false,
@@ -79,7 +27,7 @@ tinymce.init({
     
     //content_css: 'styles_edit.css',
     content_css: 'tinymce.css',
-
+    
     setup: function(editor) {
         const counterDiv = document.querySelector('.word-counter');
         const saveBtn = document.querySelector('.save-btn');
@@ -244,51 +192,4 @@ tinymce.init({
             }
         });
     }
-});*/
-
-async function checkSpelling(text, editor) {
-    try {
-        const response = await fetch('https://speller.cs.pusan.ac.kr/results', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `text1=${encodeURIComponent(text)}`
-        });
-
-        if (!response.ok) throw new Error('맞춤법 검사 실패');
-        
-        const data = await response.json();
-        
-        if (data.errInfo) {
-            data.errInfo.forEach(error => {
-                const originalText = error.orgStr;
-                const suggestion = error.candWord;
-                const errorType = error.help;
-                
-                const content = editor.getContent();
-                const markedContent = content.replace(
-                    originalText,
-                    `<span class="spelling-error" title="${errorType}\n추천: ${suggestion}" style="border-bottom: 2px wavy red;">${originalText}</span>`
-                );
-                editor.setContent(markedContent);
-            });
-
-            editor.notificationManager.open({
-                text: `맞춤법 검사 완료: ${data.errInfo.length}개의 오류 발견`,
-                type: 'info'
-            });
-        } else {
-            editor.notificationManager.open({
-                text: '맞춤법 오류가 없습니다.',
-                type: 'success'
-            });
-        }
-    } catch (error) {
-        console.error('맞춤법 검사 오류:', error);
-        editor.notificationManager.open({
-            text: '맞춤법 검사 중 오류가 발생했습니다.',
-            type: 'error'
-        });
-    }
-}
+});

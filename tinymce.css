@@ -1,3 +1,18 @@
+/* 다크모드 대응 */
+body.dark-mode .tox-edit-area__iframe,
+ .mce-content-body {
+  background-color: #AAAAAA !important;
+  color: #ffffff !important;
+}
+
+/* TinyMCE 에디터 내용 영역 - 항상 하얀색 */
+.tox-edit-area__iframe .mce-content-body {
+  background-color: white !important;
+  color: black !important;
+  line-height: 1.4 !important;
+  font-size: 16px !important;
+}
+
 /* 에디터 내부 애니메이션 스타일 */
 @keyframes shake {
     0% { transform: translate(0, 0) rotate(0deg); }
