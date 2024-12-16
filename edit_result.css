@@ -77,3 +77,7 @@ body.dark-mode .popup-content {
     font-family: "나눔스퀘어_ac", sans-serif;
     color: black;
 }
+
+body.dark-mode .fa-book-open{
+    color: white;
+}
