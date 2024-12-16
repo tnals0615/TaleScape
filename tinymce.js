@@ -1,3 +1,5 @@
+import { db, doc, getDoc, updateDoc } from "./firebase.js";
+
 tinymce.init({
     selector: "#wysiwyg-editor",
     menubar: false,

@@ -13,7 +13,7 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tinymce-i18n@23.1.23/langs/ko_KR.js"></script>
-    <script src="tinymce.js"></script>
+    <script type="module" src="tinymce.js"></script>
     <script type="module" src="script_edit.js"></script>
 
   </head>
@@ -62,7 +62,8 @@
         <hr class="black-divider" />
         <article>
           <ul class="toggle-list">
-            <li class="page-link" onclick="location.href='result.html'">
+            <!-- onclick 속성을 제거하고 id 추가 -->
+            <li class="page-link" id="resultButton">
               <i class="fas fa-book-open"></i> 결과 보기
             </li>
             <li class="shortcut-guide">

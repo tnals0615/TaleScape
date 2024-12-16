@@ -1,6 +1,6 @@
 import { db, doc, getDoc, updateDoc } from "./firebase.js";
 
-let currentEpisodeId = null;
+window.currentEpisodeId = null;
 
 document.addEventListener('DOMContentLoaded', async function() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -32,6 +32,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             alert("에피소드 데이터를 불러오는 중 문제가 발생했습니다.");
         }
     }
+
+    document.getElementById('resultButton').addEventListener('click', function() {
+        if (currentEpisodeId) {
+            location.href = `result.html?episode-id=${currentEpisodeId}`;
+        }
+    });
 
     const toggleTitles = document.querySelectorAll('.toggle-title');
     
