@@ -2,15 +2,50 @@ import { db, doc, getDoc, updateDoc } from "./firebase.js";
 
 window.currentEpisodeId = null;
 
-// HTML 태그와 엔티티를 일반 텍스트로 변환하는 함수
-function htmlToPlainText(html) {
-    // 임시 div 엘리먼트 생성
-    const temp = document.createElement('div');
-    // HTML 문자열을 div에 설정
-    temp.innerHTML = html;
-    // HTML 엔티티를 디코드하고 텍스트만 추출
-    return temp.textContent || temp.innerText;
-}
+document.addEventListener('DOMContentLoaded', async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const episodeId = urlParams.get('episode-id');
+    const episodeNumber = urlParams.get('episode-number');
+    
+    if (episodeId) {
+        window.currentEpisodeId = episodeId;
+        try {
+            const docRef = doc(db, "episode", episodeId);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                
+                const displayNumber = episodeNumber || data.episode_number || '?';
+                document.querySelector('.main-title').textContent = 
+                    `${displayNumber}화. ${data.title}`;
+                
+                // TinyMCE가 준비될 때까지 기다림
+                if (data.content) {
+                    const waitForTinyMCE = setInterval(() => {
+                        const editor = tinymce.get('wysiwyg-editor');
+                        if (editor) {
+                            editor.setContent(data.content);
+                            clearInterval(waitForTinyMCE);
+                        }
+                    }, 100);
+                }
+            } else {
+                console.log("에피소드를 찾을 수 없습니다!");
+                alert("에피소드 데이터를 불러올 수 없습니다.");
+            }
+        } catch (error) {
+            console.error("에피소드 데이터 로드 중 오류:", error);
+            alert("에피소드 데이터를 불러오는 중 문제가 발생했습니다.");
+        }
+    }
+});
+
+document.getElementById('resultButton').addEventListener('click', function() {
+    if (window.currentEpisodeId) {
+        location.href = `result.html?episode-id=${window.currentEpisodeId}`;
+    }
+});
 
 // 에피소드 데이터 로드 함수
 async function loadEpisodeContent() {
@@ -30,7 +65,7 @@ async function loadEpisodeContent() {
                 }
             } else {
                 console.log("에피소드를 찾을 수 없습니다!");
-                alert("에피소드 데이터를 불러올 수 없습니���.");
+                alert("에피소드 데이터를 불러올 수 없습니다.");
             }
         } catch (error) {
             console.error("에피소드 데이터 로드 중 오류:", error);
@@ -59,7 +94,6 @@ async function loadEpisodeContent() {
             );
         });
     });
-});
 /*
 tinymce.init({
     selector: "#wysiwyg-editor",

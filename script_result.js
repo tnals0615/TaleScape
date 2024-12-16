@@ -11,24 +11,60 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
+                let currentPageSet = 1;
+                let totalContent = [];  // 전체 콘텐츠를 저장할 배열
                 
                 const leftPage = document.querySelector('.left-page');
                 const rightPage = document.querySelector('.right-page');
                 
-                // 기존 내용 초기화
-                leftPage.innerHTML = '';
-                rightPage.innerHTML = '';
+                // 페이지 세트 표시 함수
+                function displayPageSet(pageNumber) {
+                    leftPage.innerHTML = '';
+                    rightPage.innerHTML = '';
+                    
+                    const startIndex = (pageNumber - 1) * 2;
+                    
+                    // 첫 페이지 세트가 아닌 경우에는 제목 없이 내용만 표시
+                    if (pageNumber === 1) {
+                        // 제목 추가
+                        const titleElement = document.createElement('p');
+                        titleElement.className = 'main-title';
+                        titleElement.style.textAlign = 'center';
+                        titleElement.style.fontSize = '25px';
+                        titleElement.style.marginTop = '20px';
+                        titleElement.style.marginBottom = '20px';
+                        titleElement.textContent = `${data.episode_number || '?'}화. ${data.title}`;
+                        leftPage.appendChild(titleElement);
+                    }
+                    
+                    if (totalContent[startIndex]) {
+                        if (pageNumber === 1) {
+                            // 첫 페이지의 경우 기존 내용에 추가
+                            leftPage.innerHTML += totalContent[startIndex];
+                        } else {
+                            // 다른 페이지는 내용만 표시
+                            leftPage.innerHTML = totalContent[startIndex];
+                        }
+                    }
+                    
+                    if (totalContent[startIndex + 1]) {
+                        rightPage.innerHTML = totalContent[startIndex + 1];
+                    }
+                    
+                    // 마지막 페이지 세트인 경우 처리
+                    if (!totalContent[startIndex] && !totalContent[startIndex + 1]) {
+                        currentPageSet = 1;
+                        displayPageSet(1);
+                    }
+                }
                 
-                // 제목 스타일 수정
-                const titleElement = document.createElement('p');
-                titleElement.className = 'main-title';
-                titleElement.style.textAlign = 'center';
-                titleElement.style.fontSize = '25px';
-                titleElement.style.marginTop = '10px';
-                titleElement.style.marginBottom = '20px';
-                titleElement.textContent = `${data.episode_number || '?'}화. ${data.title}`;
-                leftPage.appendChild(titleElement);
-                
+                // 오른쪽 페이지 클릭 이벤트
+                rightPage.addEventListener('click', () => {
+                    currentPageSet++;
+                    displayPageSet(currentPageSet);
+                });
+
+                // 초기 콘텐츠 로드 및 페이지 나누기
                 if (data.content) {
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = data.content;
@@ -71,7 +107,16 @@ document.addEventListener('DOMContentLoaded', async function() {
                             }
                         }
                     });
+
+                    // 각 페이지의 내용을 totalContent 배열에 저장
+                    totalContent.push(leftPage.innerHTML);
+                    if (rightPage.innerHTML) {
+                        totalContent.push(rightPage.innerHTML);
+                    }
                 }
+                
+                // 첫 페이지 세트 표시
+                displayPageSet(1);
             } else {
                 console.log("에피소드를 찾을 수 없습니다!");
                 alert("에피소드 데이터를 불러올 수 없습니다.");
