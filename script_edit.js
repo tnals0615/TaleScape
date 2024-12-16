@@ -2,53 +2,46 @@ import { db, doc, getDoc, updateDoc } from "./firebase.js";
 
 let currentEpisodeId = null;
 
-document.addEventListener('DOMContentLoaded', async function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const episodeId = urlParams.get('episode-id');
-    const episodeNumber = urlParams.get('episode-number');
-    
-    if (episodeId) {
-        currentEpisodeId = episodeId;
-        try {
-            const docRef = doc(db, "episode", episodeId);
-            const docSnap = await getDoc(docRef);
+// HTML 태그와 엔티티를 일반 텍스트로 변환하는 함수
+function htmlToPlainText(html) {
+    // 임시 div 엘리먼트 생성
+    const temp = document.createElement('div');
+    // HTML 문자열을 div에 설정
+    temp.innerHTML = html;
+    // HTML 엔티티를 디코드하고 텍스트만 추출
+    return temp.textContent || temp.innerText;
+}
 
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                
-                const displayNumber = episodeNumber || data.episode_number || '?';
-                document.querySelector('.main-title').textContent = 
-                    `${displayNumber}화. ${data.title}`;
-                
-                if (data.content) {
-                    tinymce.get('wysiwyg-editor').setContent(data.content);
-                }
-            } else {
-                console.log("에피소드를 찾을 수 없습니다!");
-                alert("에피소드 데이터를 불러올 수 없습니���.");
-            }
-        } catch (error) {
-            console.error("에피소드 데이터 로드 중 오류:", error);
-            alert("에피소드 데이터를 불러오는 중 문제가 발생했습니다.");
-        }
-    }
+// 에피소드 데이터 로드 함수
+async function loadEpisodeContent() {
+    try {
+        const docRef = doc(db, "episode", currentEpisodeId);
+        const docSnap = await getDoc(docRef);
 
-    const toggleTitles = document.querySelectorAll('.toggle-title');
-    
-    toggleTitles.forEach(title => {
-        title.addEventListener('click', function() {
-            const content = this.nextElementSibling;
-            const isExpanded = content.style.display === 'block';
-            content.style.display = isExpanded ? 'none' : 'block';
+        if (docSnap.exists()) {
+            const data = docSnap.data();
             
-            const arrow = this.textContent.trim().charAt(0);
-            this.textContent = this.textContent.replace(
-                arrow,
-                isExpanded ? '▼' : '▶'
-            );
-        });
-    });
-});
+            // 제목 설정
+            document.querySelector('.main-title').textContent = 
+                `${data.episode_number}화. ${data.title}`;
+            
+            // 에디터와 본문 미리보기에 내용 설정
+            if (data.content) {
+                const editor = tinymce.get('wysiwyg-editor');
+                if (editor) {
+                    editor.setContent(data.content);
+                    
+                    // 본문 미리보기 설정
+                    const contentPreview = document.querySelector('.content-preview');
+                    contentPreview.textContent = htmlToPlainText(data.content);
+                    contentPreview.style.display = 'block';
+                }
+            }
+        }
+    } catch (error) {
+        console.error("에피소드 데이터 로드 중 오류:", error);
+    }
+}
 
 tinymce.init({
     selector: "#wysiwyg-editor",
@@ -80,6 +73,16 @@ tinymce.init({
     content_css: 'styles_edit.css',
     
     setup: function(editor) {
+        editor.on('init', async function() {
+            // 에디터 초기화 완료 후 데이터 로드
+            const urlParams = new URLSearchParams(window.location.search);
+            currentEpisodeId = urlParams.get('episode-id');
+            
+            if (currentEpisodeId) {
+                await loadEpisodeContent();
+            }
+        });
+
         const counterDiv = document.querySelector('.word-counter');
         const saveBtn = document.querySelector('.save-btn');
         const contentPreview = document.querySelector('.content-preview');
@@ -141,11 +144,6 @@ tinymce.init({
         });
 
         saveBtn.addEventListener('click', async function() {
-            if (!currentEpisodeId) {
-                alert("에피소드 ID를 찾을 수 없습니다.");
-                return;
-            }
-
             try {
                 const content = editor.getContent();
                 const docRef = doc(db, "episode", currentEpisodeId);
@@ -155,14 +153,16 @@ tinymce.init({
                     lastModified: new Date()
                 });
 
+                // 저장 후 본문 미리보기 업데이트
+                const contentPreview = document.querySelector('.content-preview');
+                contentPreview.textContent = htmlToPlainText(content);
+                contentPreview.style.display = 'block';
+
                 console.log("내용이 저장되었습니다.");
                 saveBtn.style.display = 'none';
-                
-                contentPreview.textContent = editor.getContent({format: 'text'});
-                contentPreview.style.display = 'block';
             } catch (error) {
-                console.error("내용 저장 중 오류:", error);
-                alert("내용을 저장하는 중 문제가 발생했습니다.");
+                console.error("저장 중 오류:", error);
+                alert("저장하는 중 문제가 발생했습니다.");
             }
         });
 
