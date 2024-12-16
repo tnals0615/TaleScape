@@ -6,6 +6,7 @@
     <title>Result</title>
     <link rel="stylesheet" href="styles_common.css" />
     <link rel="stylesheet" href="styles_result.css" />
+    <link rel="stylesheet" href="edit_result.css"/>
     <link rel="stylesheet" href="tinymce.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -15,6 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
     <script type="module" src="tinymce.js"></script>
     <script type="module" src="script_common.js"></script>
+    <script type="module" src="script_edit_result.js"></script>
     <script type="module" src="script_result.js"></script>
   </head>
 
@@ -55,36 +57,28 @@
         <hr class="black-divider" />
         <article>
           <ul class="toggle-list">
-            <li class="page-link" id="editButton">
-              <i class="fas fa-edit"></i> 수정하기
-            </li>
-            <li class="page-link" id="generateShareLink">
-              <i class="fas fa-share-alt"></i> 공유하기
-            </li>
+            <!-- onclick 속성을 제거하고 id 추가 -->
             <li>
               <div class="toggle-title">▼ 메모</div>
-              <ul class="toggle-content">
-                <li>메모 내용...</li>
+              <ul class="toggle-content memo-list">
               </ul>
             </li>
             <li>
               <div class="toggle-title">▼ 캐릭터 노트</div>
-              <ul class="toggle-content">
-                <li>캐릭터 내용...</li>
+              <ul class="toggle-content character-list">
               </ul>
             </li>
             <li>
               <div class="toggle-title">▼ 세계관</div>
-              <ul class="toggle-content">
-                <li>세계관 내용...</li>
+              <ul class="toggle-content world-list">
               </ul>
             </li>
-            <li>
-              <div class="toggle-title">▼ 설정</div>
-              <ul class="toggle-content">
-                <li>설정 내용...</li>
-              </ul>
+            <br>
+            <hr class="black-divider" />
+            <li class="page-link" id="resultButton">
+              <i class="fas fa-book-open"> 수정하기 </i> 
             </li>
+            <hr class="black-divider" />
           </ul>
         </article>
       </aside>

@@ -26,6 +26,7 @@
 }
 
 .accordion-item {
+  font-size: 15px;
   background-color: transparent !important;
   border: none !important;
 }
