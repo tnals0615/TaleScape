@@ -577,7 +577,7 @@ async function handleConfirmMemo() {
             await loadMemoData();
         } catch (error) {
             console.error("메모 추가 중 오류:", error);
-            alert("메모 추가에 실패했습니다.");
+            alert("메�� 추가에 실패했습니다.");
         }
     } else {
         alert("메모 내용을 입력해주세요.");
@@ -984,7 +984,7 @@ function handleWorldEdit(worldId) {
                         alert("세계관 수정에 실패했습니다.");
                     }
                 } else {
-                    alert("제목과 내용을 모두 입력해주세요.");
+                    alert("제목과 내용을 모두 입력해주���요.");
                 }
             });
         } else {
@@ -1202,7 +1202,7 @@ async function handleDelete(collectionName, id) {
             const contentRef = doc(db, "episode_content", id);
             try {
                 await deleteDoc(contentRef);
-                console.log("에피소드 내용이 삭제되었습니다.");
+                console.log("에피소드 내용이 제되었습니다.");
             } catch (error) {
                 console.error("에피소드 내용 삭제 중 오류:", error);
             }
@@ -1301,7 +1301,7 @@ async function handleChapterNameEdit(episodeId, currentChapterName) {
 async function handleChapterNameDelete(episodeId, chapterName) {
     if (confirm(`"${chapterName}" 챕터를 삭제하시겠습니까? (에피소드는 유지됩니다)`)) {
         try {
-            // 해당 챕터의 모든 에피소드 찾기
+            // ���당 챕터의 모든 에피소드 찾기
             const q = query(
                 collection(db, "episode"),
                 where("project_id", "==", projectId),
@@ -1357,6 +1357,53 @@ async function reorderEpisodes() {
         await loadEpisodeData();
     } catch (error) {
         console.error("에피소드 번호 재정렬 중 오류:", error);
+    }
+}
+
+// 프로젝트 삭제 함수
+async function deleteProject(projectId) {
+    if (confirm('정말로 이 프로젝트를 삭제하시겠습니까?')) {
+        try {
+            // 1. 에피소드 및 에피소드 내용 삭제
+            const episodesRef = collection(db, "episode");
+            const q = query(episodesRef, where("project_id", "==", projectId));
+            const episodeSnap = await getDocs(q);
+            
+            const deletePromises = episodeSnap.docs.map(async doc => {
+                // 에피소드 내용도 함께 삭제
+                await deleteDoc(doc(db, "episode_content", doc.id));
+                return deleteDoc(doc.ref);
+            });
+            await Promise.all(deletePromises);
+            
+            // 2. 메모 삭제
+            const memoRef = collection(db, "memo");
+            const memoQuery = query(memoRef, where("project_id", "==", projectId));
+            const memoSnap = await getDocs(memoQuery);
+            await Promise.all(memoSnap.docs.map(doc => deleteDoc(doc.ref)));
+            
+            // 3. 캐릭터 노트 삭제
+            const characterRef = collection(db, "character");
+            const characterQuery = query(characterRef, where("project_id", "==", projectId));
+            const characterSnap = await getDocs(characterQuery);
+            await Promise.all(characterSnap.docs.map(doc => deleteDoc(doc.ref)));
+            
+            // 4. 세계관 삭제
+            const worldBuildingRef = collection(db, "worldBuilding");
+            const worldBuildingQuery = query(worldBuildingRef, where("project_id", "==", projectId));
+            const worldBuildingSnap = await getDocs(worldBuildingQuery);
+            await Promise.all(worldBuildingSnap.docs.map(doc => deleteDoc(doc.ref)));
+            
+            // 5. 마지막으로 프로젝트 삭제
+            const docRef = doc(db, "project", projectId);
+            await deleteDoc(docRef);
+            
+            console.log("프로젝트와 관련된 모든 데이터가 삭제되었습니다.");
+            loadProjects();  // 프로젝트 목록 새로고침
+        } catch (error) {
+            console.error("프로젝트 삭제 중 오류:", error);
+            alert("프로젝트를 삭제하는 중 문제가 발생했습니다.");
+        }
     }
 }
 
