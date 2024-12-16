@@ -388,7 +388,7 @@ function createEpisodeElement(episodeNum, epiChapter = '', epiTitle = '', epiCha
     newRow.setAttribute('data-episode-number', episodeNum);
 
     // URL 셀에 공유 아이콘 추가
-    const shareUrl = `${window.location.origin}/share.html?episode-id=${episodeId}`;
+    const shareUrl = `https://talescape-d61b8.web.app/share.html?episode-id=${episodeId}`;
     
     newRow.innerHTML = `
         <td>${episodeNum}화</td>
@@ -417,8 +417,6 @@ function createEpisodeElement(episodeNum, epiChapter = '', epiTitle = '', epiCha
     const shareIcon = newRow.querySelector('.share-icon');
     shareIcon.addEventListener('click', async (e) => {
         e.stopPropagation(); // 행 클릭 이벤트 방지
-        
-        // 새 창에서 share.html 페이지 열기
         window.open(shareUrl, '_blank');
     });
 
@@ -1214,7 +1212,7 @@ async function handleDelete(collectionName, id) {
 
         // 에피소드인 경우, 관련된 에디터 내용도 삭제
         if (collectionName === "episode") {
-            // 에디터 내��� 문서 삭제
+            // 에디터 내용 문서 삭제
             const contentRef = doc(db, "episode_content", id);
             try {
                 await deleteDoc(contentRef);
@@ -1410,7 +1408,7 @@ async function deleteProject(projectId) {
             const worldBuildingSnap = await getDocs(worldBuildingQuery);
             await Promise.all(worldBuildingSnap.docs.map(doc => deleteDoc(doc.ref)));
             
-            // 5. 마지막으로 프로���트 삭제
+            // 5. 마지막으로 프로젝트 삭제
             const docRef = doc(db, "project", projectId);
             await deleteDoc(docRef);
             

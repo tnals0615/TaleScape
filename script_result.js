@@ -231,8 +231,8 @@ document.getElementById('generateShareLink').addEventListener('click', async fun
     
     if (episodeId) {
         try {
-            // 현재 URL을 기반으로 공유 링크 생성
-            const shareUrl = `${window.location.origin}/result.html?episode-id=${episodeId}&shared=true`;
+            // Firebase 호스팅 URL을 사용한 공유 링크 생성
+            const shareUrl = `https://talescape-d61b8.web.app/share.html?episode-id=${episodeId}`;
             
             // 공유 모달 표시
             const shareModal = document.getElementById('shareModal');
@@ -247,7 +247,7 @@ document.getElementById('generateShareLink').addEventListener('click', async fun
             // 클립보드에 복사
             try {
                 await navigator.clipboard.writeText(shareUrl);
-                alert('링크가 클립보드에 복사되었습니다.');
+                alert('공유 링크가 클립보드에 복사되었습니다.');
             } catch (err) {
                 console.error('클립보드 복사 실패:', err);
             }
