@@ -72,6 +72,22 @@ tinymce.init({
     
     content_css: 'styles_edit.css',
     
+    init_instance_callback: function(editor) {
+        const editorIframe = editor.iframeElement;
+        const editorBody = editorIframe.contentDocument.body;
+        
+        // contentEditable 요소에 직접 속성 설정
+        editorBody.setAttribute('spellcheck', 'true');
+        editorBody.setAttribute('lang', 'ko');
+        
+        // contentEditable 내부의 모든 요소에도 속성 설정
+        const allElements = editorBody.getElementsByTagName('*');
+        for (let element of allElements) {
+            element.setAttribute('spellcheck', 'true');
+            element.setAttribute('lang', 'ko');
+        }
+    },
+    
     setup: function(editor) {
         editor.on('init', async function() {
             // 에디터 초기화 완료 후 데이터 로드
@@ -170,7 +186,33 @@ tinymce.init({
             text: '맞춤법 검사',
             onAction: function() {
                 const content = editor.getContent({format: 'text'});
-                checkSpelling(content, editor);
+                
+                // 다음 맞춤법 검사기 열기
+                const spellCheckWindow = window.open(
+                    'https://alldic.daum.net/grammar_checker.do',
+                    'spell_check',
+                    'width=800,height=600'
+                );
+
+                // 사용자에게 안내
+                editor.notificationManager.open({
+                    text: '다음 맞춤법 검사기가 새 창에서 열립니다.\n텍스트를 복사하여 검사해주세요. (최대 10,000자)',
+                    type: 'info',
+                    timeout: 5000
+                });
+
+                // 클립보드에 텍스트 복사
+                try {
+                    navigator.clipboard.writeText(content).then(() => {
+                        editor.notificationManager.open({
+                            text: '텍스트가 클립보드에 복사되었습니다.',
+                            type: 'success',
+                            timeout: 3000
+                        });
+                    });
+                } catch (error) {
+                    console.error('클립보드 복사 실패:', error);
+                }
             }
         });
 
@@ -245,53 +287,6 @@ tinymce.init({
     }
 });
 
-async function checkSpelling(text, editor) {
-    try {
-        const response = await fetch('https://speller.cs.pusan.ac.kr/results', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `text1=${encodeURIComponent(text)}`
-        });
-
-        if (!response.ok) throw new Error('맞춤법 검사 실패');
-        
-        const data = await response.json();
-        
-        if (data.errInfo) {
-            data.errInfo.forEach(error => {
-                const originalText = error.orgStr;
-                const suggestion = error.candWord;
-                const errorType = error.help;
-                
-                const content = editor.getContent();
-                const markedContent = content.replace(
-                    originalText,
-                    `<span class="spelling-error" title="${errorType}\n추천: ${suggestion}" style="border-bottom: 2px wavy red;">${originalText}</span>`
-                );
-                editor.setContent(markedContent);
-            });
-
-            editor.notificationManager.open({
-                text: `맞춤법 검사 완료: ${data.errInfo.length}개의 오류 발견`,
-                type: 'info'
-            });
-        } else {
-            editor.notificationManager.open({
-                text: '맞춤법 오류가 없습니다.',
-                type: 'success'
-            });
-        }
-    } catch (error) {
-        console.error('맞춤법 검사 오류:', error);
-        editor.notificationManager.open({
-            text: '맞춤법 검사 중 오류가 발생했습니다.',
-            type: 'error'
-        });
-    }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     // 토글 메뉴 클릭 이벤트
     document.querySelectorAll('.toggle-title').forEach(title => {
@@ -312,8 +307,4 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
-
-    // 기존의 에디터 초기화 및 다른 기능들...
-    initializeEditor();
-    // ... 다른 기존 코드들 ...
 });
