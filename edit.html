@@ -13,12 +13,13 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tinymce-i18n@23.1.23/langs/ko_KR.js"></script>
+    <script type="module" src="tinymce.js"></script>
     <script type="module" src="script_edit.js"></script>
 
   </head>
   <body>
     <div class="header-container">
-      <header class="TaleScape">TaleScape</header>
+      <header class="TaleScape" id="TaleScape">TaleScape</header>
       <button id="moon"><i class="fa-solid fa-moon icon-moon"></i></button>
     </div>
 
@@ -45,12 +46,13 @@
           <div class="content-preview toggle-content"></div>
         </div>
         <div class="editor-container">
-          <textarea id="wysiwyg-editor">위지위그 에디터를 여기에 추가합니다.</textarea>
+          <textarea id="wysiwyg-editor"></textarea>
           <div class="editor-controls">
             <button class="save-btn" style="display: none;">
               <i class="fas fa-save"></i> 저장
             </button>
           </div>
+          <br>
           <div class="word-counter">글자 수: 0</div>
         </div>
       </section>
@@ -60,7 +62,8 @@
         <hr class="black-divider" />
         <article>
           <ul class="toggle-list">
-            <li class="page-link" onclick="location.href='result.html'">
+            <!-- onclick 속성을 제거하고 id 추가 -->
+            <li class="page-link" id="resultButton">
               <i class="fas fa-book-open"></i> 결과 보기
             </li>
             <li class="shortcut-guide">
