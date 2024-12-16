@@ -18,8 +18,12 @@ const addBtnMsg = document.getElementById("addBtnMsg");
 
 // 요소 존재 여부 확인
 if (  !iconMoon ||  !modalContainer ||  !openButton ||  !closeButton ||  !applyButton ||  !projectNameInput ||  !projectPlotInput) {
-  console.error("필수 DOM 요소 중 하나가 누락되었습���다. 코드 로직을 확인하세요.");
+  console.error("필수 DOM 요소 중 하나가 누락되었습니다. 코드 로직을 확인하세요.");
 }
+
+document.getElementById("TaleScape").addEventListener("click", function() {
+            window.location.href = "main.html"; // Redirect to main.html
+        });
 
 // 다크 모드 토글 이벤트 리스너
 document.getElementById("moon")?.addEventListener("click", () => {
@@ -76,7 +80,7 @@ applyButton?.addEventListener("click", async () => {
     alert("프로젝트가 성공적으로 추가되었습니다!");
   } catch (error) {
     console.error("Firestore 추가 중 오류 발생: ", error);
-    alert("프로젝트를 추가하는 중 문제가 발생했���니다.");
+    alert("프로젝트를 추가하는 중 문제가 발생했습니다.");
   }
 });
 
