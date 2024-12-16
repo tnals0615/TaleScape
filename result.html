@@ -13,6 +13,7 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
     <script src="script_edit.js"></script>
+    <script type="module" src="script_result.js"></script>
   </head>
 
   <body>
@@ -55,6 +56,9 @@
           <ul class="toggle-list">
             <li class="page-link" onclick="location.href='edit.html'">
               <i class="fas fa-edit"></i> 수정하기
+            </li>
+            <li class="page-link" id="generateShareLink">
+              <i class="fas fa-share-alt"></i> 공유하기
             </li>
             <li>
               <div class="toggle-title">▼ 메모</div>
@@ -102,6 +106,15 @@
       </section>
     </div>
 
+    <div id="shareModal" class="modal hidden">
+      <div class="modal-content">
+        <h3>공유 링크</h3>
+        <div class="share-controls">
+          <input type="text" id="shareUrlInput" readonly class="form-control">
+          <button class="btn btn-secondary" onclick="document.getElementById('shareModal').classList.add('hidden')">닫기</button>
+        </div>
+      </div>
+    </div>
   </body>
   <script type="module" src="script_common.js"></script>
 </html>
