@@ -27,8 +27,7 @@ tinymce.init({
     height: 500,
     placeholder: '내용을 입력하세요...',
     
-    //content_css: 'styles_edit.css',
-    content_css: 'tinymce.css',
+    content_css: ['tinymce.css', 'styles_edit.css'],
     
     setup: function(editor) {
         const counterDiv = document.querySelector('.word-counter');

@@ -45,20 +45,30 @@ body.dark-mode .tox-edit-area__iframe,
     100% { color: #ff0000; }
 }
 
-/* 에디터 내부에서도 애니메이션이 보이도록 설정 */
-.tox-edit-area__iframe {
-    overflow: visible !important;
-}
-
-.mce-content-body {
-    overflow: visible !important;
-}
-
 /* 다크모드에서도 애니메이션이 보이도록 설정 */
 body.dark-mode .tox-edit-area__iframe .mce-content-body [style*="animation"] {
     color: inherit;
     text-shadow: inherit;
 }
+
+/* 에디터 기본 스타일 */
+.tox .tox-edit-area__iframe {
+    background-color: white !important;
+}
+
+.mce-content-body {
+    background-color: white !important;
+    color: black !important;
+    line-height: 1.4 !important;
+    font-size: 16px !important;
+    padding: 10px !important;
+}
+
+/* 다크모드 대응 - 에디터 외부만 어둡게 */
+body.dark-mode .tox:not(.tox-tinymce-inline) .tox-editor-header {
+    background-color: #414141 !important;
+}
+
 
 /* 페이드인 애니메이션 */
 @keyframes fadeIn {

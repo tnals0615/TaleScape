@@ -541,15 +541,18 @@ function handleAddMemo() {
 
 // 메모 추가 처리 함수
 async function handleConfirmMemo() {
-    console.log("Adding memo with projectId:", projectId); // 디버깅용
-
+    console.log("Adding memo with projectId:", projectId);
+    
     if (!projectId) {
         alert("프로젝트를 먼저 선택해주세요.");
         return;
     }
 
-    const memoTitle = document.getElementById('memoTitleInput').value.trim();
-    const memoContent = document.getElementById('memoInput').value.trim();
+    const titleInput = document.getElementById('memoTitleInput');
+    const contentInput = document.getElementById('memoContentInput');
+    
+    const memoTitle = titleInput.value.trim();
+    const memoContent = contentInput.value.trim();
 
     if (memoContent) {
         try {
@@ -561,21 +564,30 @@ async function handleConfirmMemo() {
             });
 
             console.log("Memo added with ID:", docRef.id);
-            loadMemoData();
             
+            // 입력 필드 초기화
+            titleInput.value = '';
+            contentInput.value = '';
+            
+            // 모달 닫기
             const modal = bootstrap.Modal.getInstance(document.getElementById('memoModal'));
             modal.hide();
+
+            // 메모 목록 새로고침
+            await loadMemoData();
         } catch (error) {
             console.error("메모 추가 중 오류:", error);
-            alert("메모를 추가하는 중 문제가 발생했습니다.");
+            alert("메�� 추가에 실패했습니다.");
         }
+    } else {
+        alert("메모 내용을 입력해주세요.");
     }
 }
 
 function createMemoElement(memoId, memoTitle, memoContent) {
-    const newMemo = document.createElement('div');
-    newMemo.className = 'memo-item';
-    newMemo.innerHTML = `
+    const memoElement = document.createElement('div');
+    memoElement.className = 'memo-item';
+    memoElement.innerHTML = `
         <div class="d-flex justify-content-between align-items-start">
             <div>
                 ${memoTitle ? `<h6 class="memo-title">${memoTitle}</h6>` : ''}
@@ -587,8 +599,68 @@ function createMemoElement(memoId, memoTitle, memoContent) {
             </div>
         </div>
     `;
-    attachMemoEvents(newMemo, memoId);
-    return newMemo;
+
+    // 수정 버튼 클릭 이벤트
+    memoElement.querySelector('.edit-memo-btn').addEventListener('click', async () => {
+        try {
+            const docRef = doc(db, "memo", memoId);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                
+                // 모달 초기화 전에 기존 데이터 설정
+                const titleInput = document.getElementById('memoTitleInput');
+                const contentInput = document.getElementById('memoContentInput');
+                
+                titleInput.value = data.title || '';
+                contentInput.value = data.content || '';
+                
+                // 모달 표시
+                const memoModal = new bootstrap.Modal(document.getElementById('memoModal'));
+                
+                // 기존 이벤트 리스너 제거 후 새로 연결
+                const confirmBtn = document.querySelector('.confirm-memo-btn');
+                const newConfirmBtn = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+                
+                newConfirmBtn.addEventListener('click', async () => {
+                    const newTitle = titleInput.value.trim();
+                    const newContent = contentInput.value.trim();
+                    
+                    if (newTitle && newContent) {
+                        try {
+                            await updateDoc(docRef, {
+                                title: newTitle,
+                                content: newContent,
+                                lastModified: new Date()
+                            });
+                            
+                            memoModal.hide();
+                            await loadMemoData();
+                        } catch (error) {
+                            console.error("메모 수정 중 오류:", error);
+                            alert("메모 수정에 실패했습니다.");
+                        }
+                    }
+                });
+                
+                memoModal.show();
+            }
+        } catch (error) {
+            console.error("메모 데이터 로드 중 오류:", error);
+            alert("메모 데이터를 불러올 수 없습니다.");
+        }
+    });
+
+    // 삭제 버튼 클릭 이벤트
+    memoElement.querySelector('.delete-btn').addEventListener('click', () => {
+        if (confirm('메모를 삭제하시겠습니까?')) {
+            handleDelete("memo", memoId);
+        }
+    });
+
+    return memoElement;
 }
 
 function attachMemoEvents(memo, memoId) {
@@ -903,7 +975,7 @@ function handleWorldEdit(worldId) {
                         await updateDoc(docRef, { title, content });
 
                         console.log(`World with ID: ${worldId} has been updated.`);
-                        alert("세계관 성공적으로 수정었습니다.");
+                        alert("세계관이 성공적으로 수정되었습니다.");
 
                         // 모달 닫기
                         closeModal('worldModal');
@@ -912,7 +984,7 @@ function handleWorldEdit(worldId) {
                         alert("세계관 수정에 실패했습니다.");
                     }
                 } else {
-                    alert("제목과 내용을 모두 입력해주세요.");
+                    alert("제목과 내용을 모두 입력해주���요.");
                 }
             });
         } else {
@@ -978,7 +1050,7 @@ function loadData(collectionName, listSelector, createElementCallback, errorMess
             console.log(`실시간 ${collectionName} 데이터:`, snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
         });
     } catch (error) {
-        console.error(`데��터 로드 중 오류 발생:`, error);
+        console.error(`데이터 로드 중 오류 발생:`, error);
         alert(errorMessage);
     }
 }
@@ -1070,7 +1142,7 @@ export function loadEpisodeData() {
         let chapterNum = 1;
         let currentChapter = '';
 
-        // 데이터를 배열로 변환하여 createdAt 기준으로 정렬
+        // 데이터를 열로 변환하여 createdAt 기준으로 정렬
         const episodes = snapshot.docs
             .map(doc => ({id: doc.id, ...doc.data()}))
             .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
@@ -1124,6 +1196,18 @@ async function handleDelete(collectionName, id) {
     try {
         const docRef = doc(db, collectionName, id);
 
+        // 에피소드인 경우, 관련된 에디터 내용도 삭제
+        if (collectionName === "episode") {
+            // 에디터 내용 문서 삭제
+            const contentRef = doc(db, "episode_content", id);
+            try {
+                await deleteDoc(contentRef);
+                console.log("에피소드 내용이 제되었습니다.");
+            } catch (error) {
+                console.error("에피소드 내용 삭제 중 오류:", error);
+            }
+        }
+
         // 문서 삭제
         await deleteDoc(docRef);
         console.log(`${collectionName} 문서가 성공적으로 삭제되었습니다.`);
@@ -1158,7 +1242,6 @@ async function handleConfirmChapter() {
     
     if (epiTitle) {
         try {
-            // 현재 프로젝트의 모든 에피소드를 가져와서 가장 큰 번�� 찾기
             const q = query(
                 collection(db, "episode"),
                 where("project_id", "==", projectId)
@@ -1218,7 +1301,7 @@ async function handleChapterNameEdit(episodeId, currentChapterName) {
 async function handleChapterNameDelete(episodeId, chapterName) {
     if (confirm(`"${chapterName}" 챕터를 삭제하시겠습니까? (에피소드는 유지됩니다)`)) {
         try {
-            // 해당 챕터의 모든 에피소드 찾기
+            // ���당 챕터의 모든 에피소드 찾기
             const q = query(
                 collection(db, "episode"),
                 where("project_id", "==", projectId),
@@ -1227,7 +1310,7 @@ async function handleChapterNameDelete(episodeId, chapterName) {
             
             const snapshot = await getDocs(q);
             
-            // 모��� 에피소드의 챕터 정보 제거
+            // 모든 에피소드의 챕터 정보 제거
             const updatePromises = snapshot.docs.map(doc => 
                 updateDoc(doc.ref, {
                     is_new_chapter: false,
@@ -1274,6 +1357,53 @@ async function reorderEpisodes() {
         await loadEpisodeData();
     } catch (error) {
         console.error("에피소드 번호 재정렬 중 오류:", error);
+    }
+}
+
+// 프로젝트 삭제 함수
+async function deleteProject(projectId) {
+    if (confirm('정말로 이 프로젝트를 삭제하시겠습니까?')) {
+        try {
+            // 1. 에피소드 및 에피소드 내용 삭제
+            const episodesRef = collection(db, "episode");
+            const q = query(episodesRef, where("project_id", "==", projectId));
+            const episodeSnap = await getDocs(q);
+            
+            const deletePromises = episodeSnap.docs.map(async doc => {
+                // 에피소드 내용도 함께 삭제
+                await deleteDoc(doc(db, "episode_content", doc.id));
+                return deleteDoc(doc.ref);
+            });
+            await Promise.all(deletePromises);
+            
+            // 2. 메모 삭제
+            const memoRef = collection(db, "memo");
+            const memoQuery = query(memoRef, where("project_id", "==", projectId));
+            const memoSnap = await getDocs(memoQuery);
+            await Promise.all(memoSnap.docs.map(doc => deleteDoc(doc.ref)));
+            
+            // 3. 캐릭터 노트 삭제
+            const characterRef = collection(db, "character");
+            const characterQuery = query(characterRef, where("project_id", "==", projectId));
+            const characterSnap = await getDocs(characterQuery);
+            await Promise.all(characterSnap.docs.map(doc => deleteDoc(doc.ref)));
+            
+            // 4. 세계관 삭제
+            const worldBuildingRef = collection(db, "worldBuilding");
+            const worldBuildingQuery = query(worldBuildingRef, where("project_id", "==", projectId));
+            const worldBuildingSnap = await getDocs(worldBuildingQuery);
+            await Promise.all(worldBuildingSnap.docs.map(doc => deleteDoc(doc.ref)));
+            
+            // 5. 마지막으로 프로젝트 삭제
+            const docRef = doc(db, "project", projectId);
+            await deleteDoc(docRef);
+            
+            console.log("프로젝트와 관련된 모든 데이터가 삭제되었습니다.");
+            loadProjects();  // 프로젝트 목록 새로고침
+        } catch (error) {
+            console.error("프로젝트 삭제 중 오류:", error);
+            alert("프로젝트를 삭제하는 중 문제가 발생했습니다.");
+        }
     }
 }
 
