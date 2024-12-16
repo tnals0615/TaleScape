@@ -71,3 +71,9 @@ body.dark-mode .popup-content {
   width: 15px;
   transition: transform 0.2s;
 }
+
+.fa-book-open{
+    margin: 0px;
+    font-family: "나눔스퀘어_ac", sans-serif;
+    color: black;
+}

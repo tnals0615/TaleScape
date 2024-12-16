@@ -192,6 +192,21 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const editButton = document.getElementById('resultButton');
+    if (editButton) {
+        editButton.addEventListener('click', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const episodeId = urlParams.get('episode-id');
+            
+            if (episodeId) {
+                window.location.href = `edit.html?episode-id=${episodeId}`;
+            }
+        });
+    }
+});
+
 /*
 document.addEventListener("DOMContentLoaded", () => {
   const modalOpenButton = document.getElementById("plus");
