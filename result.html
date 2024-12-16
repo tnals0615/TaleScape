@@ -6,6 +6,7 @@
     <title>Result</title>
     <link rel="stylesheet" href="styles_common.css" />
     <link rel="stylesheet" href="styles_result.css" />
+    <link rel="stylesheet" href="edit_result.css"/>
     <link rel="stylesheet" href="tinymce.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -14,6 +15,7 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
     <script type="module" src="tinymce.js"></script>
+    <script type="module" src="script_edit_result.js"></script>
     <script type="module" src="script_result.js"></script>
   </head>
 
@@ -54,31 +56,30 @@
         <hr class="black-divider" />
         <article>
           <ul class="toggle-list">
-            <li class="page-link" onclick="location.href='edit.html'">
-              <i class="fas fa-edit"></i> 수정하기
+            <!-- onclick 속성을 제거하고 id 추가 -->
+            <li class="page-link" id="resultButton">
+              <i class="fas fa-book-open"></i> 결과 보기
+            </li>
+            <li class="shortcut-guide">
+              <div class="toggle-title">▼ 단축키 가이드</div>
+              <ul class="toggle-content shortcut-list">
+                <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> : 큰따옴표 추가</li>
+                <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd> : 작은따옴표 추가</li>
+              </ul>
             </li>
             <li>
               <div class="toggle-title">▼ 메모</div>
-              <ul class="toggle-content">
-                <li>메모 내용...</li>
+              <ul class="toggle-content memo-list">
               </ul>
             </li>
             <li>
               <div class="toggle-title">▼ 캐릭터 노트</div>
-              <ul class="toggle-content">
-                <li>캐릭터 내용...</li>
+              <ul class="toggle-content character-list">
               </ul>
             </li>
             <li>
               <div class="toggle-title">▼ 세계관</div>
-              <ul class="toggle-content">
-                <li>세계관 내용...</li>
-              </ul>
-            </li>
-            <li>
-              <div class="toggle-title">▼ 설정</div>
-              <ul class="toggle-content">
-                <li>설정 내용...</li>
+              <ul class="toggle-content world-list">
               </ul>
             </li>
           </ul>

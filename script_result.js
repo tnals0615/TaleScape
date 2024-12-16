@@ -3,7 +3,6 @@ import { db, doc, getDoc } from "./firebase.js";
 document.addEventListener('DOMContentLoaded', async function () {
     const urlParams = new URLSearchParams(window.location.search);
     const episodeId = urlParams.get('episode-id');
-    
     if (episodeId) {
         try {
             const docRef = doc(db, "episode", episodeId);
@@ -11,6 +10,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
+
+                if (data.project_id) {
+                    localStorage.setItem('currentProjectId', data.project_id);
+                }
+
+                console.log("currentProjectId", data.project_id);
+
                 let currentPageSet = 1;
                 let totalContent = [];  // 전체 콘텐츠를 저장할 배열
                 
