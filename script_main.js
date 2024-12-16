@@ -331,7 +331,7 @@ function handleProjectClick(project, name, desc) {
 }
 
 function handleProjectDelete(project) {
-    if (confirm('프���젝트를 삭제하시겠습니까?')) {
+    if (confirm('프로젝트를 삭제하시겠습니까?')) {
         project.remove();
         checkEmptyProjectList();
     }
@@ -387,6 +387,9 @@ function createEpisodeElement(episodeNum, epiChapter = '', epiTitle = '', epiCha
     newRow.className = 'chapter-row';
     newRow.setAttribute('data-episode-number', episodeNum);
 
+    // URL 셀에 공유 아이콘 추가
+    const shareUrl = `${window.location.origin}/share.html?episode-id=${episodeId}`;
+    
     newRow.innerHTML = `
         <td>${episodeNum}화</td>
         <td class="title-cell" episode-id="${episodeId}">${epiTitle}</td>
@@ -400,14 +403,24 @@ function createEpisodeElement(episodeNum, epiChapter = '', epiTitle = '', epiCha
             </select>
         </td>
         <td class="url-cell">
-            ${epiUrl ? `<i class="fas fa-external-link-alt share-icon" style="cursor: pointer; color: #666;" 
-            onclick="window.open('${epiUrl}', '_blank')"></i>` : ''}
+            <i class="fas fa-share-alt share-icon" 
+               style="cursor: pointer; color: #666;" 
+               title="공유하기"></i>
         </td>
         <td>
             <button class="btn btn-sm btn-link edit-btn"><i class="bi bi-pencil"></i></button>
             <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-trash"></i></button>
         </td>
     `;
+
+    // 공유 아이콘 클릭 이벤트 추가
+    const shareIcon = newRow.querySelector('.share-icon');
+    shareIcon.addEventListener('click', async (e) => {
+        e.stopPropagation(); // 행 클릭 이벤트 방지
+        
+        // 새 창에서 share.html 페이지 열기
+        window.open(shareUrl, '_blank');
+    });
 
     // 상태 변경 시 자동 저장
     const statusSelect = newRow.querySelector('.status-select');
@@ -603,7 +616,7 @@ function createMemoElement(memoId, memoTitle, memoContent) {
         </div>
     `;
 
-    // 수정 버튼 클릭 이벤트
+    // 수정 튼 클릭 이벤트
     memoElement.querySelector('.edit-memo-btn').addEventListener('click', async () => {
         try {
             const docRef = doc(db, "memo", memoId);
@@ -987,7 +1000,7 @@ function handleWorldEdit(worldId) {
                         alert("세계관 수정에 실패했습니다.");
                     }
                 } else {
-                    alert("제���과 내용을 모두 입력해주세요.");
+                    alert("제목과 내용을 모두 입력해주세요.");
                 }
             });
         } else {
@@ -1145,7 +1158,7 @@ export function loadEpisodeData() {
         let chapterNum = 1;
         let currentChapter = '';
 
-        // ��이터를 열로 변환하여 createdAt 기준으로 정렬
+        // 이터를 열로 변환하여 createdAt 기준으로 정렬
         const episodes = snapshot.docs
             .map(doc => ({id: doc.id, ...doc.data()}))
             .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
@@ -1201,7 +1214,7 @@ async function handleDelete(collectionName, id) {
 
         // 에피소드인 경우, 관련된 에디터 내용도 삭제
         if (collectionName === "episode") {
-            // 에디터 내용 문서 삭제
+            // 에디터 내��� 문서 삭제
             const contentRef = doc(db, "episode_content", id);
             try {
                 await deleteDoc(contentRef);
@@ -1304,7 +1317,7 @@ async function handleChapterNameEdit(episodeId, currentChapterName) {
 async function handleChapterNameDelete(episodeId, chapterName) {
     if (confirm(`"${chapterName}" 챕터를 삭제하시겠습니까? (에피소드는 유지됩니다)`)) {
         try {
-            // 당 챕터의 ��든 에피소드 찾기
+            // 당 챕터의 든 에피소드 찾기
             const q = query(
                 collection(db, "episode"),
                 where("project_id", "==", projectId),
@@ -1397,11 +1410,11 @@ async function deleteProject(projectId) {
             const worldBuildingSnap = await getDocs(worldBuildingQuery);
             await Promise.all(worldBuildingSnap.docs.map(doc => deleteDoc(doc.ref)));
             
-            // 5. 마지막으로 프로젝트 삭제
+            // 5. 마지막으로 프로���트 삭제
             const docRef = doc(db, "project", projectId);
             await deleteDoc(docRef);
             
-            console.log("프로젝트와 관���된 모든 데이터가 삭제되었습니다.");
+            console.log("프로젝트와 관된 모든 데이터가 삭제되었습니다.");
             loadProjects();  // 프로젝트 목록 새로고침
         } catch (error) {
             console.error("프로젝트 삭제 중 오류:", error);

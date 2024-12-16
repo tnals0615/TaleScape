@@ -223,3 +223,44 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 */
+
+// 공유하기 기능 추가
+document.getElementById('generateShareLink').addEventListener('click', async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const episodeId = urlParams.get('episode-id');
+    
+    if (episodeId) {
+        try {
+            // 현재 URL을 기반으로 공유 링크 생성
+            const shareUrl = `${window.location.origin}/result.html?episode-id=${episodeId}&shared=true`;
+            
+            // 공유 모달 표시
+            const shareModal = document.getElementById('shareModal');
+            const shareUrlInput = document.getElementById('shareUrlInput');
+            
+            shareUrlInput.value = shareUrl;
+            shareModal.classList.remove('hidden');
+            
+            // URL 자동 선택
+            shareUrlInput.select();
+            
+            // 클립보드에 복사
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                alert('링크가 클립보드에 복사되었습니다.');
+            } catch (err) {
+                console.error('클립보드 복사 실패:', err);
+            }
+        } catch (error) {
+            console.error('공유 링크 생성 중 오류:', error);
+            alert('공유 링크 생성에 실패했습니다.');
+        }
+    } else {
+        alert('공유할 에피소드를 찾을 수 없습니다.');
+    }
+});
+
+// 공유 모달 닫기 버튼 이벤트
+document.querySelector('#shareModal .btn-secondary').addEventListener('click', function() {
+    document.getElementById('shareModal').classList.add('hidden');
+});
