@@ -1,6 +1,6 @@
 import { db, doc, getDoc } from "./firebase.js";
 
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     const urlParams = new URLSearchParams(window.location.search);
     const episodeId = urlParams.get('episode-id');
     
@@ -19,60 +19,95 @@ document.addEventListener('DOMContentLoaded', async function() {
                 
                 // 페이지 세트 표시 함수
                 function displayPageSet(pageNumber) {
+                    const startIndex = (pageNumber - 1) * 2;
+    
+                    // 첫 페이지에서 이전으로 가려고 할 때
+                    if (pageNumber === 1 && leftPage.hasEventListener) {
+                        alert("첫 페이지입니다.");
+                        return;
+                    }
+
+                    // 이전 내용 저장
+                    const oldLeftContent = leftPage.innerHTML;
+                    const oldRightContent = rightPage.innerHTML;
+
+                    // 페이지 내용 초기화
                     leftPage.innerHTML = '';
                     rightPage.innerHTML = '';
-                    
-                    const startIndex = (pageNumber - 1) * 2;
-                    
-                    // 첫 페이지 세트가 아닌 경우에는 제목 없이 내용만 표시
+    
+                    // 첫 페이지에만 제목 표시
                     if (pageNumber === 1) {
-                        // 제목 추가
                         const titleElement = document.createElement('p');
                         titleElement.className = 'main-title';
                         titleElement.style.textAlign = 'center';
                         titleElement.style.fontSize = '25px';
-                        titleElement.style.marginTop = '20px';
+                        titleElement.style.marginTop = '10px';
                         titleElement.style.marginBottom = '20px';
                         titleElement.textContent = `${data.episode_number || '?'}화. ${data.title}`;
                         leftPage.appendChild(titleElement);
                     }
-                    
+    
+                    // 내용 표시
                     if (totalContent[startIndex]) {
                         if (pageNumber === 1) {
-                            // 첫 페이지의 경우 기존 내용에 추가
                             leftPage.innerHTML += totalContent[startIndex];
                         } else {
-                            // 다른 페이지는 내용만 표시
                             leftPage.innerHTML = totalContent[startIndex];
                         }
                     }
-                    
+    
                     if (totalContent[startIndex + 1]) {
                         rightPage.innerHTML = totalContent[startIndex + 1];
                     }
-                    
-                    // 마지막 페이지 세트인 경우 처리
-                    if (!totalContent[startIndex] && !totalContent[startIndex + 1]) {
-                        currentPageSet = 1;
-                        displayPageSet(1);
-                    }
+    
+                    // 새 페이지 내용을 표시할 때
+                    leftPage.classList.add('page-appear');
+                    rightPage.classList.add('page-appear');
+
+                    // 애니메이션이 끝나면 클래스 제거
+                    setTimeout(() => {
+                        leftPage.classList.remove('page-appear');
+                        rightPage.classList.remove('page-appear');
+                    }, 800);
                 }
-                
+
                 // 오른쪽 페이지 클릭 이벤트
                 rightPage.addEventListener('click', () => {
-                    currentPageSet++;
-                    displayPageSet(currentPageSet);
+                    // 다음 페이지가 있는지 확인
+                    const nextPageStart = currentPageSet * 2;
+                    if (!totalContent[nextPageStart]) {
+                        alert("마지막 페이지입니다.");
+                        return;
+                    }
+
+                    rightPage.classList.add('flip-page');
+
+                    // 애니메이션이 끝나면
+                    setTimeout(() => {
+                        rightPage.classList.remove('flip-page');
+                        currentPageSet++; // currentPageSet 증가
+                        displayPageSet(currentPageSet);
+                    }, 800);
+                });
+
+                // 왼쪽 페이지 클릭 이벤트
+                leftPage.addEventListener('click', () => {
+                    if (currentPageSet > 1) {
+                        currentPageSet--;
+                        displayPageSet(currentPageSet, 'left');
+                    } else {
+                        alert("첫 페이지입니다.");
+                    }
                 });
 
                 // 초기 콘텐츠 로드 및 페이지 나누기
                 if (data.content) {
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = data.content;
-                    
+    
                     const contentNodes = Array.from(tempDiv.childNodes);
                     let currentPage = leftPage;
-                    let currentContent = '';
-                    
+    
                     // 각 텍스트 노드를 문장 단위로 분리
                     contentNodes.forEach(node => {
                         if (node.nodeType === 3) { // 텍스트 노드인 경우
@@ -82,34 +117,58 @@ document.addEventListener('DOMContentLoaded', async function() {
                                     const tempSpan = document.createElement('span');
                                     tempSpan.textContent = sentence + ' ';
                                     currentPage.appendChild(tempSpan);
-                                    
+                    
                                     // 높이 체크
-                                    if (currentPage === leftPage && 
-                                        currentPage.scrollHeight > currentPage.clientHeight) {
-                                        // 왼쪽 페이지 높이 초과시
-                                        currentPage = rightPage;
+                                    if (currentPage.scrollHeight > currentPage.clientHeight) {
                                         tempSpan.remove();
-                                        rightPage.appendChild(tempSpan);
+                        
+                                        // 현재 페이지 내용 저장
+                                        totalContent.push(currentPage.innerHTML);
+                        
+                                        // 다음 페이지로 전환
+                                        if (currentPage === leftPage) {
+                                            currentPage = rightPage;
+                                        } else {
+                                            // 오른쪽 페이지가 가득 차면 새로운 페이지 세트 시작
+                                            leftPage.innerHTML = '';
+                                            rightPage.innerHTML = '';
+                                            currentPage = leftPage;
+                                        }
+                        
+                                        currentPage.appendChild(tempSpan);
                                     }
                                 }
                             });
                         } else if (node.nodeType === 1) { // 요소 노드인 경우
                             const clone = node.cloneNode(true);
                             currentPage.appendChild(clone);
-                            
+            
                             // 높이 체크
-                            if (currentPage === leftPage && 
-                                currentPage.scrollHeight > currentPage.clientHeight) {
-                                // 왼쪽 페이지 높이 초과시
-                                currentPage = rightPage;
+                            if (currentPage.scrollHeight > currentPage.clientHeight) {
                                 clone.remove();
-                                rightPage.appendChild(clone);
+                
+                                // 현재 페이지 내용 저장
+                                totalContent.push(currentPage.innerHTML);
+                
+                                // 다음 페이지로 전환
+                                if (currentPage === leftPage) {
+                                    currentPage = rightPage;
+                                } else {
+                                    // 오른쪽 페이지가 가득 차면 새로운 페이지 세트 시작
+                                    leftPage.innerHTML = '';
+                                    rightPage.innerHTML = '';
+                                    currentPage = leftPage;
+                                }
+                
+                                currentPage.appendChild(clone);
                             }
                         }
                     });
 
-                    // 각 페이지의 내용을 totalContent 배열에 저장
-                    totalContent.push(leftPage.innerHTML);
+                    // 마지막 페이지들의 내용 저장
+                    if (leftPage.innerHTML) {
+                        totalContent.push(leftPage.innerHTML);
+                    }
                     if (rightPage.innerHTML) {
                         totalContent.push(rightPage.innerHTML);
                     }
