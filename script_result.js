@@ -1,4 +1,4 @@
-import { db, doc, getDoc } from "./firebase.js";
+import { db, doc, getDoc, updateDoc } from "./firebase.js";
 
 document.addEventListener('DOMContentLoaded', async function() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -129,11 +129,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                 });
 
                 // 공유하기 버튼 클릭 이벤트
-                document.getElementById('generateShareLink')?.addEventListener('click', () => {
+                document.getElementById('generateShareLink')?.addEventListener('click', async () => {
                     const shareModal = document.getElementById('shareModal');
                     const shareUrlInput = document.getElementById('shareUrlInput');
                     
-                    const baseUrl = 'https://talescape-d61b8.web.app';  // Firebase 호스팅 URL
+                    const baseUrl = 'https://talescape-d61b8.web.app';
                     const shareUrl = `${baseUrl}/share.html?episode-id=${episodeId}`;
                     
                     shareUrlInput.value = shareUrl;
@@ -144,9 +144,13 @@ document.addEventListener('DOMContentLoaded', async function() {
                     
                     try {
                         // 클립보드에 복사
-                        navigator.clipboard.writeText(shareUrl).then(() => {
-                            alert('링크가 클립보드에 복사되었습니다.');
+                        await navigator.clipboard.writeText(shareUrl);
+                        // episode 문서의 url 필드 업데이트
+                        const episodeRef = doc(db, "episode", episodeId);
+                        await updateDoc(episodeRef, {
+                            url: shareUrl
                         });
+                        alert('링크가 클립보드에 복사되었습니다.');
                     } catch (err) {
                         console.error('클립보드 복사 실패:', err);
                         alert('링크 복사에 실패했습니다. 직접 복사해주세요.');

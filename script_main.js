@@ -331,7 +331,7 @@ function handleProjectClick(project, name, desc) {
 }
 
 function handleProjectDelete(project) {
-    if (confirm('프로젝트를 삭제하시겠습니까?')) {
+    if (confirm('프���젝트를 삭제하시겠습니까?')) {
         project.remove();
         checkEmptyProjectList();
     }
@@ -385,7 +385,7 @@ function handleAddEpisode() {
 function createEpisodeElement(episodeNum, epiChapter = '', epiTitle = '', epiCharacter = '', epiStatus = '작성중', epiUrl = '', episodeId = '') {
     const newRow = document.createElement('tr');
     newRow.className = 'chapter-row';
-    newRow.setAttribute('data-episode-number', episodeNum); // 에피소드 번호를 row에 저장
+    newRow.setAttribute('data-episode-number', episodeNum);
 
     newRow.innerHTML = `
         <td>${episodeNum}화</td>
@@ -399,7 +399,10 @@ function createEpisodeElement(episodeNum, epiChapter = '', epiTitle = '', epiCha
                 <option value="발행" ${epiStatus === '발행' ? 'selected' : ''}>발행</option>
             </select>
         </td>
-        <td class="url-text">${epiUrl || 'url'}</td>
+        <td class="url-cell">
+            ${epiUrl ? `<i class="fas fa-external-link-alt share-icon" style="cursor: pointer; color: #666;" 
+            onclick="window.open('${epiUrl}', '_blank')"></i>` : ''}
+        </td>
         <td>
             <button class="btn btn-sm btn-link edit-btn"><i class="bi bi-pencil"></i></button>
             <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-trash"></i></button>
@@ -577,7 +580,7 @@ async function handleConfirmMemo() {
             await loadMemoData();
         } catch (error) {
             console.error("메모 추가 중 오류:", error);
-            alert("메�� 추가에 실패했습니다.");
+            alert("메모 추가에 실패했습니다.");
         }
     } else {
         alert("메모 내용을 입력해주세요.");
@@ -984,7 +987,7 @@ function handleWorldEdit(worldId) {
                         alert("세계관 수정에 실패했습니다.");
                     }
                 } else {
-                    alert("제목과 내용을 모두 입력해주���요.");
+                    alert("제���과 내용을 모두 입력해주세요.");
                 }
             });
         } else {
@@ -1142,7 +1145,7 @@ export function loadEpisodeData() {
         let chapterNum = 1;
         let currentChapter = '';
 
-        // 데이터를 열로 변환하여 createdAt 기준으로 정렬
+        // ��이터를 열로 변환하여 createdAt 기준으로 정렬
         const episodes = snapshot.docs
             .map(doc => ({id: doc.id, ...doc.data()}))
             .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
@@ -1301,7 +1304,7 @@ async function handleChapterNameEdit(episodeId, currentChapterName) {
 async function handleChapterNameDelete(episodeId, chapterName) {
     if (confirm(`"${chapterName}" 챕터를 삭제하시겠습니까? (에피소드는 유지됩니다)`)) {
         try {
-            // ���당 챕터의 모든 에피소드 찾기
+            // 당 챕터의 ��든 에피소드 찾기
             const q = query(
                 collection(db, "episode"),
                 where("project_id", "==", projectId),
@@ -1398,7 +1401,7 @@ async function deleteProject(projectId) {
             const docRef = doc(db, "project", projectId);
             await deleteDoc(docRef);
             
-            console.log("프로젝트와 관련된 모든 데이터가 삭제되었습니다.");
+            console.log("프로젝트와 관���된 모든 데이터가 삭제되었습니다.");
             loadProjects();  // 프로젝트 목록 새로고침
         } catch (error) {
             console.error("프로젝트 삭제 중 오류:", error);
