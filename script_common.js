@@ -55,18 +55,11 @@ applyButton?.addEventListener("click", async () => {
   }
 
   try {
-    const docRef = await addDoc(collection(db, "project"), {
+    await addDoc(collection(db, "project"), {
       name: projectName,
       plot: projectPlot,
       createdAt: new Date(),
     });
-
-    console.log("Document written with ID: ", docRef.id);
-
-    // 안내 메시지 제거
-    if (addBtnMsg) {
-      addBtnMsg.remove();
-    }
 
     // 입력 필드 초기화 및 모달 닫기
     projectNameInput.value = "";
@@ -219,7 +212,7 @@ async function handleProjectClick(project, clickedProjectId) {
                 return;
             }
             
-            // main.html에서만 데이터 업���이트 및 로드
+            // main.html에서만 데이터 업데이트 및 로드
             const mainTitle = document.querySelector('.main-title');
             const projectDesc = document.querySelector('.project-desc');
             if (mainTitle && projectDesc) {
@@ -357,6 +350,80 @@ async function handleProjectSelect(projectId) {
         }
     } catch (error) {
         console.error("프로젝트 선택 중 오류:", error);
-        alert("프로젝트 데이터를 불러오는데 실패했습니다.");
+        alert("프로젝트 데이터를 ���러오는데 실패했습니다.");
+    }
+}
+
+// 프로젝트 수정 처리 함수
+async function handleProjectEdit(listItem, projectId) {
+    try {
+        const projectRef = doc(db, "project", projectId);
+        const docSnap = await getDoc(projectRef);
+        
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            
+            // 입력 필드에 기존 데이터 설정
+            projectNameInput.value = data.name;
+            projectPlotInput.value = data.plot;
+            
+            // 모달 표시
+            modalContainer.classList.remove('hidden');
+            
+            // 이벤트 리스너 설정을 위한 버튼 참조
+            const confirmButton = document.getElementById("pModalApply");
+            const cancelButton = document.getElementById("pModalClose");
+            
+            // 이벤트 리스너 제거
+            const newConfirmButton = confirmButton.cloneNode(true);
+            const newCancelButton = cancelButton.cloneNode(true);
+            
+            if (confirmButton.parentNode && cancelButton.parentNode) {
+                confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+                cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+            }
+            
+            // 닫기 버튼 이벤트
+            newCancelButton.addEventListener('click', () => {
+                modalContainer.classList.add('hidden');
+                projectNameInput.value = '';
+                projectPlotInput.value = '';
+            });
+            
+            // 수정 확인 버튼 이벤트
+            newConfirmButton.addEventListener('click', async () => {
+                const newName = projectNameInput.value.trim();
+                const newPlot = projectPlotInput.value.trim();
+                
+                if (newName && newPlot) {
+                    if (newName.length > 50) {
+                        alert("프로젝트 이름은 50자를 초과할 수 없습니다.");
+                        return;
+                    }
+
+                    try {
+                        await updateDoc(projectRef, {
+                            name: newName,
+                            plot: newPlot,
+                            lastModified: new Date()
+                        });
+                        
+                        modalContainer.classList.add('hidden');
+                        projectNameInput.value = '';
+                        projectPlotInput.value = '';
+                        
+                        console.log("프로젝트가 수정되었습니다.");
+                    } catch (error) {
+                        console.error("프로젝트 수정 중 오류:", error);
+                        alert("프로젝트 수정에 실패했습니다.");
+                    }
+                } else {
+                    alert("모든 필드를 입력해주세요.");
+                }
+            });
+        }
+    } catch (error) {
+        console.error("프로젝트 데이터 로드 중 오류:", error);
+        alert("프로젝트 데이터를 불러올 수 없습니다.");
     }
 }
