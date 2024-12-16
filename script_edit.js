@@ -2,16 +2,21 @@ import { db, doc, getDoc, updateDoc } from "./firebase.js";
 
 window.currentEpisodeId = null;
 
-document.addEventListener('DOMContentLoaded', async function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const episodeId = urlParams.get('episode-id');
-    const episodeNumber = urlParams.get('episode-number');
-    
-    if (episodeId) {
-        currentEpisodeId = episodeId;
-        try {
-            const docRef = doc(db, "episode", episodeId);
-            const docSnap = await getDoc(docRef);
+// HTML 태그와 엔티티를 일반 텍스트로 변환하는 함수
+function htmlToPlainText(html) {
+    // 임시 div 엘리먼트 생성
+    const temp = document.createElement('div');
+    // HTML 문자열을 div에 설정
+    temp.innerHTML = html;
+    // HTML 엔티티를 디코드하고 텍스트만 추출
+    return temp.textContent || temp.innerText;
+}
+
+// 에피소드 데이터 로드 함수
+async function loadEpisodeContent() {
+    try {
+        const docRef = doc(db, "episode", currentEpisodeId);
+        const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
@@ -87,6 +92,16 @@ tinymce.init({
     content_css: 'tinymce.css',
 
     setup: function(editor) {
+        editor.on('init', async function() {
+            // 에디터 초기화 완료 후 데이터 로드
+            const urlParams = new URLSearchParams(window.location.search);
+            currentEpisodeId = urlParams.get('episode-id');
+            
+            if (currentEpisodeId) {
+                await loadEpisodeContent();
+            }
+        });
+
         const counterDiv = document.querySelector('.word-counter');
         const saveBtn = document.querySelector('.save-btn');
         const contentPreview = document.querySelector('.content-preview');
@@ -148,11 +163,6 @@ tinymce.init({
         });
 
         saveBtn.addEventListener('click', async function() {
-            if (!currentEpisodeId) {
-                alert("에피소드 ID를 찾을 수 없습니다.");
-                return;
-            }
-
             try {
                 const content = editor.getContent();
                 const docRef = doc(db, "episode", currentEpisodeId);
@@ -162,14 +172,16 @@ tinymce.init({
                     lastModified: new Date()
                 });
 
+                // 저장 후 본문 미리보기 업데이트
+                const contentPreview = document.querySelector('.content-preview');
+                contentPreview.textContent = htmlToPlainText(content);
+                contentPreview.style.display = 'block';
+
                 console.log("내용이 저장되었습니다.");
                 saveBtn.style.display = 'none';
-                
-                contentPreview.textContent = editor.getContent({format: 'text'});
-                contentPreview.style.display = 'block';
             } catch (error) {
-                console.error("내용 저장 중 오류:", error);
-                alert("내용을 저장하는 중 문제가 발생했습니다.");
+                console.error("저장 중 오류:", error);
+                alert("저장하는 중 문제가 발생했습니다.");
             }
         });
 
