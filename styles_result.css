@@ -92,3 +92,93 @@ body.dark-mode .modal-content {
 .hidden {
     display: none !important;
 }
+
+/* 공유 모달 스타일 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+}
+
+.share-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+#shareUrlInput {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* 다크모드 대응 */
+body.dark-mode .modal-content {
+    background-color: #333;
+    color: white;
+}
+
+body.dark-mode #shareUrlInput {
+    background-color: #444;
+    color: white;
+    border-color: #555;
+}
+
+.page-link {
+    color: #6E6E6E;
+    transition: color 0.3s;
+    padding: 5px 0;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.page-link:hover {
+    color: #595959;
+    text-decoration: underline;
+}
+
+#resultButton,
+#generateShareLink {
+    color: #333;  /* 더 진한 색상 */
+    font-weight: bold;
+}
+
+#resultButton:hover,
+#generateShareLink:hover {
+    color: #000;  /* 호버 시 더 진한 색상 */
+}
+
+/* 다크모드 대응 */
+body.dark-mode .page-link {
+    color: #fff;
+}
+
+body.dark-mode #resultButton,
+body.dark-mode #generateShareLink {
+    color: #fff;
+    font-weight: bold;
+}
+
+body.dark-mode #resultButton:hover,
+body.dark-mode #generateShareLink:hover {
+    color: #d0d0d0;
+}
