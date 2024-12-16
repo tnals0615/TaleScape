@@ -975,7 +975,7 @@ function handleWorldEdit(worldId) {
                         await updateDoc(docRef, { title, content });
 
                         console.log(`World with ID: ${worldId} has been updated.`);
-                        alert("세계관 성공적으로 수정었습니다.");
+                        alert("세계관이 성공적으로 수정되었습니다.");
 
                         // 모달 닫기
                         closeModal('worldModal');
@@ -1142,7 +1142,7 @@ export function loadEpisodeData() {
         let chapterNum = 1;
         let currentChapter = '';
 
-        // 데이터를 배열로 변환하여 createdAt 기준으로 정렬
+        // 데이터를 열로 변환하여 createdAt 기준으로 정렬
         const episodes = snapshot.docs
             .map(doc => ({id: doc.id, ...doc.data()}))
             .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
@@ -1195,6 +1195,18 @@ export function loadEpisodeData() {
 async function handleDelete(collectionName, id) {
     try {
         const docRef = doc(db, collectionName, id);
+
+        // 에피소드인 경우, 관련된 에디터 내용도 삭제
+        if (collectionName === "episode") {
+            // 에디터 내용 문서 삭제
+            const contentRef = doc(db, "episode_content", id);
+            try {
+                await deleteDoc(contentRef);
+                console.log("에피소드 내용이 삭제되었습니다.");
+            } catch (error) {
+                console.error("에피소드 내용 삭제 중 오류:", error);
+            }
+        }
 
         // 문서 삭제
         await deleteDoc(docRef);
