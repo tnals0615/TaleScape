@@ -4,6 +4,25 @@ document.addEventListener('DOMContentLoaded', async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const episodeId = urlParams.get('episode-id');
     
+    // 토글 메뉴 초기화 및 이벤트 설정
+    document.querySelectorAll('.toggle-title').forEach(title => {
+        const content = title.nextElementSibling;
+        if (content && content.classList.contains('toggle-content')) {
+            // 초기 상태 설정 - 닫힌 상태
+            content.style.display = 'none';
+            title.textContent = title.textContent.replace('▼', '▶');
+            
+            title.addEventListener('click', () => {
+                const isVisible = content.style.display !== 'none';
+                content.style.display = isVisible ? 'none' : 'block';
+                title.textContent = title.textContent.replace(
+                    isVisible ? '▼' : '▶',
+                    isVisible ? '▶' : '▼'
+                );
+            });
+        }
+    });
+    
     if (episodeId) {
         try {
             const docRef = doc(db, "episode", episodeId);
@@ -11,24 +30,60 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
+                let currentPageSet = 1;
+                let totalContent = [];  // 전체 콘텐츠를 저장할 배열
                 
                 const leftPage = document.querySelector('.left-page');
                 const rightPage = document.querySelector('.right-page');
                 
-                // 기존 내용 초기화
-                leftPage.innerHTML = '';
-                rightPage.innerHTML = '';
+                // 페이지 세트 표시 함수
+                function displayPageSet(pageNumber) {
+                    leftPage.innerHTML = '';
+                    rightPage.innerHTML = '';
+                    
+                    const startIndex = (pageNumber - 1) * 2;
+                    
+                    // 첫 페이지 세트가 아닌 경우에는 제목 없이 내용만 표시
+                    if (pageNumber === 1) {
+                        // 제목 추가
+                        const titleElement = document.createElement('p');
+                        titleElement.className = 'main-title';
+                        titleElement.style.textAlign = 'center';
+                        titleElement.style.fontSize = '25px';
+                        titleElement.style.marginTop = '20px';
+                        titleElement.style.marginBottom = '20px';
+                        titleElement.textContent = `${data.episode_number || '?'}화. ${data.title}`;
+                        leftPage.appendChild(titleElement);
+                    }
+                    
+                    if (totalContent[startIndex]) {
+                        if (pageNumber === 1) {
+                            // 첫 페이지의 경우 기존 내용에 추가
+                            leftPage.innerHTML += totalContent[startIndex];
+                        } else {
+                            // 다른 페이지는 내용만 표시
+                            leftPage.innerHTML = totalContent[startIndex];
+                        }
+                    }
+                    
+                    if (totalContent[startIndex + 1]) {
+                        rightPage.innerHTML = totalContent[startIndex + 1];
+                    }
+                    
+                    // 마지막 페이지 세트인 경우 처리
+                    if (!totalContent[startIndex] && !totalContent[startIndex + 1]) {
+                        currentPageSet = 1;
+                        displayPageSet(1);
+                    }
+                }
                 
-                // 제목 스타일 수정
-                const titleElement = document.createElement('p');
-                titleElement.className = 'main-title';
-                titleElement.style.textAlign = 'center';
-                titleElement.style.fontSize = '25px';
-                titleElement.style.marginTop = '10px';
-                titleElement.style.marginBottom = '20px';
-                titleElement.textContent = `${data.episode_number || '?'}화. ${data.title}`;
-                leftPage.appendChild(titleElement);
-                
+                // 오른쪽 페이지 클릭 이벤트
+                rightPage.addEventListener('click', () => {
+                    currentPageSet++;
+                    displayPageSet(currentPageSet);
+                });
+
+                // 초기 콘텐츠 로드 및 페이지 나누기
                 if (data.content) {
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = data.content;
@@ -64,49 +119,77 @@ document.addEventListener('DOMContentLoaded', async function() {
                             // 높이 체크
                             if (currentPage === leftPage && 
                                 currentPage.scrollHeight > currentPage.clientHeight) {
-                                // 왼쪽 페이지 높이 초과시
+                                // 쪽 페이지 높이 초과시
                                 currentPage = rightPage;
                                 clone.remove();
                                 rightPage.appendChild(clone);
                             }
                         }
                     });
+
+                    // 각 페이지의 내용을 totalContent 배열에 저장
+                    totalContent.push(leftPage.innerHTML);
+                    if (rightPage.innerHTML) {
+                        totalContent.push(rightPage.innerHTML);
+                    }
                 }
+                
+                // 수정하기 버튼 클릭 이벤트
+                document.getElementById('editButton')?.addEventListener('click', () => {
+                    if (episodeId) {
+                        window.location.href = `edit.html?episode-id=${episodeId}`;
+                    }
+                });
+
+                // 공유하기 버튼 클릭 이벤트
+                document.getElementById('generateShareLink')?.addEventListener('click', () => {
+                    const shareModal = document.getElementById('shareModal');
+                    const shareUrlInput = document.getElementById('shareUrlInput');
+                    
+                    const baseUrl = 'https://talescape-d61b8.web.app';  // Firebase 호스팅 URL
+                    const shareUrl = `${baseUrl}/share.html?episode-id=${episodeId}`;
+                    
+                    shareUrlInput.value = shareUrl;
+                    shareModal.classList.remove('hidden');
+                    
+                    // 입력창 선택
+                    shareUrlInput.select();
+                    
+                    try {
+                        // 클립보드에 복사
+                        navigator.clipboard.writeText(shareUrl).then(() => {
+                            alert('링크가 클립보드에 복사되었습니다.\n이 링크로 웹소설처럼 내용을 볼 수 있습니다.');
+                        });
+                    } catch (err) {
+                        console.error('클립보드 복사 실패:', err);
+                        alert('링크 복사에 실패했습니다. 직접 복사해주세요.');
+                    }
+                });
+
+                // 첫 페이지 세트 표시
+                displayPageSet(1);
             } else {
                 console.log("에피소드를 찾을 수 없습니다!");
                 alert("에피소드 데이터를 불러올 수 없습니다.");
             }
         } catch (error) {
-            console.error("에피소드 데이터 로드 중 오류:", error);
+            console.error("에피소드 데이터 로드 중 ��류:", error);
             alert("에피소드 데이터를 불러오는 중 문제가 발생했습니다.");
         }
     }
 });
 /*
 document.addEventListener("DOMContentLoaded", () => {
-  // 토글 메뉴 클릭 이벤트
-  document.querySelectorAll('.toggle-title').forEach(title => {
-    title.addEventListener('click', () => {
-      const content = title.nextElementSibling;
-      if (content && content.classList.contains('toggle-content')) {
-        // 현재 표시 상태 확인
-        const isHidden = content.style.display === 'none';
-        
-        // 토글 상태 변경
-        content.style.display = isHidden ? 'block' : 'none';
-        
-        // 화살표 방향 변경
-        title.textContent = title.textContent.replace(
-          isHidden ? '▶' : '▼',
-          isHidden ? '▼' : '▶'
-        );
-      }
-    });
+  const modalOpenButton = document.getElementById("plus");
+  const modalCloseButton = document.getElementById("modalCloseButton");
+  const modal = document.getElementById("modalContainer");
+
+  modalOpenButton.addEventListener("click", () => {
+    modal.classList.remove("hidden");
   });
 
-  // 공유하기 버튼 클릭 이벤트
-  document.getElementById('generateShareLink')?.addEventListener('click', () => {
-    // ... 기존 공유하기 코드 ...
+  modalCloseButton.addEventListener("click", () => {
+    modal.classList.add("hidden");
   });
 });
 

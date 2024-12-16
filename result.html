@@ -14,7 +14,7 @@
     <script type="module" src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
     <script type="module" src="tinymce.js"></script>
-    <script src="script_edit.js"></script>
+    <script type="module" src="script_common.js"></script>
     <script type="module" src="script_result.js"></script>
   </head>
 
@@ -55,7 +55,7 @@
         <hr class="black-divider" />
         <article>
           <ul class="toggle-list">
-            <li class="page-link" onclick="location.href='edit.html'">
+            <li class="page-link" id="editButton">
               <i class="fas fa-edit"></i> 수정하기
             </li>
             <li class="page-link" id="generateShareLink">
@@ -117,5 +117,4 @@
       </div>
     </div>
   </body>
-  <script type="module" src="script_common.js"></script>
 </html>

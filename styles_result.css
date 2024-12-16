@@ -31,3 +31,64 @@ body.dark-mode .preview {
 #resultTitle{
   font-size: 25px !important;  
 }
+
+/* 모달 배경 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);  /* 반투명 배경 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* 모달 내용 */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 400px;  /* 모달 너비 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 다크모드 모달 스타일 */
+body.dark-mode .modal-content {
+    background-color: #2A2A2A;
+    color: #E0E0E0;
+}
+
+/* 공유 컨트롤 */
+.share-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.share-controls input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.share-controls button {
+    padding: 8px 16px;
+    background-color: #6E6E6E;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.share-controls button:hover {
+    background-color: #595959;
+}
+
+/* 숨김 클래스 */
+.hidden {
+    display: none !important;
+}
