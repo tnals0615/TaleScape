@@ -79,21 +79,6 @@ async function loadEpisodeContent() {
         }
     });
 
-    const toggleTitles = document.querySelectorAll('.toggle-title');
-    
-    toggleTitles.forEach(title => {
-        title.addEventListener('click', function() {
-            const content = this.nextElementSibling;
-            const isExpanded = content.style.display === 'block';
-            content.style.display = isExpanded ? 'none' : 'block';
-            
-            const arrow = this.textContent.trim().charAt(0);
-            this.textContent = this.textContent.replace(
-                arrow,
-                isExpanded ? '▼' : '▶'
-            );
-        });
-    });
 /*
 tinymce.init({
     selector: "#wysiwyg-editor",

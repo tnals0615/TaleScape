@@ -3,26 +3,6 @@ import { db, doc, getDoc, updateDoc } from "./firebase.js";
 document.addEventListener('DOMContentLoaded', async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const episodeId = urlParams.get('episode-id');
-    
-    // 토글 메뉴 초기화 및 이벤트 설정
-    document.querySelectorAll('.toggle-title').forEach(title => {
-        const content = title.nextElementSibling;
-        if (content && content.classList.contains('toggle-content')) {
-            // 초기 상태 설정 - 닫힌 상태
-            content.style.display = 'none';
-            title.textContent = title.textContent.replace('▼', '▶');
-            
-            title.addEventListener('click', () => {
-                const isVisible = content.style.display !== 'none';
-                content.style.display = isVisible ? 'none' : 'block';
-                title.textContent = title.textContent.replace(
-                    isVisible ? '▼' : '▶',
-                    isVisible ? '▶' : '▼'
-                );
-            });
-        }
-    });
-    
     if (episodeId) {
         try {
             const docRef = doc(db, "episode", episodeId);
@@ -30,6 +10,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
+
+                if (data.project_id) {
+                    localStorage.setItem('currentProjectId', data.project_id);
+                }
+
+                console.log("currentProjectId", data.project_id);
+
                 let currentPageSet = 1;
                 let totalContent = [];  // 전체 콘텐츠를 저장할 배열
                 
@@ -182,6 +169,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const editButton = document.getElementById('resultButton');
+    if (editButton) {
+        editButton.addEventListener('click', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const episodeId = urlParams.get('episode-id');
+            
+            if (episodeId) {
+                window.location.href = `edit.html?episode-id=${episodeId}`;
+            }
+        });
+    }
+});
+
 /*
 document.addEventListener("DOMContentLoaded", () => {
   const modalOpenButton = document.getElementById("plus");

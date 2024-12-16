@@ -317,35 +317,6 @@ body.dark-mode #projectModal input[type="text"] {
   background-color: #0056b3; /* 확인 버튼 호버 효과 */
 }
 
-/* Tool 섹션 공통 스타일 */
-.toggle-list {
-  list-style-type: none;
-  padding: 10px 0 0 10px;
-}
-
-.toggle-title {
-  cursor: pointer;
-  user-select: none;
-  padding: 5px 0;
-}
-
-.toggle-title:hover {
-  color: #666;
-}
-
-.toggle-content {
-  margin-left: 15px;
-  padding-top: 5px;
-  display: none;  /* 초기 상태는 숨김 */
-}
-
-/* 토글 아이콘 스타일 */
-.toggle-title::first-letter {
-  display: inline-block;
-  width: 15px;
-  transition: transform 0.2s;
-}
-
 /* 페이지 링크 스타일 */
 .page-link {
   color: #6E6E6E;
