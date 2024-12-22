@@ -64,10 +64,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // 이벤트 리스너 초기화
 function initEventListeners() {
-    // 프로젝트 관련
-    //document.querySelector('.icon-plus').addEventListener('click', handleAddProject);
-    //document.querySelector('#projectModal .btn-primary').addEventListener('click', handleProjectSubmit);
-    //document.getElementById('projectModal').addEventListener('hidden.bs.modal', handleProjectModalHidden);
 
     const projectList = document.querySelector(".project-list");
     projectList.addEventListener("click", async (event) => {
@@ -331,7 +327,7 @@ function handleProjectClick(project, name, desc) {
 }
 
 function handleProjectDelete(project) {
-    if (confirm('프로젝트를 삭제하시겠습니까?')) {
+    if (confirm('프로젝트를 삭제하겠습니까?')) {
         project.remove();
         checkEmptyProjectList();
     }
@@ -867,8 +863,7 @@ function handleCharacterEdit(characterId) {
                 await updateDoc(docRef, updatedData);
 
                 console.log(`Character with ID: ${characterId} has been updated.`);
-                alert("캐릭터가 성공적으로 수정되었습니다.");
-                closeModal('characterModal'); // 달 닫기
+                closeModal('characterModal'); 
             } catch (error) {
                 console.error("캐릭터 수정 중 오류 발생:", error);
                 alert("캐릭터 수정에 실패했습니다.");
@@ -960,7 +955,7 @@ function attachWorldEvents(world, worldId) {
 function handleWorldEdit(worldId) {
     const worldModal = new bootstrap.Modal(document.getElementById('worldModal'));
 
-    // Firestore에서 기존 이터 가져오기
+    // Firestore에서 기존 데이터 가져오기
     const docRef = doc(db, "worldBuilding", worldId);
 
     getDoc(docRef).then((docSnap) => {
@@ -989,7 +984,6 @@ function handleWorldEdit(worldId) {
                         await updateDoc(docRef, { title, content });
 
                         console.log(`World with ID: ${worldId} has been updated.`);
-                        alert("세계관이 성공적으로 수정되었습니다.");
 
                         // 모달 닫기
                         closeModal('worldModal');
@@ -1003,11 +997,11 @@ function handleWorldEdit(worldId) {
             });
         } else {
             console.error("해당 세계관 데이터를 찾을 수 없습니다.");
-            alert("세계관 이터를 불러오는 중 문제가 발생했습니다.");
+            alert("세계관 데이터를 불러오는 중 문제가 발생했습니다.");
         }
     }).catch((error) => {
         console.error("Firestore에서 세계관 데이터 가져오기 중 오류 발생:", error);
-        alert("세계관 이터를 불러오는 중 오류가 발생했습니다.");
+        alert("세계관 데이터를 불러오는 중 오류가 발생했습니다.");
     });
 }
 
@@ -1028,7 +1022,7 @@ function closeModal(modalId) {
 
 function resetChapterModal() {
     document.getElementById('newChapterCheck').checked = false;
-    document.getElementById('chapterNameGroup').style.display = 'none';  // 터 이름 입력칸 숨김
+    document.getElementById('chapterNameGroup').style.display = 'none';  // 이름 입력칸 숨김
     document.getElementById('chapterTitleInput').value = '';
     document.getElementById('chapterCharacterInput').value = '';
     document.getElementById('chapterStatusInput').value = '작성중';
@@ -1051,7 +1045,7 @@ function loadData(collectionName, listSelector, createElementCallback, errorMess
                 return;
             }
 
-            // 기존 스 초기화 (중복 추가 방지)
+            // 기존 스냅샷 초기화 (중복 추가 방지)
             listElement.innerHTML = "";
 
             // 스냅샷 순회하며 데이터 추가
@@ -1187,7 +1181,7 @@ export function loadEpisodeData() {
                 });
             }
 
-            // 에피소드 번호 정: 기존 번호가 있면 사용, 없으면 차 번호 부여
+            // 에피소드 번호 정렬: 기존 번호가 있면 사용, 없으면 차례대로 번호 부여
             const currentEpisodeNum = data.episode_number || episodeNum++;
             
             const episodeElement = createEpisodeElement(
@@ -1207,37 +1201,43 @@ export function loadEpisodeData() {
 
 
 async function handleDelete(collectionName, id) {
+    const typeNames = {
+        memo: "메모",
+        character: "캐릭터",
+        worldBuilding: "세계관",
+        episode: "에피소드"
+    };
+    
+    if (!confirm(`${typeNames[collectionName]}을(를) 삭제하시겠습니까?`)) {
+        return;
+    }
+
     try {
         const docRef = doc(db, collectionName, id);
 
         // 에피소드인 경우, 관련된 에디터 내용도 삭제
         if (collectionName === "episode") {
-            // 에디터 내용 문서 삭제
             const contentRef = doc(db, "episode_content", id);
             try {
                 await deleteDoc(contentRef);
-                console.log("에피소드 내용이 제되었습니다.");
             } catch (error) {
                 console.error("에피소드 내용 삭제 중 오류:", error);
             }
         }
 
-        // 문서 삭제
         await deleteDoc(docRef);
-        console.log(`${collectionName} 문서가 성공적으로 삭제되었습니다.`);
 
         // 에피소드인 경우 번호 재정렬
         if (collectionName === "episode") {
             await reorderEpisodes();
         } else {
-            // 다른 컬렉션의 경우 기존 로직대로 처리
             if (collectionName === "memo") await loadMemoData();
             else if (collectionName === "character") await loadCharacterData();
             else if (collectionName === "worldBuilding") await loadWorldBuildingData();
         }
     } catch (error) {
-        console.error(`${collectionName} 삭제 중 오류 발생:`, error);
-        alert(`${collectionName} 항목 삭제에 실패했습니다.`);
+        console.error(`${typeNames[collectionName]} 삭제 중 오류 발생:`, error);
+        alert(`${typeNames[collectionName]} 삭제에 실패했습니다.`);
     }
 }
 
@@ -1376,49 +1376,36 @@ async function reorderEpisodes() {
 
 // 프로젝트 삭제 함수
 async function deleteProject(projectId) {
-    if (confirm('정말로 이 프로젝트를 삭제하시겠습니까?')) {
-        try {
-            // 1. 에피소드 및 에피소드 내용 삭제
-            const episodesRef = collection(db, "episode");
-            const q = query(episodesRef, where("project_id", "==", projectId));
-            const episodeSnap = await getDocs(q);
+    if (!confirm('정말로 이 프로젝트를 삭제하시겠습니까?')) return;
+    
+    try {
+        const collections = [
+            { name: "episode", needsContent: true },
+            { name: "memo", needsContent: false },
+            { name: "character", needsContent: false },
+            { name: "worldBuilding", needsContent: false }
+        ];
+
+        // 각 컬렉션 삭제
+        for (const { name, needsContent } of collections) {
+            const q = query(collection(db, name), where("project_id", "==", projectId));
+            const snapshot = await getDocs(q);
             
-            const deletePromises = episodeSnap.docs.map(async doc => {
-                // 에피소드 내용도 함께 삭제
-                await deleteDoc(doc(db, "episode_content", doc.id));
+            await Promise.all(snapshot.docs.map(async doc => {
+                if (needsContent) {
+                    await deleteDoc(doc(db, `${name}_content`, doc.id));
+                }
                 return deleteDoc(doc.ref);
-            });
-            await Promise.all(deletePromises);
-            
-            // 2. 메모 삭제
-            const memoRef = collection(db, "memo");
-            const memoQuery = query(memoRef, where("project_id", "==", projectId));
-            const memoSnap = await getDocs(memoQuery);
-            await Promise.all(memoSnap.docs.map(doc => deleteDoc(doc.ref)));
-            
-            // 3. 캐릭터 노트 삭제
-            const characterRef = collection(db, "character");
-            const characterQuery = query(characterRef, where("project_id", "==", projectId));
-            const characterSnap = await getDocs(characterQuery);
-            await Promise.all(characterSnap.docs.map(doc => deleteDoc(doc.ref)));
-            
-            // 4. 세계관 삭제
-            const worldBuildingRef = collection(db, "worldBuilding");
-            const worldBuildingQuery = query(worldBuildingRef, where("project_id", "==", projectId));
-            const worldBuildingSnap = await getDocs(worldBuildingQuery);
-            await Promise.all(worldBuildingSnap.docs.map(doc => deleteDoc(doc.ref)));
-            
-            // 5. 마지막으로 프로젝트 삭제
-            const docRef = doc(db, "project", projectId);
-            await deleteDoc(docRef);
-            
-            console.log("프로젝트와 관된 모든 데이터가 삭제되었습니다.");
-            loadProjects();  // 프로젝트 목록 새로고침
-        } catch (error) {
-            console.error("프로젝트 삭제 중 오류:", error);
-            alert("프로젝트를 삭제하는 중 문제가 발생했습니다.");
+            }));
         }
+
+        // 프로젝트 삭제
+        await deleteDoc(doc(db, "project", projectId));
+        
+        console.log("프로젝트와 관련 데이터가 삭제되었습니다.");
+        loadProjects();
+    } catch (error) {
+        console.error("프로젝트 삭제 중 오류:", error);
+        alert("프로젝트를 삭제하는 중 문제가 발생했습니다.");
     }
 }
-
-

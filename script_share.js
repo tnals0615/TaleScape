@@ -147,8 +147,23 @@ function displayPageSet(pageNumber) {
     
     const startIndex = (pageNumber - 1) * 2;
     
-    leftPage.innerHTML = totalContent[startIndex] || '';
-    rightPage.innerHTML = totalContent[startIndex + 1] || '';
+    // 페이지 내용 초기화
+    leftPage.innerHTML = '';
+    rightPage.innerHTML = '';
+
+    // 첫 페이지에만 제목 표시
+    if (pageNumber === 1) {
+        const titleElement = createTitleElement(data);
+        leftPage.appendChild(titleElement);
+    }
+
+    // 내용 표시
+    if (totalContent[startIndex]) {
+        leftPage.innerHTML += totalContent[startIndex];
+    }
+    if (totalContent[startIndex + 1]) {
+        rightPage.innerHTML = totalContent[startIndex + 1];
+    }
 }
 
 // 페이지 클릭 이벤트 수정
@@ -214,16 +229,27 @@ window.toggleViewMode = function(mode) {
     }
 } 
 
-// 확대/축소 ��지
-window.addEventListener('wheel', function(e) {
-    if (e.ctrlKey) {
+// 확대/축소 방지 함수
+function preventZoom(event) {
+    if (event.ctrlKey && (event.key === '+' || event.key === '-' || event.key === '0')) {
+        event.preventDefault();
+    }
+}
+
+// 터치 확대/축소 방지
+document.addEventListener('touchmove', function(e) {
+    if (e.touches.length > 1) {
         e.preventDefault();
     }
 }, { passive: false });
 
-// 키보드 단축키로 인한 확대/축소 방지
-window.addEventListener('keydown', function(e) {
-    if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '0')) {
-        e.preventDefault();
-    }
-});
+// 이벤트 리스너 초기화 함수
+function initEventListeners() {
+    // 터치 이벤트
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleTouchEnd);
+    
+    // 키보드 이벤트
+    window.addEventListener('keydown', handleKeyDown);
+}
