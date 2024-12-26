@@ -15,6 +15,7 @@ const projectPlotInput = document.getElementById("projectPlotInput");
 const projectList = document.querySelector(".project-list");
 const addBtnMsg = document.getElementById("addBtnMsg");
 const projectContainer = document.getElementById("projectContainer");
+const taleScapeHeader = document.getElementById("TaleScape");
 
 // 1. 자주 사용되는 DOM 요소들을 상수로 정의
 const UI = {
@@ -39,16 +40,15 @@ const modalUtils = {
 };
 
 // 요소 존재 여부 확인
-if (  !iconMoon ||  !modalContainer ||  !openButton ||  !closeButton ||  !applyButton ||  !projectNameInput ||  !projectPlotInput) {
-  console.error("필수 DOM 요소 중 하나가 누락되었습니다. 코드 로직을 확인하세요.");
+if (!iconMoon || !modalContainer || !openButton || !closeButton || !applyButton || !projectNameInput || !projectPlotInput || !taleScapeHeader) {
+    console.error("필수 DOM 요소 중 하나가 누락되었습니다. 코드 로직을 확인하세요.");
 }
 
-document.getElementById("TaleScape").addEventListener("click", function() {
-            window.location.href = "main.html"; // Redirect to main.html
-        });
+// 헤더 클릭 이벤트
+taleScapeHeader?.addEventListener("click", () => window.location.href = "main.html");
 
 // 다크 모드 토글 이벤트 리스너
-document.getElementById("moon")?.addEventListener("click", () => {
+iconMoon?.addEventListener("click", () => {
     const body = document.querySelector('body');
     body.classList.toggle("dark-mode");
     localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
