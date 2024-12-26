@@ -199,7 +199,7 @@ export const eventUtils = {
 // 유효성 검사 유틸리티
 export const validationUtils = {
     isEmpty(value) {
-        return value.trim() === '';
+        return !value || value.trim() === '';
     },
 
     isValidLength(value, maxLength) {
@@ -213,6 +213,15 @@ export const validationUtils = {
         }
         if (!this.isValidLength(name, 50)) {
             alert("프로젝트 이름은 50자를 초과할 수 없습니다.");
+            return false;
+        }
+        return true;
+    },
+
+    // 프로젝트 ID 체크
+    checkProjectId(projectId) {
+        if (!projectId) {
+            alert("프로젝트를 먼저 선택해주세요.");
             return false;
         }
         return true;
