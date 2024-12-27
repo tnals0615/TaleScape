@@ -177,7 +177,7 @@ body.dark-mode .project-desc {
 }
 
 body.dark-mode .project-list .text-muted {
-    color: #ccc !important;  /* 가이드 텍스트 색상을 밝게 */
+    color: #ccc !important;  /* 가이드 텍스트 색상��� 밝게 */
 }
 
 /* 포커스 아웃라인 제거 */
@@ -422,4 +422,30 @@ body.dark-mode .memo-title {
 
 .chapter-actions button:hover {
     color: #0d6efd;
+}
+
+/* 공유 아이콘 스타일 */
+.share-icon {
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
+.share-icon:hover {
+    opacity: 1;
+    color: #0d6efd !important;
+    transform: scale(1.1);
+}
+
+/* 다크모드 대응 */
+body.dark-mode .share-icon {
+    color: #999 !important;
+}
+
+body.dark-mode .share-icon:hover {
+    color: #0d6efd !important;
+}
+
+/* URL 셀 정렬 */
+.url-cell {
+    text-align: center;
 }

@@ -1,5 +1,11 @@
 import { db, doc, getDoc } from "./firebase.js";
 
+// 에러 처리 함수
+function handleError(error, message) {
+    console.error(error);
+    alert(message || "작업 중 문제가 발생했습니다.");
+}
+
 document.addEventListener('DOMContentLoaded', async function () {
     const urlParams = new URLSearchParams(window.location.search);
     const episodeId = urlParams.get('episode-id');
@@ -14,8 +20,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (data.project_id) {
                     localStorage.setItem('currentProjectId', data.project_id);
                 }
-
-                console.log("currentProjectId", data.project_id);
 
                 let currentPageSet = 1;
                 let totalContent = [];  // 전체 콘텐츠를 저장할 배열
@@ -33,27 +37,37 @@ document.addEventListener('DOMContentLoaded', async function () {
                         return;
                     }
 
-                    // 이전 내용 저장
-                    const oldLeftContent = leftPage.innerHTML;
-                    const oldRightContent = rightPage.innerHTML;
-
                     // 페이지 내용 초기화
                     leftPage.innerHTML = '';
                     rightPage.innerHTML = '';
-    
-                    // 첫 페이지에만 제목 표시
+
+                    // 첫 페이지 제목 표시
                     if (pageNumber === 1) {
-                        const titleElement = document.createElement('p');
-                        titleElement.className = 'main-title';
-                        titleElement.style.textAlign = 'center';
-                        titleElement.style.fontSize = '25px';
-                        titleElement.style.marginTop = '10px';
-                        titleElement.style.marginBottom = '20px';
-                        titleElement.textContent = `${data.episode_number || '?'}화. ${data.title}`;
+                        const titleElement = createTitleElement(data);
                         leftPage.appendChild(titleElement);
                     }
-    
+
                     // 내용 표시
+                    displayPageContent(pageNumber, startIndex);
+
+                    // 페이지 전환 애니메이션
+                    applyPageTransitionEffect();
+                }
+
+                // 제목 요소 생성 함수
+                function createTitleElement(data) {
+                    const titleElement = document.createElement('p');
+                    titleElement.className = 'main-title';
+                    titleElement.style.textAlign = 'center';
+                    titleElement.style.fontSize = '25px';
+                    titleElement.style.marginTop = '10px';
+                    titleElement.style.marginBottom = '20px';
+                    titleElement.textContent = `${data.episode_number || '?'}화. ${data.title}`;
+                    return titleElement;
+                }
+
+                // 페이지 내용 표시 함수
+                function displayPageContent(pageNumber, startIndex) {
                     if (totalContent[startIndex]) {
                         if (pageNumber === 1) {
                             leftPage.innerHTML += totalContent[startIndex];
@@ -61,16 +75,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                             leftPage.innerHTML = totalContent[startIndex];
                         }
                     }
-    
+
                     if (totalContent[startIndex + 1]) {
                         rightPage.innerHTML = totalContent[startIndex + 1];
                     }
-    
-                    // 새 페이지 내용을 표시할 때
+                }
+
+                // 페이지 전환 효과 적용 함수
+                function applyPageTransitionEffect() {
                     leftPage.classList.add('page-appear');
                     rightPage.classList.add('page-appear');
 
-                    // 애니메이션이 끝나면 클래스 제거
                     setTimeout(() => {
                         leftPage.classList.remove('page-appear');
                         rightPage.classList.remove('page-appear');
@@ -187,8 +202,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 alert("에피소드 데이터를 불러올 수 없습니다.");
             }
         } catch (error) {
-            console.error("에피소드 데이터 로드 중 오류:", error);
-            alert("에피소드 데이터를 불러오는 중 문제가 발생했습니다.");
+            handleError(error, "에피소드 데이터 로드 중 오류");
         }
     }
 });
@@ -206,20 +220,42 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-/*
-document.addEventListener("DOMContentLoaded", () => {
-  const modalOpenButton = document.getElementById("plus");
-  const modalCloseButton = document.getElementById("modalCloseButton");
-  const modal = document.getElementById("modalContainer");
-
-  modalOpenButton.addEventListener("click", () => {
-    modal.classList.remove("hidden");
-  });
-
-  modalCloseButton.addEventListener("click", () => {
-    modal.classList.add("hidden");
-  });
+// 공유하기 기능 추가
+document.getElementById('generateShareLink').addEventListener('click', async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const episodeId = urlParams.get('episode-id');
+    
+    if (episodeId) {
+        try {
+            // Firebase 호스팅 URL을 사용한 공유 링크 생성
+            const shareUrl = `https://talescape-d61b8.web.app/share.html?episode-id=${episodeId}`;
+            
+            // 공유 모달 표시
+            const shareModal = document.getElementById('shareModal');
+            const shareUrlInput = document.getElementById('shareUrlInput');
+            
+            shareUrlInput.value = shareUrl;
+            shareModal.classList.remove('hidden');
+            
+            // URL 자동 선택
+            shareUrlInput.select();
+            
+            // 클립보드에 복사
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+            } catch (err) {
+                console.error('클립보드 복사 실패:', err);
+                alert('클립보드 복사에 실패했습니다.');
+            }
+        } catch (error) {
+            handleError(error, "공유 링크 생성 중 오류");
+        }
+    } else {
+        alert('공유할 에피소드를 찾을 수 없습니다.');
+    }
 });
 
-*/
+// 공유 모달 닫기 버튼 이벤트
+document.querySelector('#shareModal .btn-secondary').addEventListener('click', function() {
+    document.getElementById('shareModal').classList.add('hidden');
+});

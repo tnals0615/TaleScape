@@ -1,6 +1,5 @@
 // firebase.js에서 export한것만 가져올 수 있다.
 import { db, addDoc, collection, getDoc, doc, onSnapshot, query, orderBy, updateDoc, deleteDoc, getDocs, where } from "./firebase.js";
-import { loadMemoData, loadCharacterData, loadWorldBuildingData, loadEpisodeData } from './script_main.js';
 
 // 전역 변수
 let projectId = "";
@@ -15,32 +14,49 @@ const projectNameInput = document.getElementById("projectNameInput");
 const projectPlotInput = document.getElementById("projectPlotInput");
 const projectList = document.querySelector(".project-list");
 const addBtnMsg = document.getElementById("addBtnMsg");
+const projectContainer = document.getElementById("projectContainer");
+const taleScapeHeader = document.getElementById("TaleScape");
+
+// 1. 자주 사용되는 DOM 요소들을 상수로 정의
+const UI = {
+    mainTitle: document.querySelector('.main-title'),
+    projectDesc: document.querySelector('.project-desc'),
+};
+
+// 2. 모달 관련 유틸리티 함수
+const modalUtils = {
+    open() {
+        modalContainer.classList.remove('hidden');
+    },
+    close() {
+        modalContainer.classList.add('hidden');
+        projectNameInput.value = '';
+        projectPlotInput.value = '';
+    },
+    setValues(name, plot) {
+        projectNameInput.value = name;
+        projectPlotInput.value = plot;
+    }
+};
 
 // 요소 존재 여부 확인
-if (  !iconMoon ||  !modalContainer ||  !openButton ||  !closeButton ||  !applyButton ||  !projectNameInput ||  !projectPlotInput) {
-  console.error("필수 DOM 요소 중 하나가 누락되었습니다. 코드 로직을 확인하세요.");
+if (!iconMoon || !modalContainer || !openButton || !closeButton || !applyButton || !projectNameInput || !projectPlotInput || !taleScapeHeader) {
+    console.error("필수 DOM 요소 중 하나가 누락되었습니다. 코드 로직을 확인하세요.");
 }
 
-document.getElementById("TaleScape").addEventListener("click", function() {
-            window.location.href = "main.html"; // Redirect to main.html
-        });
+// 헤더 클릭 이벤트
+taleScapeHeader?.addEventListener("click", () => window.location.href = "main.html");
 
 // 다크 모드 토글 이벤트 리스너
-document.getElementById("moon")?.addEventListener("click", () => {
+iconMoon?.addEventListener("click", () => {
     const body = document.querySelector('body');
     body.classList.toggle("dark-mode");
     localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
 });
 
-// 모달 열기
-openButton?.addEventListener("click", () => {
-  modalContainer?.classList.remove("hidden");
-});
-
-// 모달 닫기
-closeButton?.addEventListener("click", () => {
-  modalContainer?.classList.add("hidden");
-});
+// 모달 이벤트 리스너
+openButton?.addEventListener("click", modalUtils.open);
+closeButton?.addEventListener("click", modalUtils.close);
 
 // Firestore에 데이터 추가
 applyButton?.addEventListener("click", async () => {
@@ -162,7 +178,7 @@ function attachProjectEvents(listItem, projectId) {
     // 프로젝트 클릭 이벤트
     listItem.addEventListener('click', (e) => {
         if (!e.target.closest('.delete-project-btn') && !e.target.closest('.edit-project-btn')) {
-            handleProjectClick(listItem, projectId);
+            handleProjectSelection(listItem, projectId);
         }
     });
 
@@ -188,51 +204,39 @@ function attachProjectEvents(listItem, projectId) {
 function checkEmptyProjectList() {
     const projectList = document.querySelector('.project-list');
     if (!projectList.children.length) {
-        handleAddBtnMsg(false, document.getElementById('projectContainer'));
+        handleAddBtnMsg(false, projectContainer);
     }
 }
 
-async function handleProjectClick(project, clickedProjectId) {
+async function handleProjectSelection(project, projectId, isClick = true) {
     try {
-        const projectRef = doc(db, "project", clickedProjectId);
+        const projectRef = doc(db, "project", projectId);
         const docSnap = await getDoc(projectRef);
 
         if (docSnap.exists()) {
-            projectId = clickedProjectId;  // 전역 변수 설정
-            localStorage.setItem('currentProjectId', clickedProjectId);
+            localStorage.setItem('currentProjectId', projectId);
             
-            // 모든 프로젝트에서 active 클래스 제거
-            document.querySelectorAll('.project-list li').forEach(li => {
-                li.classList.remove('active');
-            });
-            
-            // 클릭된 프로젝트에 active 클래스 추가
-            project.classList.add('active');
+            if (isClick) {
+                document.querySelectorAll('.project-list li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                project.classList.add('active');
+            }
 
-            // 현재 페이지 확인
             const currentPath = window.location.pathname;
             if (currentPath.includes('edit.html') || currentPath.includes('result.html')) {
                 window.location.href = 'main.html';
                 return;
             }
-            
-            // main.html에서만 데이터 업데이트 및 로드
-            const mainTitle = document.querySelector('.main-title');
-            const projectDesc = document.querySelector('.project-desc');
-            if (mainTitle && projectDesc) {
-                mainTitle.textContent = docSnap.data().name || "프로젝트 이름 없음";
-                projectDesc.textContent = docSnap.data().plot || "설명 없음";
-                
-                // 데이터 로드
-                loadMemoData();
-                loadCharacterData();
-                loadWorldBuildingData();
-                loadEpisodeData();
+
+            // main.html에서의 처리
+            if (UI.mainTitle && UI.projectDesc) {
+                UI.mainTitle.textContent = docSnap.data().name || "프로젝트 이름 없음";
+                UI.projectDesc.textContent = docSnap.data().plot || "설명 없음";
             }
         }
     } catch (error) {
-        console.error("프로젝트 데이터 로드 중 오류 발생:", error);
-        // 에러 메시지 표시하지 않음
+        console.error("프로젝트 데이터 로드 중 오류:", error);
     }
 }
 
@@ -303,58 +307,15 @@ async function handleProjectDelete(projectId) {
     }
 }
 
-// 메인 UI 초기화
+// 3. resetMainUI 함수 개선
 function resetMainUI() {
-    // 현재 페이지 확인
     const isMainPage = window.location.pathname.includes('main.html');
     
     if (isMainPage) {
-        // main.html 페이지일 때의 초기화
-        document.querySelector('.main-title').textContent = "프로젝트를 선택하세요";
-        document.querySelector('.project-desc').textContent = "";
-        document.querySelector('.memo-list').innerHTML = '';
-        document.querySelector('.character-list').innerHTML = '';
-        document.querySelector('.world-list').innerHTML = '';
-        document.querySelector('tbody').innerHTML = '';
-        document.querySelector('.accordion').style.display = 'none';
-        document.querySelector('.chapter-table').style.display = 'none';
+        UI.mainTitle.textContent = "프로젝트를 선택하세요";
+        UI.projectDesc.textContent = "";
     } else {
-        // edit.html 또는 result.html 페이지일 때의 초기화
-        window.location.href = 'main.html'; // 메인 페이지로 리다이렉트
-    }
-}
-
-// 프로젝트 선택 이벤트 핸들러
-async function handleProjectSelect(projectId) {
-    try {
-        const projectRef = doc(db, "project", projectId);
-        const docSnap = await getDoc(projectRef);
-
-        if (docSnap.exists()) {
-            // localStorage에 현재 선택된 프로젝트 ID 저장
-            localStorage.setItem('currentProjectId', projectId);
-            
-            const data = docSnap.data();
-            
-            // 현재 페이지에 따른 처리
-            const isMainPage = window.location.pathname.includes('main.html');
-            if (isMainPage) {
-                // main.html에서의 처리
-                document.querySelector('.main-title').textContent = data.name;
-                document.querySelector('.project-desc').textContent = data.plot || '';
-                document.querySelector('.accordion').style.display = 'block';
-                document.querySelector('.chapter-table').style.display = 'block';
-                
-                // 데이터 로드
-                loadMemoData();
-                loadCharacterData();
-                loadWorldBuildingData();
-                loadEpisodeData();
-            }
-        }
-    } catch (error) {
-        console.error("프로젝트 선택 중 오류:", error);
-        alert("프로젝트 데이터를 ���러오는데 실패했습니다.");
+        window.location.href = 'main.html';
     }
 }
 
@@ -367,12 +328,8 @@ async function handleProjectEdit(listItem, projectId) {
         if (docSnap.exists()) {
             const data = docSnap.data();
             
-            // 입력 필드에 기존 데이터 설정
-            projectNameInput.value = data.name;
-            projectPlotInput.value = data.plot;
-            
-            // 모달 표시
-            modalContainer.classList.remove('hidden');
+            modalUtils.setValues(data.name, data.plot);
+            modalUtils.open();
             
             // 이벤트 리스너 설정을 위한 버튼 참조
             const confirmButton = document.getElementById("pModalApply");
@@ -389,9 +346,7 @@ async function handleProjectEdit(listItem, projectId) {
             
             // 닫기 버튼 이벤트
             newCancelButton.addEventListener('click', () => {
-                modalContainer.classList.add('hidden');
-                projectNameInput.value = '';
-                projectPlotInput.value = '';
+                modalUtils.close();
             });
             
             // 수정 확인 버튼 이벤트
@@ -412,7 +367,7 @@ async function handleProjectEdit(listItem, projectId) {
                             lastModified: new Date()
                         });
                         
-                        modalContainer.classList.add('hidden');
+                        modalUtils.close();
                         projectNameInput.value = '';
                         projectPlotInput.value = '';
                         
@@ -430,4 +385,12 @@ async function handleProjectEdit(listItem, projectId) {
         console.error("프로젝트 데이터 로드 중 오류:", error);
         alert("프로젝트 데이터를 불러올 수 없습니다.");
     }
+}
+
+// 프로젝트 리스트 상태 체크 함수 통합
+function updateProjectListStatus() {
+    const projectList = document.querySelector('.project-list');
+    const projectContainer = document.getElementById('projectContainer');
+    const hasProjects = projectList.children.length > 0;
+    handleAddBtnMsg(!hasProjects, projectContainer);
 }

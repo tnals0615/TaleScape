@@ -1,7 +1,7 @@
 import { db, addDoc, collection, getDoc, doc, onSnapshot, query, orderBy, where, updateDoc, deleteDoc, getDocs } from "./firebase.js";
+import { modalUtils, eventUtils, dataUtils, validationUtils } from "./utils.js";
 
 // 전역 변수
-let projectCount = 0;
 let projectId = "";
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -12,10 +12,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const savedProjectId = localStorage.getItem('currentProjectId');
     if (savedProjectId) {
         try {
-            const projectRef = doc(db, "project", savedProjectId);
-            const docSnap = await getDoc(projectRef);
-
-            if (docSnap.exists()) {
+            const data = await dataUtils.getDocument("project", savedProjectId);
+            if (data) {
                 projectId = savedProjectId;
                 
                 // main.html 페이지일 때만 UI 업데이트 시도
@@ -26,8 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const chapterTable = document.querySelector('.chapter-table');
                     
                     if (mainTitle && projectDesc && accordion && chapterTable) {
-                        const data = docSnap.data();
-                        
                         // UI 업데이트
                         mainTitle.textContent = data.name || "프로젝트 이름 없음";
                         projectDesc.textContent = data.plot || "설명 없음";
@@ -64,10 +60,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // 이벤트 리스너 초기화
 function initEventListeners() {
-    // 프로젝트 관련
-    //document.querySelector('.icon-plus').addEventListener('click', handleAddProject);
-    //document.querySelector('#projectModal .btn-primary').addEventListener('click', handleProjectSubmit);
-    //document.getElementById('projectModal').addEventListener('hidden.bs.modal', handleProjectModalHidden);
 
     const projectList = document.querySelector(".project-list");
     projectList.addEventListener("click", async (event) => {
@@ -87,16 +79,11 @@ function initEventListeners() {
 
             if (projectId) {
                 try {
-                    // 프로젝트 기본 정보 가져오기
-                    const projectRef = doc(db, "project", projectId);
-                    const docSnap = await getDoc(projectRef);
-
-                    if (docSnap.exists()) {
-                        const projectData = docSnap.data();
-                        
+                    const data = await dataUtils.getDocument("project", projectId);
+                    if (data) {
                         // 프로젝트 제목과 설명 업데이트
-                        document.querySelector('.main-title').textContent = projectData.name || "프로젝트 이름 없음";
-                        document.querySelector('.project-desc').textContent = projectData.plot || "설명 없음";
+                        document.querySelector('.main-title').textContent = data.name || "프로젝트 이름 없음";
+                        document.querySelector('.project-desc').textContent = data.plot || "설명 없음";
 
                         // 관련 데이터 로드
                         loadMemoData();
@@ -108,12 +95,14 @@ function initEventListeners() {
                         document.querySelector('.accordion').style.display = 'block';
                         document.querySelector('.chapter-table').style.display = 'block';
 
+                        // 현재 프로젝트 ID를 로컬 스토리지에 저장
+                        localStorage.setItem('currentProjectId', projectId);
                     } else {
                         console.log("프로젝트를 찾을 수 없습니다!");
                         alert("프로젝트 데이터를 불러올 수 없습니다.");
                     }
                 } catch (error) {
-                    console.error("프로젝트 데이터 로드 중 오류 발생:", error);
+                    console.error("프로젝트 데이터 로드 중 오류:", error);
                     alert("프로젝트 데이터를 불러오는 중 문제가 발생했습니다.");
                 }
             }
@@ -127,17 +116,12 @@ function initEventListeners() {
             alert("프로젝트를 먼저 선택해주세요.");
             return;
         }
-        const chapterModal = new bootstrap.Modal(document.getElementById('chapterModal'));
+        modalUtils.resetModal('chapterModal');
+        modalUtils.showModal('chapterModal');
         
-        // 기존 이벤트 리스너 제거 후 새로 연결
+        // 이벤트 리스너 교체
         const confirmBtn = document.querySelector('.confirm-chapter-btn');
-        confirmBtn.onclick = null;  // 기존 이벤트 제거
-        confirmBtn.onclick = handleConfirmChapter;  // 새 이벤트 연결
-        
-        // 모달 초기화
-        resetChapterModal();
-        
-        chapterModal.show();
+        eventUtils.replaceEventListener(confirmBtn, 'click', handleConfirmChapter);
     });
 
     // 메모, 캐릭터, 세계관 관련
@@ -146,15 +130,12 @@ function initEventListeners() {
             alert("프로젝트를 먼저 선택해주세요.");
             return;
         }
-        const memoModal = new bootstrap.Modal(document.getElementById('memoModal'));
+        modalUtils.resetModal('memoModal');
+        modalUtils.showModal('memoModal');
         
-        // 기존 이벤트 리스너 제거 후 새로 연결
+        // 기존 이벤트 리스너 교체
         const confirmBtn = document.querySelector('.confirm-memo-btn');
-        const newConfirmBtn = confirmBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-        newConfirmBtn.addEventListener('click', handleConfirmMemo);
-        
-        memoModal.show();
+        eventUtils.replaceEventListener(confirmBtn, 'click', handleConfirmMemo);
     });
 
     document.querySelector('#characterSection .btn').addEventListener('click', () => {
@@ -162,15 +143,12 @@ function initEventListeners() {
             alert("프로젝트를 먼저 선택해주세요.");
             return;
         }
-        const characterModal = new bootstrap.Modal(document.getElementById('characterModal'));
+        modalUtils.resetModal('characterModal');
+        modalUtils.showModal('characterModal');
         
-        // 기존 이벤트 리스너 제거 후 새로 연결
+        // 기존 이벤트 리스너 교체
         const confirmBtn = document.querySelector('.confirm-character-btn');
-        const newConfirmBtn = confirmBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-        newConfirmBtn.addEventListener('click', handleConfirmCharacter);
-        
-        characterModal.show();
+        eventUtils.replaceEventListener(confirmBtn, 'click', handleConfirmCharacter);
     });
 
     document.querySelector('#worldSection .btn').addEventListener('click', () => {
@@ -178,15 +156,12 @@ function initEventListeners() {
             alert("프로젝트를 먼저 선택해주세요.");
             return;
         }
-        const worldModal = new bootstrap.Modal(document.getElementById('worldModal'));
+        modalUtils.resetModal('worldModal');
+        modalUtils.showModal('worldModal');
         
-        // 기존 이벤트 리스너 제거 후 새로 연결
+        // 기존 이벤트 리스너 교체
         const confirmBtn = document.querySelector('.confirm-world-btn');
-        const newConfirmBtn = confirmBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-        newConfirmBtn.addEventListener('click', handleConfirmWorld);
-        
-        worldModal.show();
+        eventUtils.replaceEventListener(confirmBtn, 'click', handleConfirmWorld);
     });
 
     // 테그 입력 처리
@@ -199,9 +174,11 @@ function initEventListeners() {
                 tagElement.className = 'character-tag';
                 tagElement.innerHTML = `#${tagText} <span class="remove-tag">×</span>`;
                 
-                tagElement.querySelector('.remove-tag').addEventListener('click', function() {
-                    this.parentElement.remove();
-                });
+                eventUtils.replaceEventListener(
+                    tagElement.querySelector('.remove-tag'),
+                    'click',
+                    function() { this.parentElement.remove(); }
+                );
                 
                 document.getElementById('characterTags').appendChild(tagElement);
                 this.value = '';
@@ -222,25 +199,10 @@ function initEventListeners() {
         }
     });
 
-    // 모달 리셋 이벤트
+    // 모달 리셋 이벤트 통합
     document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('hidden.bs.modal', function () {
-            // 입력값 초기화만 수행
-            this.querySelectorAll('input, textarea, select').forEach(input => {
-                input.value = '';
-            });
-            
-            // 이미지 미리보기 초기화
-            const imagePreview = this.querySelector('#characterImagePreview');
-            if (imagePreview) {
-                imagePreview.innerHTML = '';
-            }
-            
-            // 태그 초기화
-            const tagsContainer = this.querySelector('#characterTags');
-            if (tagsContainer) {
-                tagsContainer.innerHTML = '';
-            }
+        modal.addEventListener('hidden.bs.modal', function() {
+            modalUtils.resetModal(this.id);
         });
     });
 
@@ -250,127 +212,7 @@ function initEventListeners() {
     });
 }
 
-// ===============================
-// 프로젝트 관련 함수들
-// ===============================
-function handleAddProject() {
-    const modalContainer = document.getElementById('projectModalContainer');
-    modalContainer.classList.remove('hidden');
-}
 
-function handleProjectSubmit() {
-    const projectName = document.querySelector('#projectNameInput').value.trim();
-    const projectPlot = document.querySelector('#projectPlotInput').value.trim();
-    
-    if (projectName) {
-        createProject(projectName, projectPlot);
-    }
-}
-
-function createProject(projectName, projectDesc) {
-    const projectList = document.querySelector('.project-list');
-    removeGuideText(projectList);
-    
-    const newProject = createProjectElement(projectName);
-    attachProjectEvents(newProject, projectName, projectDesc);
-    
-    projectList.appendChild(newProject);
-    closeAndResetProjectModal();
-
-    handleProjectClick(newProject, projectName, projectDesc);
-}
-
-function createProjectElement(projectName) {
-    const newProject = document.createElement('li');
-    newProject.className = 'project-item';
-    newProject.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center">
-            <span class="project-name cursor-pointer">${projectName}</span>
-            <div>
-                <button class="btn btn-sm btn-link edit-btn"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-sm btn-link delete-btn"><i class="bi bi-trash"></i></button>
-            </div>
-        </div>
-    `;
-    return newProject;
-}
-
-function attachProjectEvents(project, name, desc) {
-    project.querySelector('.project-name').addEventListener('click', () => {
-        handleProjectClick(project, name, desc);
-    });
-    
-    project.querySelector('.delete-btn').addEventListener('click', () => {
-        handleProjectDelete(project);
-    });
-
-    project.querySelector('.edit-btn').addEventListener('click', () => {
-        handleProjectEdit(project, name, desc);
-    });
-}
-
-function handleProjectClick(project, name, desc) {
-    // 기존 선택 제거
-    document.querySelectorAll('.project-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // 새로 선택된 프로젝트 선택
-    project.classList.add('active');
-    projectId = project.getAttribute('data-id');
-    
-    // UI 업데이트 - 기존 부분이 변경되어야 함
-    document.getElementById('projectName').textContent = name;
-    document.getElementById('projectPlot').textContent = desc || '프로젝트의 설명이 입력되는 부분입니다.';
-    
-    // 데이터 로드
-    loadMemoData();
-    loadCharacterData();
-    loadWorldBuildingData();
-    loadEpisodeData();
-}
-
-function handleProjectDelete(project) {
-    if (confirm('프���젝트를 삭제하시겠습니까?')) {
-        project.remove();
-        checkEmptyProjectList();
-    }
-}
-
-function handleProjectEdit(project, name, desc) {
-    const modalContainer = document.getElementById('projectModalContainer');
-    document.querySelector('#projectNameInput').value = name;
-    document.querySelector('#projectPlotInput').value = desc;
-    modalContainer.classList.remove('hidden');
-}
-
-function removeGuideText(projectList) {
-    const guideText = projectList.querySelector('.text-muted');
-    if (guideText) {
-        guideText.remove();
-    }
-}
-
-function checkEmptyProjectList() {
-    const projectList = document.querySelector('.project-list');
-    if (projectList.children.length === 0) {
-        const guideText = document.createElement('li');
-        guideText.className = 'text-muted text-center mt-3';
-        guideText.innerHTML = '<small>+ 버튼을 눌러 프젝트를 생성해주세요</small>';
-        projectList.appendChild(guideText);
-    }
-}
-
-function closeAndResetProjectModal() {
-    const modalContainer = document.getElementById('projectModalContainer');
-    modalContainer.classList.add('hidden');
-    document.querySelector('#projectNameInput').value = '';
-    document.querySelector('#projectPlotInput').value = '';
-}
-
-function handleProjectModalHidden() {
-    this.querySelector('input').value = '';
-}
 
 // ===============================
 // 챕터 관련 함수들
@@ -387,6 +229,9 @@ function createEpisodeElement(episodeNum, epiChapter = '', epiTitle = '', epiCha
     newRow.className = 'chapter-row';
     newRow.setAttribute('data-episode-number', episodeNum);
 
+    // URL 셀에 공유 아이콘 추가
+    const shareUrl = `https://talescape-d61b8.web.app/share.html?episode-id=${episodeId}`;
+    
     newRow.innerHTML = `
         <td>${episodeNum}화</td>
         <td class="title-cell" episode-id="${episodeId}">${epiTitle}</td>
@@ -400,8 +245,9 @@ function createEpisodeElement(episodeNum, epiChapter = '', epiTitle = '', epiCha
             </select>
         </td>
         <td class="url-cell">
-            ${epiUrl ? `<i class="fas fa-external-link-alt share-icon" style="cursor: pointer; color: #666;" 
-            onclick="window.open('${epiUrl}', '_blank')"></i>` : ''}
+            <i class="fas fa-share-alt share-icon" 
+               style="cursor: pointer; color: #666;" 
+               title="공유하기"></i>
         </td>
         <td>
             <button class="btn btn-sm btn-link edit-btn"><i class="bi bi-pencil"></i></button>
@@ -409,17 +255,25 @@ function createEpisodeElement(episodeNum, epiChapter = '', epiTitle = '', epiCha
         </td>
     `;
 
+    // 공유 아이콘 클릭 이벤트 추가
+    const shareIcon = newRow.querySelector('.share-icon');
+    shareIcon.addEventListener('click', async (e) => {
+        e.stopPropagation(); // 행 클릭 이벤트 방지
+        window.open(shareUrl, '_blank');
+    });
+
     // 상태 변경 시 자동 저장
     const statusSelect = newRow.querySelector('.status-select');
     statusSelect.addEventListener('change', async () => {
-        try {
-            await updateDoc(doc(db, "episode", episodeId), {
-                status: statusSelect.value
-            });
-            console.log("Status updated:", statusSelect.value);
-        } catch (error) {
-            console.error("상태 업데이트 중 오류:", error);
+        const result = await dataUtils.updateDocument("episode", episodeId, {
+            status: statusSelect.value
+        });
+        
+        if (!result.success) {
+            console.error("상태 업데이트 중 오류:", result.error);
             alert("상태 변경에 실패했습니다.");
+        } else {
+            console.log("Status updated:", statusSelect.value);
         }
     });
 
@@ -451,68 +305,66 @@ function attachChapterEvents(row) {
 
 // 에피소드 수정 처리
 function handleChapterEdit(row) {
-    const chapterModal = new bootstrap.Modal(document.getElementById('chapterModal'));
     const titleCell = row.querySelector('.title-cell');
     const episodeId = titleCell?.getAttribute('episode-id');
     
     if (episodeId) {
-        try {
-            const docRef = doc(db, "episode", episodeId);
-            getDoc(docRef).then((docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
+        dataUtils.getDocument("episode", episodeId).then(async (data) => {
+            if (data) {
+                // 모달에 데이터 채우기
+                document.getElementById('newChapterCheck').checked = data.is_new_chapter;
+                document.getElementById('chapterNameInput').value = data.chapter || '';
+                document.getElementById('chapterTitleInput').value = data.title || '';
+                document.getElementById('chapterCharacterInput').value = data.character || '';
+                document.getElementById('chapterStatusInput').value = data.status || '작성중';
+                document.getElementById('chapterUrlInput').value = data.url || '';
+                
+                // 새 챕터 체크박스에 따라 입력칸 표시/숨김
+                const chapterNameGroup = document.getElementById('chapterNameGroup');
+                chapterNameGroup.style.display = data.is_new_chapter ? 'block' : 'none';
+                
+                modalUtils.showModal('chapterModal');
+                
+                // 확인 버튼 이벤트 리스너
+                const confirmBtn = document.querySelector('.confirm-chapter-btn');
+                eventUtils.replaceEventListener(confirmBtn, 'click', async () => {
+                    const isNewChapter = document.getElementById('newChapterCheck').checked;
+                    const epiChapter = isNewChapter ? document.getElementById('chapterNameInput').value.trim() : '';
+                    const epiTitle = document.getElementById('chapterTitleInput').value.trim();
+                    const epiCharacter = document.getElementById('chapterCharacterInput').value.trim();
+                    const epiStatus = document.getElementById('chapterStatusInput').value;
+                    const epiUrl = document.getElementById('chapterUrlInput').value.trim();
                     
-                    // 모달에 데이터 채우기
-                    document.getElementById('newChapterCheck').checked = data.is_new_chapter;
-                    document.getElementById('chapterNameInput').value = data.chapter || '';
-                    document.getElementById('chapterTitleInput').value = data.title || '';
-                    document.getElementById('chapterCharacterInput').value = data.character || '';
-                    document.getElementById('chapterStatusInput').value = data.status || '작성중';
-                    document.getElementById('chapterUrlInput').value = data.url || '';
-                    
-                    // 새 챕터 체크박스에 따라 입력칸 표시/숨김
-                    const chapterNameGroup = document.getElementById('chapterNameGroup');
-                    chapterNameGroup.style.display = data.is_new_chapter ? 'block' : 'none';
-                    
-                    // 확인 버튼 이벤트 리스너
-                    const confirmBtn = document.querySelector('.confirm-chapter-btn');
-                    confirmBtn.onclick = async () => {
-                        const isNewChapter = document.getElementById('newChapterCheck').checked;
-                        const epiChapter = isNewChapter ? document.getElementById('chapterNameInput').value.trim() : '';
-                        const epiTitle = document.getElementById('chapterTitleInput').value.trim();
-                        const epiCharacter = document.getElementById('chapterCharacterInput').value.trim();
-                        const epiStatus = document.getElementById('chapterStatusInput').value;
-                        const epiUrl = document.getElementById('chapterUrlInput').value.trim();
-                        
-                        if (epiTitle) {
-                            try {
-                                await updateDoc(docRef, {
-                                    is_new_chapter: isNewChapter,
-                                    chapter: epiChapter,
-                                    title: epiTitle,
-                                    character: epiCharacter,
-                                    status: epiStatus,
-                                    url: epiUrl
-                                });
+                    if (!validationUtils.isEmpty(epiTitle)) {
+                        const result = await dataUtils.updateDocument("episode", episodeId, {
+                            is_new_chapter: isNewChapter,
+                            chapter: epiChapter,
+                            title: epiTitle,
+                            character: epiCharacter,
+                            status: epiStatus,
+                            url: epiUrl
+                        });
 
-                                console.log("Episode updated:", episodeId);
-                                await loadEpisodeData();
-                                
-                                chapterModal.hide();
-                            } catch (error) {
-                                console.error("에피소드 수정 중 오류:", error);
-                                alert("에피소드 수정에 실패했습니다.");
-                            }
+                        if (result.success) {
+                            console.log("Episode updated:", episodeId);
+                            await loadEpisodeData();
+                            modalUtils.hideModal('chapterModal');
+                        } else {
+                            console.error("에피소드 수정 중 오류:", result.error);
+                            alert("에피소드 수정에 실패했습니다.");
                         }
-                    };
-                    
-                    chapterModal.show();
-                }
-            });
-        } catch (error) {
+                    } else {
+                        alert("제목을 입력해주세요.");
+                    }
+                });
+            } else {
+                console.error("해당 에피소드 데이터를 찾을 수 없습니다.");
+                alert("에피소드 데이터를 불러오는 중 문제가 발생했습니다.");
+            }
+        }).catch((error) => {
             console.error("에피소드 데이터 로드 중 오류:", error);
             alert("에피소드 데이터를 불러오는 중 문제가 발생했습니다.");
-        }
+        });
     }
 }
 
@@ -537,15 +389,15 @@ async function handleChapterDelete(row) {
 // 메모 관련 함수들
 // ===============================
 function handleAddMemo() {
-    const memoModal = new bootstrap.Modal(document.getElementById('memoModal'));
-    document.getElementById('memoInput').value = '';
-    memoModal.show();
+    if (!projectId) {
+        alert("프로젝트를 먼저 선택해주세요.");
+        return;
+    }
+    modalUtils.showModal('memoModal');
 }
 
 // 메모 추가 처리 함수
 async function handleConfirmMemo() {
-    console.log("Adding memo with projectId:", projectId);
-    
     if (!projectId) {
         alert("프로젝트를 먼저 선택해주세요.");
         return;
@@ -557,29 +409,21 @@ async function handleConfirmMemo() {
     const memoTitle = titleInput.value.trim();
     const memoContent = contentInput.value.trim();
 
-    if (memoContent) {
-        try {
-            const docRef = await addDoc(collection(db, "memo"), {
-                project_id: projectId,
-                title: memoTitle,
-                content: memoContent,
-                createdAt: new Date()
-            });
+    if (!validationUtils.isEmpty(memoContent)) {
+        const result = await dataUtils.createDocument("memo", {
+            project_id: projectId,
+            title: memoTitle,
+            content: memoContent
+        });
 
-            console.log("Memo added with ID:", docRef.id);
-            
-            // 입력 필드 초기화
+        if (result.success) {
+            console.log("Memo added with ID:", result.id);
             titleInput.value = '';
             contentInput.value = '';
-            
-            // 모달 닫기
-            const modal = bootstrap.Modal.getInstance(document.getElementById('memoModal'));
-            modal.hide();
-
-            // 메모 목록 새로고침
+            modalUtils.hideModal('memoModal');
             await loadMemoData();
-        } catch (error) {
-            console.error("메모 추가 중 오류:", error);
+        } else {
+            console.error("메모 추가 중 오류:", result.error);
             alert("메모 추가에 실패했습니다.");
         }
     } else {
@@ -606,12 +450,9 @@ function createMemoElement(memoId, memoTitle, memoContent) {
     // 수정 버튼 클릭 이벤트
     memoElement.querySelector('.edit-memo-btn').addEventListener('click', async () => {
         try {
-            const docRef = doc(db, "memo", memoId);
-            const docSnap = await getDoc(docRef);
+            const data = await dataUtils.getDocument("memo", memoId);
             
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                
+            if (data) {
                 // 모달 초기화 전에 기존 데이터 설정
                 const titleInput = document.getElementById('memoTitleInput');
                 const contentInput = document.getElementById('memoContentInput');
@@ -620,7 +461,7 @@ function createMemoElement(memoId, memoTitle, memoContent) {
                 contentInput.value = data.content || '';
                 
                 // 모달 표시
-                const memoModal = new bootstrap.Modal(document.getElementById('memoModal'));
+                modalUtils.showModal('memoModal');
                 
                 // 기존 이벤트 리스너 제거 후 새로 연결
                 const confirmBtn = document.querySelector('.confirm-memo-btn');
@@ -632,23 +473,25 @@ function createMemoElement(memoId, memoTitle, memoContent) {
                     const newContent = contentInput.value.trim();
                     
                     if (newTitle && newContent) {
-                        try {
-                            await updateDoc(docRef, {
-                                title: newTitle,
-                                content: newContent,
-                                lastModified: new Date()
-                            });
-                            
-                            memoModal.hide();
+                        const result = await dataUtils.updateDocument("memo", memoId, {
+                            title: newTitle,
+                            content: newContent,
+                            lastModified: new Date()
+                        });
+                        
+                        if (result.success) {
+                            modalUtils.hideModal('memoModal');
                             await loadMemoData();
-                        } catch (error) {
-                            console.error("메모 수정 중 오류:", error);
+                        } else {
+                            console.error("메모 수정 중 오류:", result.error);
                             alert("메모 수정에 실패했습니다.");
                         }
+                    } else {
+                        alert("제목과 내용을 모두 입력해주세요.");
                     }
                 });
-                
-                memoModal.show();
+            } else {
+                throw new Error("메모 데이터를 찾을 수 없습니다.");
             }
         } catch (error) {
             console.error("메모 데이터 로드 중 오류:", error);
@@ -708,9 +551,11 @@ function updateMemo(memo) {
 // 캐릭터 관련 함수들
 // ===============================
 function handleAddCharacter() {
-    const characterModal = new bootstrap.Modal(document.getElementById('characterModal'));
-    resetCharacterModal();
-    characterModal.show();
+    if (!projectId) {
+        alert("프로젝트를 먼저 선택해주세요.");
+        return;
+    }
+    modalUtils.showModal('characterModal');
 }
 
 // 캐릭터 추가 처리 함수
@@ -728,26 +573,25 @@ async function handleConfirmCharacter() {
     const characterImageUrl = document.getElementById('characterImagePreview').querySelector('img')?.src || '';
 
     if (characterName) {
-        try {
-            const docRef = await addDoc(collection(db, "character"), {
-                project_id: projectId,
-                name: characterName,
-                profile: characterProfile,
-                desc: characterDesc,
-                tags: characterTags,
-                imageUrl: characterImageUrl,
-                createdAt: new Date()
-            });
+        const result = await dataUtils.createDocument("character", {
+            project_id: projectId,
+            name: characterName,
+            profile: characterProfile,
+            desc: characterDesc,
+            tags: characterTags,
+            imageUrl: characterImageUrl
+        });
 
-            console.log("Character added successfully:", docRef.id);
-            loadCharacterData();  // 캐릭터 목록 새로고침
-            
-            const modal = bootstrap.Modal.getInstance(document.getElementById('characterModal'));
-            modal.hide();
-        } catch (error) {
-            console.error("캐릭터 추가 중 오류 발생:", error);
+        if (result.success) {
+            console.log("Character added successfully:", result.id);
+            loadCharacterData();  // 캐릭터 록 새로고침
+            modalUtils.hideModal('characterModal');
+        } else {
+            console.error("캐릭터 추가 중 오류 발생:", result.error);
             alert("캐릭터를 추가하는 중 문제가 발생했습니다.");
         }
+    } else {
+        alert("캐릭터 이름은 필수 항목입니다.");
     }
 }
 
@@ -792,16 +636,10 @@ function attachCharacterEvents(character, characterId) {
 }
 
 function handleCharacterEdit(characterId) {
-    const characterModal = new bootstrap.Modal(document.getElementById('characterModal'));
-
     // Firestore에서 캐릭터 데이터 가져오기
-    const docRef = doc(db, "character", characterId);
-
-    getDoc(docRef).then((docSnap) => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-
-            // 입력 필요 Firestore 데이터 채우기
+    dataUtils.getDocument("character", characterId).then((data) => {
+        if (data) {
+            // 입력 필드에 데이터 채우기
             document.getElementById('characterNameInput').value = data.name || '';
             document.getElementById('characterProfileInput').value = data.profile || '';
             document.getElementById('characterDescInput').value = data.desc || '';
@@ -824,66 +662,58 @@ function handleCharacterEdit(characterId) {
                 : '';
 
             // 모달 표시
-            characterModal.show();
+            modalUtils.showModal('characterModal');
+
+            // 확인 버튼 이벤트 설정
+            const confirmBtn = document.querySelector('.confirm-character-btn');
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+            newConfirmBtn.addEventListener('click', async () => {
+                const updatedData = {
+                    name: document.getElementById('characterNameInput').value.trim(),
+                    profile: document.getElementById('characterProfileInput').value.trim(),
+                    desc: document.getElementById('characterDescInput').value.trim(),
+                    tags: Array.from(document.getElementById('characterTags').children).map(tag =>
+                        tag.textContent.replace('×', '').trim()
+                    ),
+                    imageUrl: document.getElementById('characterImagePreview').querySelector('img')?.src || '',
+                };
+
+                if (updatedData.name) {
+                    const result = await dataUtils.updateDocument("character", characterId, updatedData);
+                    
+                    if (result.success) {
+                        console.log(`Character with ID: ${characterId} has been updated.`);
+                        modalUtils.hideModal('characterModal');
+                        loadCharacterData();
+                    } else {
+                        console.error("캐릭터 수정 중 오류:", result.error);
+                        alert("캐릭터 수정에 실패했습니다.");
+                    }
+                } else {
+                    alert("캐릭터 이름은 필수 항목입니다.");
+                }
+            });
         } else {
             console.error("해당 캐릭터 데이터를 찾을 수 없습니다.");
             alert("캐릭터 데이터를 불러오는 중 문제가 발생했습니다.");
         }
     }).catch((error) => {
-        console.error("Firestore에서 캐릭터 데이터 가져오기 중 오류 발생:", error);
+        console.error("캐릭터 데이터 가져오기 중 오류 발생:", error);
         alert("캐릭터 데이터를 불러오는 중 오류가 발생했습니다.");
     });
-
-    // 확인 버튼 이벤트 설정
-    const confirmBtn = document.querySelector('.confirm-character-btn');
-    const newConfirmBtn = confirmBtn.cloneNode(true); // 기존 이벤트 제거용 복제
-    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-
-    newConfirmBtn.addEventListener('click', async () => {
-        const updatedData = {
-            name: document.getElementById('characterNameInput').value.trim(),
-            profile: document.getElementById('characterProfileInput').value.trim(),
-            desc: document.getElementById('characterDescInput').value.trim(),
-            tags: Array.from(document.getElementById('characterTags').children).map(tag =>
-                tag.textContent.replace('×', '').trim()
-            ),
-            imageUrl: document.getElementById('characterImagePreview').querySelector('img')?.src || '',
-        };
-
-        if (updatedData.name) {
-            try {
-                // Firestore 업데이트
-                await updateDoc(docRef, updatedData);
-
-                console.log(`Character with ID: ${characterId} has been updated.`);
-                alert("캐릭터가 성공적으로 수정되었습니다.");
-                closeModal('characterModal'); // 달 닫기
-            } catch (error) {
-                console.error("캐릭터 수정 중 오류 발생:", error);
-                alert("캐릭터 수정에 실패했습니다.");
-            }
-        } else {
-            alert("캐릭터 이름은 필수 항목입니다.");
-        }
-    });
-}
-
-function resetCharacterModal() {
-    document.getElementById('characterNameInput').value = '';
-    document.getElementById('characterProfileInput').value = '';
-    document.getElementById('characterDescInput').value = '';
-    document.getElementById('characterTags').innerHTML = '';
-    document.getElementById('characterImagePreview').innerHTML = '';
-    document.getElementById('characterImageInput').value = '';
 }
 
 // ===============================
 // 세계관 관련 함수들
 // ===============================
 function handleAddWorld() {
-    const worldModal = new bootstrap.Modal(document.getElementById('worldModal'));
-    resetWorldModal();
-    worldModal.show();
+    if (!projectId) {
+        alert("프로젝트를 먼저 선택해주세요.");
+        return;
+    }
+    modalUtils.showModal('worldModal');
 }
 
 // 세계관 추가 처리 함수
@@ -896,24 +726,23 @@ async function handleConfirmWorld() {
     const worldTitle = document.getElementById('worldTitleInput').value.trim();
     const worldContent = document.getElementById('worldContentInput').value.trim();
 
-    if (worldTitle && worldContent) {
-        try {
-            const docRef = await addDoc(collection(db, "worldBuilding"), {
-                project_id: projectId,
-                title: worldTitle,
-                content: worldContent,
-                createdAt: new Date()
-            });
+    if (!validationUtils.isEmpty(worldTitle) && !validationUtils.isEmpty(worldContent)) {
+        const result = await dataUtils.createDocument("worldBuilding", {
+            project_id: projectId,
+            title: worldTitle,
+            content: worldContent
+        });
 
-            console.log("World Building added successfully:", docRef.id);
-            loadWorldBuildingData();  // 세계관 목록 새로고침
-            
-            const modal = bootstrap.Modal.getInstance(document.getElementById('worldModal'));
-            modal.hide();
-        } catch (error) {
-            console.error("세계관 추가 중 오류 발생:", error);
+        if (result.success) {
+            console.log("World Building added successfully:", result.id);
+            loadWorldBuildingData();
+            modalUtils.hideModal('worldModal');
+        } else {
+            console.error("세계관 추가 중 오류 발생:", result.error);
             alert("세계관을 추가하는 중 문제가 발생했습니다.");
         }
+    } else {
+        alert("제목과 내용을 모두 입력해주세요.");
     }
 }
 
@@ -947,25 +776,19 @@ function attachWorldEvents(world, worldId) {
 }
 
 function handleWorldEdit(worldId) {
-    const worldModal = new bootstrap.Modal(document.getElementById('worldModal'));
-
-    // Firestore에서 기존 이터 가져오기
-    const docRef = doc(db, "worldBuilding", worldId);
-
-    getDoc(docRef).then((docSnap) => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-
+    // Firestore에서 세계관 데이터 가져오기
+    dataUtils.getDocument("worldBuilding", worldId).then((data) => {
+        if (data) {
             // 모달에 데이터 채우기
             document.getElementById('worldTitleInput').value = data.title || '';
             document.getElementById('worldContentInput').value = data.content || '';
 
             // 모달 표시
-            worldModal.show();
+            modalUtils.showModal('worldModal');
 
             // 확인 버튼 이벤트 설정
             const confirmBtn = document.querySelector('.confirm-world-btn');
-            const newConfirmBtn = confirmBtn.cloneNode(true); // 기존 이벤트 제거용 복제
+            const newConfirmBtn = confirmBtn.cloneNode(true);
             confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
             newConfirmBtn.addEventListener('click', async () => {
@@ -973,36 +796,32 @@ function handleWorldEdit(worldId) {
                 const content = document.getElementById('worldContentInput').value.trim();
 
                 if (title && content) {
-                    try {
-                        // Firestore 데이터 업데이트
-                        await updateDoc(docRef, { title, content });
+                    const result = await dataUtils.updateDocument("worldBuilding", worldId, {
+                        title,
+                        content,
+                        lastModified: new Date()
+                    });
 
+                    if (result.success) {
                         console.log(`World with ID: ${worldId} has been updated.`);
-                        alert("세계관이 성공적으로 수정되었습니다.");
-
-                        // 모달 닫기
-                        closeModal('worldModal');
-                    } catch (error) {
-                        console.error("세계관 수정 중 오류 발생:", error);
+                        modalUtils.hideModal('worldModal');
+                        loadWorldBuildingData();
+                    } else {
+                        console.error("세계관 수정 중 오류:", result.error);
                         alert("세계관 수정에 실패했습니다.");
                     }
                 } else {
-                    alert("제���과 내용을 모두 입력해주세요.");
+                    alert("제목과 내용을 모두 입력해주세요.");
                 }
             });
         } else {
             console.error("해당 세계관 데이터를 찾을 수 없습니다.");
-            alert("세계관 이터를 불러오는 중 문제가 발생했습니다.");
+            alert("세계관 데이터를 불러오는 중 문제가 발생했습니다.");
         }
     }).catch((error) => {
-        console.error("Firestore에서 세계관 데이터 가져오기 중 오류 발생:", error);
-        alert("세계관 이터를 불러오는 중 오류가 발생했습니다.");
+        console.error("세계관 데이터 가져오기 중 오류:", error);
+        alert("세계관 데이터를 불러오는 중 오류가 발생했습니다.");
     });
-}
-
-function resetWorldModal() {
-    document.getElementById('worldTitleInput').value = '';
-    document.getElementById('worldContentInput').value = '';
 }
 
 // ===============================
@@ -1015,52 +834,8 @@ function closeModal(modalId) {
     }
 }
 
-function resetChapterModal() {
-    document.getElementById('newChapterCheck').checked = false;
-    document.getElementById('chapterNameGroup').style.display = 'none';  // 터 이름 입력칸 숨김
-    document.getElementById('chapterTitleInput').value = '';
-    document.getElementById('chapterCharacterInput').value = '';
-    document.getElementById('chapterStatusInput').value = '작성중';
-    document.getElementById('chapterUrlInput').value = '';
-}
-
-// 데이터 로드
-function loadData(collectionName, listSelector, createElementCallback, errorMessage) {
-    try {
-        const q = query(
-            collection(db, collectionName),
-            where("project_id", "==", projectId) // 특정 project_id로 필터링
-        );
-
-        // 실시간 데이트
-        onSnapshot(q, (snapshot) => {
-            const listElement = document.querySelector(listSelector);
-            if (!listElement) {
-                console.error(`${listSelector} 요소를 찾을 수 없습니다.`);
-                return;
-            }
-
-            // 기존 스 초기화 (중복 추가 방지)
-            listElement.innerHTML = "";
-
-            // 스냅샷 순회하며 데이터 추가
-            snapshot.forEach((doc) => {
-                const dataWithId = { id: doc.id, ...doc.data() };
-                const newElement = createElementCallback(dataWithId);
-                listElement.appendChild(newElement); // 화면에 요소 추가
-            });
-
-            console.log(`실시간 ${collectionName} 데이터:`, snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-        });
-    } catch (error) {
-        console.error(`데이터 로드 중 오류 발생:`, error);
-        alert(errorMessage);
-    }
-}
-
+// 데이터 로드 함수들
 export function loadMemoData() {
-    console.log("Loading memos for project:", projectId); // 프로젝트 ID 확인
-    
     const memoList = document.querySelector('.memo-list');
     if (!memoList) {
         console.error("Memo list element not found");
@@ -1068,14 +843,8 @@ export function loadMemoData() {
     }
     
     memoList.innerHTML = '';
-
-    const q = query(
-        collection(db, "memo"),
-        where("project_id", "==", projectId)
-    );
-
-    onSnapshot(q, (snapshot) => {
-        console.log("Memo snapshot:", snapshot.docs.map(doc => doc.data())); // 데이터 확인
+    
+    dataUtils.loadData("memo", projectId, (snapshot) => {
         memoList.innerHTML = '';
         snapshot.forEach((doc) => {
             const data = doc.data();
@@ -1087,15 +856,12 @@ export function loadMemoData() {
 
 export function loadCharacterData() {
     const characterList = document.querySelector('.character-list');
-    characterList.innerHTML = ''; // 기존 캐릭터 초기화
-
-    const q = query(
-        collection(db, "character"),
-        where("project_id", "==", projectId)
-    );
-
-    onSnapshot(q, (snapshot) => {
-        characterList.innerHTML = ''; // 실시간 업데이트를 위한 초기화
+    if (!characterList) return;
+    
+    characterList.innerHTML = '';
+    
+    dataUtils.loadData("character", projectId, (snapshot) => {
+        characterList.innerHTML = '';
         snapshot.forEach((doc) => {
             const data = doc.data();
             const characterElement = createCharacterElement(
@@ -1113,15 +879,12 @@ export function loadCharacterData() {
 
 export function loadWorldBuildingData() {
     const worldList = document.querySelector('.world-list');
-    worldList.innerHTML = ''; // 기존 세계관 초기화
-
-    const q = query(
-        collection(db, "worldBuilding"),
-        where("project_id", "==", projectId)
-    );
-
-    onSnapshot(q, (snapshot) => {
-        worldList.innerHTML = ''; // 실시간 업데이트를 위한 초기화
+    if (!worldList) return;
+    
+    worldList.innerHTML = '';
+    
+    dataUtils.loadData("worldBuilding", projectId, (snapshot) => {
+        worldList.innerHTML = '';
         snapshot.forEach((doc) => {
             const data = doc.data();
             const worldElement = createWorldElement(doc.id, data.title, data.content);
@@ -1132,20 +895,17 @@ export function loadWorldBuildingData() {
 
 export function loadEpisodeData() {
     const tbody = document.querySelector('tbody');
+    if (!tbody) return;
+    
     tbody.innerHTML = '';
-
-    const q = query(
-        collection(db, "episode"),
-        where("project_id", "==", projectId)
-    );
-
-    onSnapshot(q, (snapshot) => {
+    
+    dataUtils.loadData("episode", projectId, (snapshot) => {
         tbody.innerHTML = '';
-        let episodeNum = 1;  // 순차적인 번호 부여를 위한 변수
+        let episodeNum = 1;
         let chapterNum = 1;
         let currentChapter = '';
 
-        // ��이터를 열로 변환하여 createdAt 기준으로 정렬
+        // 데이터를 createdAt 기준으로 정렬
         const episodes = snapshot.docs
             .map(doc => ({id: doc.id, ...doc.data()}))
             .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
@@ -1176,7 +936,7 @@ export function loadEpisodeData() {
                 });
             }
 
-            // 에피소드 번호 정: 기존 번호가 있면 사용, 없으면 차 번호 부여
+            // 에피소드 번호 정렬
             const currentEpisodeNum = data.episode_number || episodeNum++;
             
             const episodeElement = createEpisodeElement(
@@ -1196,40 +956,44 @@ export function loadEpisodeData() {
 
 
 async function handleDelete(collectionName, id) {
-    try {
-        const docRef = doc(db, collectionName, id);
+    const typeNames = {
+        memo: "메모",
+        character: "캐릭터",
+        worldBuilding: "세계관",
+        episode: "에피소드"
+    };
+    
+    if (!confirm(`${typeNames[collectionName]}을(를) 삭제하시겠습니까?`)) {
+        return;
+    }
 
+    try {
         // 에피소드인 경우, 관련된 에디터 내용도 삭제
         if (collectionName === "episode") {
-            // 에디터 내용 문서 삭제
-            const contentRef = doc(db, "episode_content", id);
-            try {
-                await deleteDoc(contentRef);
-                console.log("에피소드 내용이 제되었습니다.");
-            } catch (error) {
-                console.error("에피소드 내용 삭제 중 오류:", error);
-            }
+            await dataUtils.deleteDocument("episode_content", id);
         }
 
-        // 문서 삭제
-        await deleteDoc(docRef);
-        console.log(`${collectionName} 문서가 성공적으로 삭제되었습니다.`);
-
-        // 에피소드인 경우 번호 재정렬
-        if (collectionName === "episode") {
-            await reorderEpisodes();
+        const result = await dataUtils.deleteDocument(collectionName, id);
+        
+        if (result.success) {
+            // 에피소드인 경우 번호 재정렬
+            if (collectionName === "episode") {
+                await reorderEpisodes();
+            } else {
+                if (collectionName === "memo") await loadMemoData();
+                else if (collectionName === "character") await loadCharacterData();
+                else if (collectionName === "worldBuilding") await loadWorldBuildingData();
+            }
         } else {
-            // 다른 컬렉션의 경우 기존 로직대로 처리
-            if (collectionName === "memo") await loadMemoData();
-            else if (collectionName === "character") await loadCharacterData();
-            else if (collectionName === "worldBuilding") await loadWorldBuildingData();
+            throw result.error;
         }
     } catch (error) {
-        console.error(`${collectionName} 삭제 중 오류 발생:`, error);
-        alert(`${collectionName} 항목 삭제에 실패했습니다.`);
+        console.error(`${typeNames[collectionName]} 삭제 중 오류 발생:`, error);
+        alert(`${typeNames[collectionName]} 삭제에 실패했습니다.`);
     }
 }
 
+// 새 항목 추가 처리 함수
 async function handleConfirmChapter() {
     if (!projectId) {
         alert("프로젝트를 먼저 선택해주세요.");
@@ -1245,19 +1009,16 @@ async function handleConfirmChapter() {
     
     if (epiTitle) {
         try {
-            const q = query(
-                collection(db, "episode"),
-                where("project_id", "==", projectId)
-            );
-            const querySnapshot = await getDocs(q);
+            // 현재 최대 에피소드 번호 가져오기
+            const snapshot = await dataUtils.loadDataOnce("episode", projectId);
             let maxEpisodeNumber = 0;
             
-            querySnapshot.forEach((doc) => {
+            snapshot.forEach((doc) => {
                 const episodeNumber = doc.data().episode_number || 0;
                 maxEpisodeNumber = Math.max(maxEpisodeNumber, episodeNumber);
             });
 
-            const docRef = await addDoc(collection(db, "episode"), {
+            const result = await dataUtils.createDocument("episode", {
                 project_id: projectId,
                 is_new_chapter: isNewChapter,
                 chapter: epiChapter,
@@ -1269,32 +1030,35 @@ async function handleConfirmChapter() {
                 createdAt: new Date()
             });
 
-            console.log("Episode added with ID:", docRef.id);
-            await loadEpisodeData();
-            
-            const modal = bootstrap.Modal.getInstance(document.getElementById('chapterModal'));
-            modal.hide();
-
-            resetChapterModal();
+            if (result.success) {
+                console.log("Episode added with ID:", result.id);
+                modalUtils.hideModal('chapterModal');
+                await loadEpisodeData();
+            } else {
+                throw result.error;
+            }
         } catch (error) {
             console.error("에피소드 추가 중 오류:", error);
             alert("에피소드를 추가하는 중 문제가 발생했습니다.");
         }
+    } else {
+        alert("제목을 입력해주세요.");
     }
 }
 
 // 챕터 이름 수정 함수
 async function handleChapterNameEdit(episodeId, currentChapterName) {
     const newChapterName = prompt('챕터 이름을 입력하세요:', currentChapterName);
-    if (newChapterName !== null && newChapterName.trim() !== '') {
-        try {
-            await updateDoc(doc(db, "episode", episodeId), {
-                chapter: newChapterName.trim()
-            });
+    if (newChapterName !== null && !validationUtils.isEmpty(newChapterName)) {
+        const result = await dataUtils.updateDocument("episode", episodeId, {
+            chapter: newChapterName.trim()
+        });
+        
+        if (result.success) {
             console.log("Chapter name updated:", newChapterName);
             await loadEpisodeData();
-        } catch (error) {
-            console.error("챕터 이름 수정 중 오류:", error);
+        } else {
+            console.error("챕터 이름 수정 중 오류:", result.error);
             alert("챕터 이름 수정에 실패했습니다.");
         }
     }
@@ -1304,24 +1068,21 @@ async function handleChapterNameEdit(episodeId, currentChapterName) {
 async function handleChapterNameDelete(episodeId, chapterName) {
     if (confirm(`"${chapterName}" 챕터를 삭제하시겠습니까? (에피소드는 유지됩니다)`)) {
         try {
-            // 당 챕터의 ��든 에피소드 찾기
-            const q = query(
-                collection(db, "episode"),
-                where("project_id", "==", projectId),
-                where("chapter", "==", chapterName)
-            );
-            
-            const snapshot = await getDocs(q);
+            // 해당 챕터의 모든 에피소드 찾기
+            const episodes = await dataUtils.loadDataWithFilter("episode", projectId, {
+                field: "chapter",
+                value: chapterName
+            });
             
             // 모든 에피소드의 챕터 정보 제거
-            const updatePromises = snapshot.docs.map(doc => 
-                updateDoc(doc.ref, {
+            const updatePromises = episodes.docs.map(doc => 
+                dataUtils.updateDocument("episode", doc.id, {
                     is_new_chapter: false,
                     chapter: ''
                 })
             );
-            await Promise.all(updatePromises);
             
+            await Promise.all(updatePromises);
             console.log("Chapter removed (episodes preserved)");
             await loadEpisodeData();
         } catch (error) {
@@ -1334,21 +1095,17 @@ async function handleChapterNameDelete(episodeId, chapterName) {
 // 에피소드 번호 재정렬 함수
 async function reorderEpisodes() {
     try {
-        // 현재 프로젝트의 모든 에피소드를 가져와서 정렬
-        const q = query(
-            collection(db, "episode"),
-            where("project_id", "==", projectId)
-        );
-        const querySnapshot = await getDocs(q);
+        // 현재 프로젝트의 모든 에피소드 가져와서 정렬
+        const snapshot = await dataUtils.loadDataOnce("episode", projectId);
         
         // createdAt 기준으로 정렬
-        const episodes = querySnapshot.docs
+        const sortedEpisodes = snapshot.docs
             .map(doc => ({id: doc.id, ...doc.data()}))
             .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
 
         // 순차적으로 번호 재할당
-        const updatePromises = episodes.map((episode, index) => 
-            updateDoc(doc(db, "episode", episode.id), {
+        const updatePromises = sortedEpisodes.map((episode, index) => 
+            dataUtils.updateDocument("episode", episode.id, {
                 episode_number: index + 1
             })
         );
@@ -1360,54 +1117,45 @@ async function reorderEpisodes() {
         await loadEpisodeData();
     } catch (error) {
         console.error("에피소드 번호 재정렬 중 오류:", error);
+        alert("에피소드 번호 재정렬에 실패했습니다.");
     }
 }
 
 // 프로젝트 삭제 함수
 async function deleteProject(projectId) {
-    if (confirm('정말로 이 프로젝트를 삭제하시겠습니까?')) {
-        try {
-            // 1. 에피소드 및 에피소드 내용 삭제
-            const episodesRef = collection(db, "episode");
-            const q = query(episodesRef, where("project_id", "==", projectId));
-            const episodeSnap = await getDocs(q);
+    if (!confirm('정말로 이 프로젝트를 삭제하시겠습니까?')) return;
+    
+    try {
+        const collections = [
+            { name: "episode", needsContent: true },
+            { name: "memo", needsContent: false },
+            { name: "character", needsContent: false },
+            { name: "worldBuilding", needsContent: false }
+        ];
+
+        // 각 컬렉션 삭제
+        for (const { name, needsContent } of collections) {
+            const documents = await dataUtils.loadData(name, projectId);
             
-            const deletePromises = episodeSnap.docs.map(async doc => {
-                // 에피소드 내용도 함께 삭제
-                await deleteDoc(doc(db, "episode_content", doc.id));
-                return deleteDoc(doc.ref);
-            });
-            await Promise.all(deletePromises);
-            
-            // 2. 메모 삭제
-            const memoRef = collection(db, "memo");
-            const memoQuery = query(memoRef, where("project_id", "==", projectId));
-            const memoSnap = await getDocs(memoQuery);
-            await Promise.all(memoSnap.docs.map(doc => deleteDoc(doc.ref)));
-            
-            // 3. 캐릭터 노트 삭제
-            const characterRef = collection(db, "character");
-            const characterQuery = query(characterRef, where("project_id", "==", projectId));
-            const characterSnap = await getDocs(characterQuery);
-            await Promise.all(characterSnap.docs.map(doc => deleteDoc(doc.ref)));
-            
-            // 4. 세계관 삭제
-            const worldBuildingRef = collection(db, "worldBuilding");
-            const worldBuildingQuery = query(worldBuildingRef, where("project_id", "==", projectId));
-            const worldBuildingSnap = await getDocs(worldBuildingQuery);
-            await Promise.all(worldBuildingSnap.docs.map(doc => deleteDoc(doc.ref)));
-            
-            // 5. 마지막으로 프로젝트 삭제
-            const docRef = doc(db, "project", projectId);
-            await deleteDoc(docRef);
-            
-            console.log("프로젝트와 관���된 모든 데이터가 삭제되었습니다.");
-            loadProjects();  // 프로젝트 목록 새로고침
-        } catch (error) {
-            console.error("프로젝트 삭제 중 오류:", error);
-            alert("프로젝트를 삭제하는 중 문제가 발생했습니다.");
+            await Promise.all(documents.docs.map(async doc => {
+                if (needsContent) {
+                    await dataUtils.deleteDocument(`${name}_content`, doc.id);
+                }
+                return dataUtils.deleteDocument(name, doc.id);
+            }));
         }
+
+        // 프로젝트 삭제
+        const result = await dataUtils.deleteDocument("project", projectId);
+        
+        if (result.success) {
+            console.log("프로젝트와 관련 데이터가 삭제되었습니다.");
+            loadProjects();
+        } else {
+            throw result.error;
+        }
+    } catch (error) {
+        console.error("프로젝트 삭제 중 오류:", error);
+        alert("프로젝트를 삭제하는 중 문제가 발생했습니다.");
     }
 }
-
-
