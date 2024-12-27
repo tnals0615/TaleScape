@@ -112,7 +112,10 @@ function initEventListeners() {
 
     // 챕터 관련 - 단순화
     document.querySelector('#addChapterBtn').addEventListener('click', () => {
-        if (!validationUtils.checkProjectId(projectId)) return;
+        if (!projectId) {
+            alert("프로젝트를 먼저 선택해주세요.");
+            return;
+        }
         modalUtils.resetModal('chapterModal');
         modalUtils.showModal('chapterModal');
         
@@ -123,7 +126,10 @@ function initEventListeners() {
 
     // 메모, 캐릭터, 세계관 관련
     document.querySelector('#memoSection .btn').addEventListener('click', () => {
-        if (!validationUtils.checkProjectId(projectId)) return;
+        if (!projectId) {
+            alert("프로젝트를 먼저 선택해주세요.");
+            return;
+        }
         modalUtils.resetModal('memoModal');
         modalUtils.showModal('memoModal');
         
@@ -133,7 +139,10 @@ function initEventListeners() {
     });
 
     document.querySelector('#characterSection .btn').addEventListener('click', () => {
-        if (!validationUtils.checkProjectId(projectId)) return;
+        if (!projectId) {
+            alert("프로젝트를 먼저 선택해주세요.");
+            return;
+        }
         modalUtils.resetModal('characterModal');
         modalUtils.showModal('characterModal');
         
@@ -143,7 +152,10 @@ function initEventListeners() {
     });
 
     document.querySelector('#worldSection .btn').addEventListener('click', () => {
-        if (!validationUtils.checkProjectId(projectId)) return;
+        if (!projectId) {
+            alert("프로젝트를 먼저 선택해주세요.");
+            return;
+        }
         modalUtils.resetModal('worldModal');
         modalUtils.showModal('worldModal');
         
@@ -386,7 +398,10 @@ function handleAddMemo() {
 
 // 메모 추가 처리 함수
 async function handleConfirmMemo() {
-    if (!validationUtils.checkProjectId(projectId)) return;
+    if (!projectId) {
+        alert("프로젝트를 먼저 선택해주세요.");
+        return;
+    }
 
     const titleInput = document.getElementById('memoTitleInput');
     const contentInput = document.getElementById('memoContentInput');
@@ -545,7 +560,10 @@ function handleAddCharacter() {
 
 // 캐릭터 추가 처리 함수
 async function handleConfirmCharacter() {
-    if (!validationUtils.checkProjectId(projectId)) return;
+    if (!projectId) {
+        alert("프로젝트를 먼저 선택해주세요.");
+        return;
+    }
 
     const characterName = document.getElementById('characterNameInput').value.trim();
     const characterProfile = document.getElementById('characterProfileInput').value.trim();
@@ -700,7 +718,10 @@ function handleAddWorld() {
 
 // 세계관 추가 처리 함수
 async function handleConfirmWorld() {
-    if (!validationUtils.checkProjectId(projectId)) return;
+    if (!projectId) {
+        alert("프로젝트를 먼저 선택해주세요.");
+        return;
+    }
 
     const worldTitle = document.getElementById('worldTitleInput').value.trim();
     const worldContent = document.getElementById('worldContentInput').value.trim();
@@ -974,7 +995,10 @@ async function handleDelete(collectionName, id) {
 
 // 새 항목 추가 처리 함수
 async function handleConfirmChapter() {
-    if (!validationUtils.checkProjectId(projectId)) return;
+    if (!projectId) {
+        alert("프로젝트를 먼저 선택해주세요.");
+        return;
+    }
 
     const isNewChapter = document.getElementById('newChapterCheck').checked;
     const epiChapter = isNewChapter ? document.getElementById('chapterNameInput').value.trim() : '';

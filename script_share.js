@@ -1,9 +1,5 @@
 import { db, doc, getDoc } from "./firebase.js";
 
-let currentPageSet = 1;
-let totalContent = [];
-
-// Firebase에서 데이터 로드
 document.addEventListener('DOMContentLoaded', async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const episodeId = urlParams.get('episode-id');
@@ -14,16 +10,19 @@ document.addEventListener('DOMContentLoaded', async function() {
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                const data = docSnap.data();
+                const episodeData = docSnap.data();
                 
                 // 제목 설정
                 document.querySelector('.title').textContent = 
-                    `${data.episode_number || '?'}화. ${data.title}`;
+                    `${episodeData.episode_number || '?'}화. ${episodeData.title}`;
                 
                 // 내용 설정
-                if (data.content) {
-                    document.querySelector('.content').innerHTML = data.content;
+                if (episodeData.content) {
+                    document.querySelector('.content').innerHTML = episodeData.content;
                 }
+                
+                // 페이지 클릭 이벤트 설정
+                setupPageNavigation();
             } else {
                 console.error("에피소드를 찾을 수 없습니다!");
                 document.querySelector('.content').textContent = 
@@ -34,222 +33,161 @@ document.addEventListener('DOMContentLoaded', async function() {
             document.querySelector('.content').textContent = 
                 "데이터를 불러오는 중 문제가 발생했습니다.";
         }
-    } else {
-        document.querySelector('.content').textContent = 
-            "올바른 에피소드 ID가 제공되지 않았습니다.";
     }
 });
 
-// 페이지 나누기 함수
+// 페이지 분할 함수
 function splitContentIntoPages() {
-    const leftPage = document.querySelector('.left-page');
-    const rightPage = document.querySelector('.right-page');
-    const content = document.querySelector('.content').innerHTML;
+    const content = document.querySelector('.content');
+    const title = document.querySelector('.title');
+    if (!content || !title) return;
     
-    totalContent = [];  // 배열 초기화를 여기서 해야 함
-    leftPage.innerHTML = '';
-    rightPage.innerHTML = '';
+    const titleText = title.textContent;
+    const contentHTML = content.innerHTML;
     
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = content;
+    // 페이지 배열 초기화
+    const pages = [];
     
-    const contentNodes = Array.from(tempDiv.childNodes);
-    let currentPage = leftPage;
+    // 첫 페이지는 제목만
+    pages.push(`
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px;">
+            <h2 style="text-align: center; font-family: '나눔명조', serif; font-size: 24px; margin: 0;">
+                ${titleText}
+            </h2>
+        </div>
+    `);
     
-    // 첫 페이지에만 제목 추가
-    const titleElement = document.querySelector('.title').cloneNode(true);
-    leftPage.appendChild(titleElement);
+    // 내용을 문단 단위로 분할
+    const contentDiv = document.createElement('div');
+    contentDiv.innerHTML = contentHTML;
+    const paragraphs = Array.from(contentDiv.children);
     
-    // 첫 페이지 세트 시작
-    let currentSet = {
-        left: leftPage.innerHTML,
-        right: ''
-    };
-
-    contentNodes.forEach(node => {
-        if (node.nodeType === 3) { // 텍스트 노드
-            const sentences = node.textContent.split(/([.!?])\s+/);
-            sentences.forEach(sentence => {
-                if (sentence.trim()) {
-                    const tempSpan = document.createElement('span');
-                    tempSpan.textContent = sentence + ' ';
-                    currentPage.appendChild(tempSpan);
-                    
-                    if (contentHeight > currentPage.clientHeight - 60) {
-                        tempSpan.remove();
-                        
-                        if (currentPage === leftPage) {
-                            currentPage = rightPage;
-                            currentSet.right = '';  // 오른쪽 페이지 초기화
-                            rightPage.appendChild(tempSpan);
-                        } else {
-                            // 현재 세트 저장하고 새로운 세트 시작
-                            totalContent.push(currentSet.left, currentSet.right);
-                            currentSet = {
-                                left: '',
-                                right: ''
-                            };
-                            
-                            leftPage.innerHTML = '';
-                            rightPage.innerHTML = '';
-                            currentPage = leftPage;
-                            currentPage.appendChild(tempSpan);
-                            currentSet.left = leftPage.innerHTML;
-                        }
-                    }
-                    // 현재 페이지 내용 업데이트
-                    if (currentPage === leftPage) {
-                        currentSet.left = leftPage.innerHTML;
-                    } else {
-                        currentSet.right = rightPage.innerHTML;
-                    }
-                }
-            });
-        } else if (node.nodeType === 1) { // 요소 노드
-            const clone = node.cloneNode(true);
-            currentPage.appendChild(clone);
-            
-            if (currentPage.scrollHeight > currentPage.clientHeight) {
-                clone.remove();
-                
-                if (currentPage === leftPage) {
-                    currentPage = rightPage;
-                    rightPage.appendChild(clone);
-                } else {
-                    totalContent.push(leftPage.innerHTML, rightPage.innerHTML);
-                    
-                    leftPage.innerHTML = '';
-                    rightPage.innerHTML = '';
-                    currentPage = leftPage;
-                    currentPage.appendChild(clone);
-                }
+    // 임시 div 생성 및 스타일 설정
+    const pageDiv = document.createElement('div');
+    pageDiv.style.position = 'absolute';
+    pageDiv.style.visibility = 'hidden';
+    pageDiv.style.width = '45%';
+    pageDiv.style.padding = '20px';
+    pageDiv.style.boxSizing = 'border-box';
+    pageDiv.style.height = '100%';
+    pageDiv.style.overflow = 'hidden';
+    document.body.appendChild(pageDiv);
+    
+    let currentPage = '';
+    
+    // 각 문단을 페이지에 추가
+    paragraphs.forEach((para, index) => {
+        const paraHTML = para.outerHTML;
+        const testPage = currentPage + paraHTML;
+        pageDiv.innerHTML = `<div style="padding: 20px;">${testPage}</div>`;
+        
+        // 페이지 높이가 기준을 넘으면 새 페이지 시작
+        if (pageDiv.scrollHeight > pageDiv.clientHeight) {
+            if (currentPage) {
+                pages.push(`<div style="height: 100%; padding: 20px; overflow: hidden;">${currentPage}</div>`);
             }
+            currentPage = paraHTML;
+        } else {
+            currentPage = testPage;
+        }
+        
+        // 마지막 문단이면 남은 내용 추가
+        if (index === paragraphs.length - 1 && currentPage) {
+            pages.push(`<div style="height: 100%; padding: 20px; overflow: hidden;">${currentPage}</div>`);
         }
     });
-
-    // 마지막 페이지 세트 저장
-    if (leftPage.innerHTML || rightPage.innerHTML) {
-        totalContent.push(currentSet.left, currentSet.right);
-    }
-
+    
+    // 임시 요소 제거
+    document.body.removeChild(pageDiv);
+    
+    // 전역 변수에 페이지 배열 저장
+    window.totalContent = pages;
+    window.currentPageSet = 1;
+    
+    // 첫 페이지 세트 표시
     displayPageSet(1);
 }
 
 // 페이지 이동 함수
 function displayPageSet(pageNumber) {
-    const leftPage = document.querySelector('.left-page');
-    const rightPage = document.querySelector('.right-page');
+    const leftPageContent = document.querySelector('.left-page .page-content');
+    const rightPageContent = document.querySelector('.right-page .page-content');
     
-    // 페이지 번호가 유효한 위를 벗어나면 처리하지 않음
-    if (pageNumber < 1 || pageNumber * 2 > totalContent.length) {
+    if (!leftPageContent || !rightPageContent) return;
+    
+    // 페이지 번호가 유효한 범위를 벗어나면 처리하지 않음
+    if (pageNumber < 1 || pageNumber * 2 > window.totalContent.length) {
         return;
     }
     
     const startIndex = (pageNumber - 1) * 2;
     
-    // 페이지 내용 초기화
-    leftPage.innerHTML = '';
-    rightPage.innerHTML = '';
+    // 페이지 내용 표시
+    leftPageContent.innerHTML = window.totalContent[startIndex] || '';
+    rightPageContent.innerHTML = window.totalContent[startIndex + 1] || '';
+    
+    // 스크롤 방지
+    leftPageContent.style.overflow = 'hidden';
+    rightPageContent.style.overflow = 'hidden';
+}
 
-    // 첫 페이지에만 제목 표시
-    if (pageNumber === 1) {
-        const titleElement = createTitleElement(data);
-        leftPage.appendChild(titleElement);
-    }
-
-    // 내용 표시
-    if (totalContent[startIndex]) {
-        leftPage.innerHTML += totalContent[startIndex];
-    }
-    if (totalContent[startIndex + 1]) {
-        rightPage.innerHTML = totalContent[startIndex + 1];
+// 페이지 클릭 이벤트
+function handlePageClick(e) {
+    const bookView = document.querySelector('.book-view');
+    const bookRect = bookView.getBoundingClientRect();
+    const clickX = e.clientX - bookRect.left;
+    const centerX = bookRect.width / 2;
+    
+    if (clickX < centerX) {
+        // 왼쪽 클릭
+        if (window.currentPageSet <= 1) {
+            alert('첫 페이지입니다.');
+            return;
+        }
+        window.currentPageSet--;
+        displayPageSet(window.currentPageSet);
+    } else {
+        // 오른쪽 클릭
+        if (window.currentPageSet * 2 >= window.totalContent.length) {
+            alert('마지막 페이지입니다.');
+            return;
+        }
+        const rightPage = document.querySelector('.right-page');
+        rightPage.classList.add('flip-page');
+        
+        setTimeout(() => {
+            rightPage.classList.remove('flip-page');
+            window.currentPageSet++;
+            displayPageSet(window.currentPageSet);
+        }, 600);
     }
 }
 
-// 페이지 클릭 이벤트 수정
+// 페이지 클릭 이벤트 설정
 function setupPageNavigation() {
     const bookView = document.querySelector('.book-view');
-    
-    function handlePageClick(e) {
-        const bookRect = bookView.getBoundingClientRect();
-        const clickX = e.clientX - bookRect.left;
-        const centerX = bookRect.width / 2;
-        
-        if (clickX < centerX) {
-            // 왼쪽 클릭
-            if (currentPageSet <= 1) {
-                alert('첫 페이지입니다.');
-                return;
-            }
-            currentPageSet--;
-        } else {
-            // 오른쪽 클릭
-            if (currentPageSet * 2 >= totalContent.length) {
-                alert('마지막 페이지입니다.');
-                return;
-            }
-            currentPageSet++;
-        }
-        displayPageSet(currentPageSet);
+    if (bookView) {
+        bookView.addEventListener('click', handlePageClick);
     }
-    
-    bookView.addEventListener('click', handlePageClick);
 }
 
-window.splitContentIntoPages = splitContentIntoPages;
-
-// DOMContentLoaded 이벤트에서 setupPageNavigation 호출
-document.addEventListener('DOMContentLoaded', () => {
-    setupPageNavigation();
-});
-
+// 뷰 모드 전환
 window.toggleViewMode = function(mode) {
-    // 버튼 활성화 상태 변경
-    document.querySelectorAll('.view-mode-toggle .btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
+    const scrollView = document.querySelector('.scroll-view');
+    const bookView = document.querySelector('.book-view');
+    const buttons = document.querySelectorAll('.view-mode-toggle .btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
     document.querySelector(`.btn[onclick*="${mode}"]`).classList.add('active');
     
-    // 스크롤 위치 초기화
-    window.scrollTo(0, 0);
-    
-    // 뷰 모드 변경
-    document.querySelector('.scroll-view').classList.toggle('active', mode === 'scroll');
-    document.querySelector('.book-view').classList.toggle('active', mode === 'book');
-    document.body.classList.toggle('book-mode', mode === 'book');
-    
-    if (mode === 'book') {
-        // 페이지 세트 초기화
-        totalContent = [];  // totalContent 배열 초기화
-        currentPageSet = 1;
-        splitContentIntoPages();
+    if (mode === 'scroll') {
+        scrollView.classList.add('active');
+        bookView.classList.remove('active');
+        document.body.classList.remove('book-mode');
     } else {
-        // 스크롤 모드로 전환 시 컨테이너도 맨 위로
-        document.querySelector('.container').scrollTo(0, 0);
+        scrollView.classList.remove('active');
+        bookView.classList.add('active');
+        document.body.classList.add('book-mode');
+        splitContentIntoPages();
     }
-} 
-
-// 확대/축소 방지 함수
-function preventZoom(event) {
-    if (event.ctrlKey && (event.key === '+' || event.key === '-' || event.key === '0')) {
-        event.preventDefault();
-    }
-}
-
-// 터치 확대/축소 방지
-document.addEventListener('touchmove', function(e) {
-    if (e.touches.length > 1) {
-        e.preventDefault();
-    }
-}, { passive: false });
-
-// 이벤트 리스너 초기화 함수
-function initEventListeners() {
-    // 터치 이벤트
-    document.addEventListener('touchstart', handleTouchStart);
-    document.addEventListener('touchmove', handleTouchMove);
-    document.addEventListener('touchend', handleTouchEnd);
-    
-    // 키보드 이벤트
-    window.addEventListener('keydown', handleKeyDown);
 }
