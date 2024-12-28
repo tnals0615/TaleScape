@@ -53,6 +53,74 @@ tinymce.init({
         editor.on('keyup', updateWordCount);
         editor.on('change', updateWordCount);
 
+        // 스타일 토글 기능
+        effectToggleBtn.addEventListener('click', function() {
+            stylesEnabled = !stylesEnabled;
+            
+            if (stylesEnabled) {
+                // 저장된 원본 스타일 복원
+                const styledElements = editor.dom.select('*[data-original-style]');
+                styledElements.forEach(element => {
+                    const originalStyle = element.getAttribute('data-original-style');
+                    const originalColor = element.getAttribute('data-original-color');
+                    const originalClass = element.getAttribute('data-original-class');
+                    
+                    if (originalStyle) element.style.cssText = originalStyle;
+                    if (originalColor) element.style.color = originalColor;
+                    if (originalClass) element.className = originalClass;
+                    
+                    // 데이터 속성 제거
+                    element.removeAttribute('data-original-style');
+                    element.removeAttribute('data-original-color');
+                    element.removeAttribute('data-original-class');
+                });
+                effectToggleBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i>';
+                effectToggleBtn.title = '스타일 끄기';
+                effectToggleBtn.classList.remove('effects-disabled');
+            } else {
+                // 현재 스타일 저장하고 제거
+                const styledElements = editor.dom.select('*[style], *[class]');
+                styledElements.forEach(element => {
+                    // 현재 스타일 저장
+                    if (element.style.cssText) {
+                        element.setAttribute('data-original-style', element.style.cssText);
+                    }
+                    if (element.style.color) {
+                        element.setAttribute('data-original-color', element.style.color);
+                    }
+                    if (element.className) {
+                        element.setAttribute('data-original-class', element.className);
+                    }
+                    
+                    // 모든 스타일 및 클래스 제거
+                    element.style.cssText = '';
+                    element.style.color = 'inherit';
+                    element.className = '';
+                });
+                effectToggleBtn.innerHTML = '<i class="fas fa-wand-magic"></i>';
+                effectToggleBtn.title = '스타일 켜기';
+                effectToggleBtn.classList.add('effects-disabled');
+            }
+        });
+
+        function updateWordCount() {
+            const content = editor.getContent({format: 'text'});
+            const charCount = content.length;
+            counterDiv.textContent = `글자 수: ${charCount.toLocaleString()}`;
+            
+            counterDiv.style.opacity = '1';
+            setTimeout(() => {
+                counterDiv.style.opacity = '0.7';
+            }, 3000);
+        }
+
+        editor.on('keyup', updateWordCount);
+        editor.on('change', updateWordCount);
+
+        const effectToggleBtn = document.getElementById('effectToggleBtn');
+        let stylesEnabled = true;
+        
+        // 스타일 토글 기능
         effectToggleBtn.addEventListener('click', function() {
             stylesEnabled = !stylesEnabled;
             
@@ -96,6 +164,20 @@ tinymce.init({
                 effectToggleBtn.classList.add('effects-disabled');
             }
         });
+
+        function updateWordCount() {
+            const content = editor.getContent({format: 'text'});
+            const charCount = content.length;
+            counterDiv.textContent = `글자 수: ${charCount.toLocaleString()}`;
+            
+            counterDiv.style.opacity = '1';
+            setTimeout(() => {
+                counterDiv.style.opacity = '0.7';
+            }, 3000);
+        }
+
+        editor.on('keyup', updateWordCount);
+        editor.on('change', updateWordCount);
 
         editor.on('keydown', function(e) {
             if (e.ctrlKey && !e.shiftKey && e.keyCode === 13) {
