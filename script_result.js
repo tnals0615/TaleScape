@@ -6,19 +6,8 @@ const handleError = (error, message) => {
     alert(message || "작업 중 문제가 발생했습니다.");
 };
 
-const createTitleElement = (data) => {
-    const titleElement = document.createElement('p');
-    titleElement.className = 'main-title';
-    titleElement.style.textAlign = 'center';
-    titleElement.style.fontSize = '25px';
-    titleElement.style.marginTop = '10px';
-    titleElement.style.marginBottom = '10px';
-    titleElement.textContent = `${data.episode_number || '?'}화. ${data.title}`;
-    return titleElement;
-};
-
 // 페이지 관련 함수들
-const setupPageDisplay = (leftPage, rightPage, currentPageSet, totalContent, data) => {
+const setupPageDisplay = (leftPage, rightPage, currentPageNumber, totalContent, data) => {
     const displayPageSet = (pageNumber) => {
         const startIndex = (pageNumber - 1) * 2;
 
@@ -29,10 +18,6 @@ const setupPageDisplay = (leftPage, rightPage, currentPageSet, totalContent, dat
 
         leftPage.innerHTML = '';
         rightPage.innerHTML = '';
-
-        if (pageNumber === 1) {
-            leftPage.appendChild(createTitleElement(data));
-        }
 
         displayPageContent(pageNumber, startIndex);
         applyPageTransitionEffect();
@@ -66,29 +51,28 @@ const setupPageDisplay = (leftPage, rightPage, currentPageSet, totalContent, dat
 };
 
 // 콘텐츠 처리 함수
-const processContent = (data, leftPage, rightPage) => {
+const processContent = (data, leftPage, rightPage, currentPageNumber) => {
     const totalContent = [];
     
     if (data.content) {
         const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = data.content;
+        
+        // 제목을 본문 앞에 추가
+        if(currentPageNumber == 1){
+            const titleHTML = `<p class="main-title" style="text-align: center; font-size: 25px; margin: 10px 0;">${data.episode_number || '?'}화. ${data.title}</p> <br>`;
+            tempDiv.innerHTML = titleHTML + data.content;
+        } else {
+            tempDiv.innerHTML = data.content;
+        }
+
         let currentPage = leftPage;
 
         const processNode = (node) => {
             if (node.nodeType === 3) { // 텍스트 노드
-                processSentences(node.textContent);
+                appendContentToPage(createSpan(node.textContent));
             } else if (node.nodeType === 1) { // 요소 노드
                 processElement(node);
             }
-        };
-
-        const processSentences = (text) => {
-            const sentences = text.split(/([.!?])\s+/);
-            sentences.forEach(sentence => {
-                if (sentence.trim()) {
-                    appendContentToPage(createSpan(sentence + ' '));
-                }
-            });
         };
 
         const processElement = (element) => {
@@ -103,7 +87,6 @@ const processContent = (data, leftPage, rightPage) => {
 
         const appendContentToPage = (element) => {
             currentPage.appendChild(element);
-            
             if (currentPage.scrollHeight > currentPage.clientHeight) {
                 element.remove();
                 totalContent.push(currentPage.innerHTML);
@@ -133,9 +116,9 @@ const processContent = (data, leftPage, rightPage) => {
 };
 
 // 이벤트 리스너 설정
-const setupEventListeners = (leftPage, rightPage, currentPageSet, totalContent, displayPageSet) => {
+const setupEventListeners = (leftPage, rightPage, currentPageNumber, totalContent, displayPageSet) => {
     rightPage.addEventListener('click', () => {
-        const nextPageStart = currentPageSet * 2;
+        const nextPageStart = currentPageNumber * 2;
         if (!totalContent[nextPageStart]) {
             alert("마지막 페이지입니다.");
             return;
@@ -144,15 +127,15 @@ const setupEventListeners = (leftPage, rightPage, currentPageSet, totalContent, 
         rightPage.classList.add('flip-page');
         setTimeout(() => {
             rightPage.classList.remove('flip-page');
-            currentPageSet++;
-            displayPageSet(currentPageSet);
+            currentPageNumber++;
+            displayPageSet(currentPageNumber);
         }, 800);
     });
 
     leftPage.addEventListener('click', () => {
-        if (currentPageSet > 1) {
-            currentPageSet--;
-            displayPageSet(currentPageSet);
+        if (currentPageNumber > 1) {
+            currentPageNumber--;
+            displayPageSet(currentPageNumber);
         } else {
             alert("첫 페이지입니다.");
         }
@@ -177,11 +160,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 const leftPage = document.querySelector('.left-page');
                 const rightPage = document.querySelector('.right-page');
-                let currentPageSet = 1;
+                let currentPageNumber = 1;
 
-                const totalContent = processContent(data, leftPage, rightPage);
-                const { displayPageSet } = setupPageDisplay(leftPage, rightPage, currentPageSet, totalContent, data);
-                setupEventListeners(leftPage, rightPage, currentPageSet, totalContent, displayPageSet);
+                const totalContent = processContent(data, leftPage, rightPage, currentPageNumber);
+                const { displayPageSet } = setupPageDisplay(leftPage, rightPage, currentPageNumber, totalContent, data);
+                setupEventListeners(leftPage, rightPage, currentPageNumber, totalContent, displayPageSet);
                 
                 displayPageSet(1);
             } else {
