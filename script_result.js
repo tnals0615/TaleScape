@@ -134,8 +134,12 @@ const setupEventListeners = (leftPage, rightPage, currentPageNumber, totalConten
 
     leftPage.addEventListener('click', () => {
         if (currentPageNumber > 1) {
-            currentPageNumber--;
-            displayPageSet(currentPageNumber);
+            leftPage.classList.add('flip-left-page');
+            setTimeout(() => {
+                leftPage.classList.remove('flip-left-page');
+                currentPageNumber--;
+                displayPageSet(currentPageNumber);
+            }, 800);
         } else {
             alert("첫 페이지입니다.");
         }
