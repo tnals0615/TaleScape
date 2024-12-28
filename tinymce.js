@@ -30,10 +30,30 @@ tinymce.init({
     content_css: ['tinymce.css', 'styles_edit.css'],
     
     setup: function(editor) {
+        const counterDiv = document.querySelector('.word-counter');
         const saveBtn = document.querySelector('.save-btn');
         const effectToggleBtn = document.getElementById('effectToggleBtn');
         let stylesEnabled = true;
         
+        function updateWordCount() {
+            const content = editor.getContent({format: 'text'});
+            const charCount = content ? content.length : 0;
+            counterDiv.textContent = `글자 수: ${charCount.toLocaleString()}`;
+            
+            counterDiv.style.opacity = '1';
+            setTimeout(() => {
+                counterDiv.style.opacity = '0.7';
+            }, 3000);
+        }
+
+        // 에디터 초기화 완료 시 글자 수 업데이트
+        editor.on('init', function() {
+            setTimeout(updateWordCount, 100);
+        });
+        
+        editor.on('keyup', updateWordCount);
+        editor.on('change', updateWordCount);
+
         // 스타일 토글 기능
         effectToggleBtn.addEventListener('click', function() {
             stylesEnabled = !stylesEnabled;
@@ -164,7 +184,6 @@ tinymce.init({
 
         editor.on('keyup', updateWordCount);
         editor.on('change', updateWordCount);
-
 
         editor.on('keydown', function(e) {
             if (e.ctrlKey && !e.shiftKey && e.keyCode === 13) {
@@ -209,14 +228,14 @@ tinymce.init({
         });
 
         saveBtn.addEventListener('click', async function() {
-            if (!currentEpisodeId) {
+            if (!window.currentEpisodeId) {
                 alert("에피소드 ID를 찾을 수 없습니다.");
                 return;
             }
 
             try {
                 const content = editor.getContent();
-                const docRef = doc(db, "episode", currentEpisodeId);
+                const docRef = doc(db, "episode", window.currentEpisodeId);
                 
                 await updateDoc(docRef, {
                     content: content,
