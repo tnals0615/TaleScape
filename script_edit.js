@@ -75,4 +75,32 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    // TinyMCE 에디터가 초기화될 때까지 기다린 후 글자 수 기능 추가
+    const waitForEditor = setInterval(() => {
+        const editor = tinymce.get('wysiwyg-editor');
+        if (editor) {
+            clearInterval(waitForEditor);
+            
+            const counterDiv = document.querySelector('.word-counter');
+            if (counterDiv) {
+                function updateWordCount() {
+                    const content = editor.getContent({format: 'text'});
+                    const charCount = content.length;
+                    counterDiv.textContent = `글자 수: ${charCount.toLocaleString()}`;
+                    
+                    counterDiv.style.opacity = '1';
+                    setTimeout(() => {
+                        counterDiv.style.opacity = '0.7';
+                    }, 3000);
+                }
+
+                editor.on('keyup', updateWordCount);
+                editor.on('change', updateWordCount);
+                
+                // 초기 글자 수 표시
+                updateWordCount();
+            }
+        }
+    }, 100);
 });
