@@ -55,7 +55,6 @@ body.dark-mode a:active {
   cursor: pointer;
 }
 
-
 .guide-title {
   font-weight: bold;
   color: #333;
@@ -98,31 +97,6 @@ body.dark-mode kbd {
   border-color: #666;
 }
 
-/* 본문 섹션 스타일 */
-.content-section {
-  margin-bottom: 20px;
-}
-
-.content-toggle {
-  cursor: pointer;
-  margin-bottom: 10px;
-  font-size: 20px;
-}
-
-.content-preview {
-  margin: 10px 0;
-  padding: 15px 0;
-  white-space: pre-wrap;
-  display: none;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
-}
-
-/* 다크모드 대응 */
-body.dark-mode .content-preview {
-  border-color: #444;
-}
-
 /* 에디터 관련 스타일 */
 .editor-container {
   position: relative;
@@ -138,9 +112,10 @@ body.dark-mode .content-preview {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 10px;
 }
 
-.save-btn {
+.control-btn, .save-btn {
   background-color: #6E6E6E;
   color: white;
   border: none;
@@ -151,8 +126,29 @@ body.dark-mode .content-preview {
   font-size: 14px;
 }
 
-.save-btn:hover {
+.control-btn:hover, .save-btn:hover {
   background-color: #595959;
+}
+
+/* 특수효과 비활성화 상태 */
+.control-btn.effects-disabled {
+  background-color: #999;
+}
+
+/* 다크모드 대응 */
+body.dark-mode .control-btn, 
+body.dark-mode .save-btn {
+  background-color: #444;
+  color: #fff;
+}
+
+body.dark-mode .control-btn:hover,
+body.dark-mode .save-btn:hover {
+  background-color: #666;
+}
+
+body.dark-mode .control-btn.effects-disabled {
+  background-color: #333;
 }
 
 /* 글자 수 카운터 */
