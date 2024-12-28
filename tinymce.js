@@ -30,7 +30,6 @@ tinymce.init({
     content_css: ['tinymce.css', 'styles_edit.css'],
     
     setup: function(editor) {
-        const counterDiv = document.querySelector('.word-counter');
         const saveBtn = document.querySelector('.save-btn');
         const effectToggleBtn = document.getElementById('effectToggleBtn');
         let stylesEnabled = true;

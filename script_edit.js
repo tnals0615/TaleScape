@@ -75,51 +75,32 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
-});
 
-async function checkSpelling(text, editor) {
-    try {
-        const response = await fetch('https://speller.cs.pusan.ac.kr/results', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `text1=${encodeURIComponent(text)}`
-        });
+    // TinyMCE 에디터가 초기화될 때까지 기다린 후 글자 수 기능 추가
+    const waitForEditor = setInterval(() => {
+        const editor = tinymce.get('wysiwyg-editor');
+        if (editor) {
+            clearInterval(waitForEditor);
+            
+            const counterDiv = document.querySelector('.word-counter');
+            if (counterDiv) {
+                function updateWordCount() {
+                    const content = editor.getContent({format: 'text'});
+                    const charCount = content.length;
+                    counterDiv.textContent = `글자 수: ${charCount.toLocaleString()}`;
+                    
+                    counterDiv.style.opacity = '1';
+                    setTimeout(() => {
+                        counterDiv.style.opacity = '0.7';
+                    }, 3000);
+                }
 
-        if (!response.ok) throw new Error('맞춤법 검사 실패');
-        
-        const data = await response.json();
-        
-        if (data.errInfo) {
-            data.errInfo.forEach(error => {
-                const originalText = error.orgStr;
-                const suggestion = error.candWord;
-                const errorType = error.help;
+                editor.on('keyup', updateWordCount);
+                editor.on('change', updateWordCount);
                 
-                const content = editor.getContent();
-                const markedContent = content.replace(
-                    originalText,
-                    `<span class="spelling-error" title="${errorType}\n추천: ${suggestion}" style="border-bottom: 2px wavy red;">${originalText}</span>`
-                );
-                editor.setContent(markedContent);
-            });
-
-            editor.notificationManager.open({
-                text: `맞춤법 검사 완료: ${data.errInfo.length}개의 오류 발견`,
-                type: 'info'
-            });
-        } else {
-            editor.notificationManager.open({
-                text: '맞춤법 오류가 없습니다.',
-                type: 'success'
-            });
+                // 초기 글자 수 표시
+                updateWordCount();
+            }
         }
-    } catch (error) {
-        console.error('맞춤법 검사 오류:', error);
-        editor.notificationManager.open({
-            text: '맞춤법 검사 중 오류가 발생했습니다.',
-            type: 'error'
-        });
-    }
-}
+    }, 100);
+});
