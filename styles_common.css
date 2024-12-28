@@ -19,6 +19,7 @@ main {
 .black-divider {
   border: none;
   border-top: 2px solid black;
+  opacity: 100%;
 }
 
 /* Title Styles - 공통 */
@@ -62,6 +63,7 @@ aside {
   width: 15%;
   min-width: 200px;
   font-size: 16px;
+  margin-bottom: 20px;
 }
 
 #addBtnMsg {
@@ -271,7 +273,7 @@ body.dark-mode #projectModal input[type="text"] {
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box; /* 패딩과 테두리를 포함한 전체 크기 */
+  box-sizing: border-box;
 }
 
 #projectPlotInput {

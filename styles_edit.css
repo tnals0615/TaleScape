@@ -122,7 +122,7 @@ body.dark-mode kbd {
   padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
   font-size: 14px;
 }
 
@@ -136,19 +136,33 @@ body.dark-mode kbd {
 }
 
 /* 다크모드 대응 */
-body.dark-mode .control-btn, 
 body.dark-mode .save-btn {
   background-color: #444;
   color: #fff;
 }
 
-body.dark-mode .control-btn:hover,
 body.dark-mode .save-btn:hover {
   background-color: #666;
 }
 
+/* 다크모드에서 효과 버튼 색상 반전 */
+body.dark-mode .control-btn {
+  background-color: #fff;
+  color: #333;
+}
+
+body.dark-mode .control-btn:hover {
+  background-color: #eee;
+  color: #000;
+}
+
 body.dark-mode .control-btn.effects-disabled {
-  background-color: #333;
+  background-color: #ddd;
+  color: #666;
+}
+
+body.dark-mode .control-btn.effects-disabled:hover {
+  background-color: #ccc;
 }
 
 /* 글자 수 카운터 */

@@ -12,7 +12,8 @@ tinymce.init({
     fontsize_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt',
     
     font_family_formats: '굴림=gulim; 돋움=dotum; 바탕=batang; 궁서=gungsuh; ' + 
-                        '나눔고딕=NanumGothic; 나눔명조=NanumMyeongjo',
+    '나눔고딕=NanumGothic; 나눔명조=NanumMyeongjo',
+
     
     lineheight_formats: '1 1.2 1.4 1.6 1.8 2.0',
     
@@ -30,36 +31,14 @@ tinymce.init({
     content_css: ['tinymce.css', 'styles_edit.css'],
     
     setup: function(editor) {
-        const counterDiv = document.querySelector('.word-counter');
         const saveBtn = document.querySelector('.save-btn');
         const effectToggleBtn = document.getElementById('effectToggleBtn');
         let stylesEnabled = true;
         
-        function updateWordCount() {
-            const content = editor.getContent({format: 'text'});
-            const charCount = content ? content.length : 0;
-            counterDiv.textContent = `글자 수: ${charCount.toLocaleString()}`;
-            
-            counterDiv.style.opacity = '1';
-            setTimeout(() => {
-                counterDiv.style.opacity = '0.7';
-            }, 3000);
-        }
-
-        // 에디터 초기화 완료 시 글자 수 업데이트
-        editor.on('init', function() {
-            setTimeout(updateWordCount, 100);
-        });
-        
-        editor.on('keyup', updateWordCount);
-        editor.on('change', updateWordCount);
-
-        // 스타일 토글 기능
         effectToggleBtn.addEventListener('click', function() {
             stylesEnabled = !stylesEnabled;
             
             if (stylesEnabled) {
-                // 저장된 원본 스타일 복원
                 const styledElements = editor.dom.select('*[data-original-style]');
                 styledElements.forEach(element => {
                     const originalStyle = element.getAttribute('data-original-style');
@@ -70,7 +49,6 @@ tinymce.init({
                     if (originalColor) element.style.color = originalColor;
                     if (originalClass) element.className = originalClass;
                     
-                    // 데이터 속성 제거
                     element.removeAttribute('data-original-style');
                     element.removeAttribute('data-original-color');
                     element.removeAttribute('data-original-class');
@@ -79,10 +57,8 @@ tinymce.init({
                 effectToggleBtn.title = '스타일 끄기';
                 effectToggleBtn.classList.remove('effects-disabled');
             } else {
-                // 현재 스타일 저장하고 제거
                 const styledElements = editor.dom.select('*[style], *[class]');
                 styledElements.forEach(element => {
-                    // 현재 스타일 저장
                     if (element.style.cssText) {
                         element.setAttribute('data-original-style', element.style.cssText);
                     }
@@ -93,7 +69,6 @@ tinymce.init({
                         element.setAttribute('data-original-class', element.className);
                     }
                     
-                    // 모든 스타일 및 클래스 제거
                     element.style.cssText = '';
                     element.style.color = 'inherit';
                     element.className = '';
@@ -103,87 +78,6 @@ tinymce.init({
                 effectToggleBtn.classList.add('effects-disabled');
             }
         });
-
-        function updateWordCount() {
-            const content = editor.getContent({format: 'text'});
-            const charCount = content.length;
-            counterDiv.textContent = `글자 수: ${charCount.toLocaleString()}`;
-            
-            counterDiv.style.opacity = '1';
-            setTimeout(() => {
-                counterDiv.style.opacity = '0.7';
-            }, 3000);
-        }
-
-        editor.on('keyup', updateWordCount);
-        editor.on('change', updateWordCount);
-
-        const effectToggleBtn = document.getElementById('effectToggleBtn');
-        let stylesEnabled = true;
-        
-        // 스타일 토글 기능
-        effectToggleBtn.addEventListener('click', function() {
-            stylesEnabled = !stylesEnabled;
-            
-            if (stylesEnabled) {
-                // 저장된 원본 스타일 복원
-                const styledElements = editor.dom.select('*[data-original-style]');
-                styledElements.forEach(element => {
-                    const originalStyle = element.getAttribute('data-original-style');
-                    const originalColor = element.getAttribute('data-original-color');
-                    const originalClass = element.getAttribute('data-original-class');
-                    
-                    if (originalStyle) element.style.cssText = originalStyle;
-                    if (originalColor) element.style.color = originalColor;
-                    if (originalClass) element.className = originalClass;
-                    
-                    // 데이터 속성 제거
-                    element.removeAttribute('data-original-style');
-                    element.removeAttribute('data-original-color');
-                    element.removeAttribute('data-original-class');
-                });
-                effectToggleBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i>';
-                effectToggleBtn.title = '스타일 끄기';
-                effectToggleBtn.classList.remove('effects-disabled');
-            } else {
-                // 현재 스타일 저장하고 제거
-                const styledElements = editor.dom.select('*[style], *[class]');
-                styledElements.forEach(element => {
-                    // 현재 스타일 저장
-                    if (element.style.cssText) {
-                        element.setAttribute('data-original-style', element.style.cssText);
-                    }
-                    if (element.style.color) {
-                        element.setAttribute('data-original-color', element.style.color);
-                    }
-                    if (element.className) {
-                        element.setAttribute('data-original-class', element.className);
-                    }
-                    
-                    // 모든 스타일 및 클래스 제거
-                    element.style.cssText = '';
-                    element.style.color = 'inherit';
-                    element.className = '';
-                });
-                effectToggleBtn.innerHTML = '<i class="fas fa-wand-magic"></i>';
-                effectToggleBtn.title = '스타일 켜기';
-                effectToggleBtn.classList.add('effects-disabled');
-            }
-        });
-
-        function updateWordCount() {
-            const content = editor.getContent({format: 'text'});
-            const charCount = content.length;
-            counterDiv.textContent = `글자 수: ${charCount.toLocaleString()}`;
-            
-            counterDiv.style.opacity = '1';
-            setTimeout(() => {
-                counterDiv.style.opacity = '0.7';
-            }, 3000);
-        }
-
-        editor.on('keyup', updateWordCount);
-        editor.on('change', updateWordCount);
 
         editor.on('keydown', function(e) {
             if (e.ctrlKey && !e.shiftKey && e.keyCode === 13) {
