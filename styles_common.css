@@ -23,7 +23,8 @@ main {
 
 /* Title Styles - 공통 */
 .TaleScape {
-  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-family: "Nanum Myeongjo", serif;
+  font-weight: 900;
   font-size: 64px;
   margin-top: 0;
   margin-bottom: 20px;
@@ -32,12 +33,14 @@ main {
 
 .aside-title {
   margin-top: 10px;
-  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-family: "Nanum Myeongjo", serif;
+  font-weight: 700;
   font-size: 20px;
 }
 
 .main-title {
-  font-family: "나눔명조 ExtraBold", sans-serif;
+  font-family: "Nanum Myeongjo", serif;
+  font-weight: 700;
   font-size: 40px;
   text-align: center;
   text-decoration: underline;
@@ -55,7 +58,7 @@ section {
   position: relative;
   box-sizing: border-box;
   margin: 20px 0;
-  font-family: "나눔스퀘어_ac", sans-serif;
+  font-family: "Nanum Gothic", sans-serif;
 }
 
 aside {
@@ -85,7 +88,7 @@ section {
 
 /* Button & Icon Styles - 공통 */
 button {
-  font-family: "나눔스퀘어_ac", sans-serif;
+  font-family: "Nanum Gothic", sans-serif;
   border: none;
   outline: none;
   background: transparent;
@@ -265,13 +268,13 @@ body.dark-mode #projectModal input[type="text"] {
 
 #projectModal input[type="text"],
 #projectPlotInput {
-  font-family: "나눔스퀘어_ac", sans-serif;
+  font-family: "NanumSquare", sans-serif;
   width: 100%;
   padding: 8px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box; /* 패딩과 테두리를 포함한 전체 크기 */
+  box-sizing: border-box;
 }
 
 #projectPlotInput {

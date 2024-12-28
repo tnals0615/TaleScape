@@ -47,7 +47,7 @@
 
 .table th {
   color: black !important;
-  font-family: "나눔스퀘어_ac ExtraBold", sans-serif !important;
+  font-family: "NanumSquare", sans-serif !important;
   font-size: 16px !important;
   font-weight: normal !important;
   background-color: white !important;
@@ -55,7 +55,7 @@
 }
 
 .table td {
-  font-family: "나눔스퀘어_ac", sans-serif !important;
+  font-family: "NanumSquare", sans-serif !important;
   font-size: 16px !important;
   text-align: center;
   background-color: white !important;
@@ -177,7 +177,7 @@ body.dark-mode .project-desc {
 }
 
 body.dark-mode .project-list .text-muted {
-    color: #ccc !important;  /* 가이드 텍스트 색상��� 밝게 */
+    color: #ccc !important;  /* 가이드 텍스트 색상을 밝게 */
 }
 
 /* 포커스 아웃라인 제거 */

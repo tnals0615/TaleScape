@@ -12,7 +12,7 @@ tinymce.init({
     fontsize_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt',
     
     font_family_formats: '굴림=gulim; 돋움=dotum; 바탕=batang; 궁서=gungsuh; ' + 
-                        '나눔고딕=NanumGothic; 나눔명조=NanumMyeongjo',
+                        '나눔고딕="Nanum Gothic",sans-serif; 나눔명조="Nanum Myeongjo",serif',
     
     lineheight_formats: '1 1.2 1.4 1.6 1.8 2.0',
     
