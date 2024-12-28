@@ -30,29 +30,10 @@ tinymce.init({
     content_css: ['tinymce.css', 'styles_edit.css'],
     
     setup: function(editor) {
-        const counterDiv = document.querySelector('.word-counter');
         const saveBtn = document.querySelector('.save-btn');
         const effectToggleBtn = document.getElementById('effectToggleBtn');
         let stylesEnabled = true;
         
-        function updateWordCount() {
-            const content = editor.getContent({format: 'text'});
-            const charCount = content ? content.length : 0;
-            counterDiv.textContent = `글자 수: ${charCount.toLocaleString()}`;
-            
-            counterDiv.style.opacity = '1';
-            setTimeout(() => {
-                counterDiv.style.opacity = '0.7';
-            }, 3000);
-        }
-
-        editor.on('init', function() {
-            setTimeout(updateWordCount, 100);
-        });
-        
-        editor.on('keyup', updateWordCount);
-        editor.on('change', updateWordCount);
-
         effectToggleBtn.addEventListener('click', function() {
             stylesEnabled = !stylesEnabled;
             
