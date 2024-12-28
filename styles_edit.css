@@ -55,7 +55,6 @@ body.dark-mode a:active {
   cursor: pointer;
 }
 
-
 .guide-title {
   font-weight: bold;
   color: #333;
@@ -96,31 +95,6 @@ body.dark-mode kbd {
   color: #fff;
   background-color: #333;
   border-color: #666;
-}
-
-/* 본문 섹션 스타일 */
-.content-section {
-  margin-bottom: 20px;
-}
-
-.content-toggle {
-  cursor: pointer;
-  margin-bottom: 10px;
-  font-size: 20px;
-}
-
-.content-preview {
-  margin: 10px 0;
-  padding: 15px 0;
-  white-space: pre-wrap;
-  display: none;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
-}
-
-/* 다크모드 대응 */
-body.dark-mode .content-preview {
-  border-color: #444;
 }
 
 /* 에디터 관련 스타일 */

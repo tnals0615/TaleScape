@@ -32,7 +32,6 @@ tinymce.init({
     setup: function(editor) {
         const counterDiv = document.querySelector('.word-counter');
         const saveBtn = document.querySelector('.save-btn');
-        const contentPreview = document.querySelector('.content-preview');
         
         function updateWordCount() {
             const content = editor.getContent({format: 'text'});
@@ -107,9 +106,6 @@ tinymce.init({
 
                 console.log("내용이 저장되었습니다.");
                 saveBtn.style.display = 'none';
-                
-                contentPreview.textContent = editor.getContent({format: 'text'});
-                contentPreview.style.display = 'block';
             } catch (error) {
                 console.error("내용 저장 중 오류:", error);
                 alert("내용을 저장하는 중 문제가 발생했습니다.");
