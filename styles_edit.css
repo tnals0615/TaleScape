@@ -112,9 +112,10 @@ body.dark-mode kbd {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 10px;
 }
 
-.save-btn {
+.control-btn, .save-btn {
   background-color: #6E6E6E;
   color: white;
   border: none;
@@ -125,8 +126,29 @@ body.dark-mode kbd {
   font-size: 14px;
 }
 
-.save-btn:hover {
+.control-btn:hover, .save-btn:hover {
   background-color: #595959;
+}
+
+/* 특수효과 비활성화 상태 */
+.control-btn.effects-disabled {
+  background-color: #999;
+}
+
+/* 다크모드 대응 */
+body.dark-mode .control-btn, 
+body.dark-mode .save-btn {
+  background-color: #444;
+  color: #fff;
+}
+
+body.dark-mode .control-btn:hover,
+body.dark-mode .save-btn:hover {
+  background-color: #666;
+}
+
+body.dark-mode .control-btn.effects-disabled {
+  background-color: #333;
 }
 
 /* 글자 수 카운터 */
