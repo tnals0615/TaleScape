@@ -10,7 +10,7 @@
   font-family: "나눔명조", sans-serif;
   overflow: hidden;
   perspective: 2000px;
-  position: relative; /* 추가 */
+  position: relative;
 }
 
 body.dark-mode .preview{
@@ -33,14 +33,31 @@ body.dark-mode .preview{
 
 .left-page,
 .right-page {
-  flex: 1;
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100%;
   padding: 20px;
   position: relative;
   cursor: pointer;
   box-sizing: border-box;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
 
 /* 나머지 스타일은 그대로 유지 */
+
+/* 왼쪽 페이지 넘김 애니메이션 */
+@keyframes flipLeftPage {
+    0% {
+        transform: rotateY(0deg);
+        transform-origin: right;
+    }
+    100% {
+        transform: rotateY(180deg);
+        transform-origin: right;
+    }
+}
 
 /* 오른쪽 페이지 넘김 애니메이션 */
 @keyframes flipRightPage {
@@ -72,6 +89,16 @@ body.dark-mode .preview{
 
 .right-page.flip-page {
     animation: flipRightPage 1.0s ease-in-out;
+}
+
+/* 왼쪽 페이지에만 3D 효과 적용 */
+.left-page {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+
+.left-page.flip-left-page {
+    animation: flipLeftPage 1.0s ease-in-out;
 }
 
 .page-appear {
@@ -161,4 +188,26 @@ body.dark-mode .share-controls input {
 /* 다크모드 대응 */
 body.dark-mode .page-link {
     color: #fff;
+}
+
+/* 타이핑 효과 스타일 재정의 */
+.preview .left-page .typing-effect,
+.preview .right-page .typing-effect {
+    display: inline !important;
+    width: auto !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-line !important;
+    line-height: inherit !important;
+}
+
+/* rainbow-effect도 수정 */
+.preview .left-page .rainbow-effect,
+.preview .right-page .rainbow-effect {
+    display: inline !important;
+    width: auto !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-line !important;
+    line-height: inherit !important;
 }
