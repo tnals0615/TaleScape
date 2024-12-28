@@ -13,7 +13,7 @@
 }
 
 .popup-content {
-    font-family: "NanumSquare", sans-serif;
+  font-family: "나눔스퀘어_ac", sans-serif;
     background: white;
     padding: 20px;
     border-radius: 5px;
@@ -74,7 +74,7 @@ body.dark-mode .popup-content {
 
 .fa-book-open{
     margin: 0px;
-    font-family: "NanumSquare", sans-serif;
+    font-family: "나눔스퀘어_ac", sans-serif;
     color: black;
 }
 
