@@ -51,7 +51,7 @@ function splitContentIntoPages() {
     // 첫 페이지는 제목만
     pages.push(`
         <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px;">
-            <h2 style="text-align: center; font-family: '나눔명조', serif; font-size: 24px; margin: 0;">
+            <h2 style="text-align: center; font-family: 'Nanum Myeongjo', serif; font-size: 24px; margin: 0;">
                 ${titleText}
             </h2>
         </div>

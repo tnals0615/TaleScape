@@ -12,7 +12,7 @@ tinymce.init({
     fontsize_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt',
     
     font_family_formats: '굴림=gulim; 돋움=dotum; 바탕=batang; 궁서=gungsuh; ' + 
-                        '나눔고딕=NanumGothic; 나눔명조=NanumMyeongjo',
+                        '나눔고딕="Nanum Gothic",sans-serif; 나눔명조="Nanum Myeongjo",serif',
     
     lineheight_formats: '1 1.2 1.4 1.6 1.8 2.0',
     
@@ -31,16 +31,13 @@ tinymce.init({
     
     setup: function(editor) {
         const saveBtn = document.querySelector('.save-btn');
-
         const effectToggleBtn = document.getElementById('effectToggleBtn');
         let stylesEnabled = true;
         
-        // 스타일 토글 기능
         effectToggleBtn.addEventListener('click', function() {
             stylesEnabled = !stylesEnabled;
             
             if (stylesEnabled) {
-                // 저장된 원본 스타일 복원
                 const styledElements = editor.dom.select('*[data-original-style]');
                 styledElements.forEach(element => {
                     const originalStyle = element.getAttribute('data-original-style');
@@ -51,7 +48,6 @@ tinymce.init({
                     if (originalColor) element.style.color = originalColor;
                     if (originalClass) element.className = originalClass;
                     
-                    // 데이터 속성 제거
                     element.removeAttribute('data-original-style');
                     element.removeAttribute('data-original-color');
                     element.removeAttribute('data-original-class');
@@ -60,10 +56,8 @@ tinymce.init({
                 effectToggleBtn.title = '스타일 끄기';
                 effectToggleBtn.classList.remove('effects-disabled');
             } else {
-                // 현재 스타일 저장하고 제거
                 const styledElements = editor.dom.select('*[style], *[class]');
                 styledElements.forEach(element => {
-                    // 현재 스타일 저장
                     if (element.style.cssText) {
                         element.setAttribute('data-original-style', element.style.cssText);
                     }
@@ -74,7 +68,6 @@ tinymce.init({
                         element.setAttribute('data-original-class', element.className);
                     }
                     
-                    // 모든 스타일 및 클래스 제거
                     element.style.cssText = '';
                     element.style.color = 'inherit';
                     element.className = '';
@@ -84,21 +77,6 @@ tinymce.init({
                 effectToggleBtn.classList.add('effects-disabled');
             }
         });
-
-        function updateWordCount() {
-            const content = editor.getContent({format: 'text'});
-            const charCount = content.length;
-            counterDiv.textContent = `글자 수: ${charCount.toLocaleString()}`;
-            
-            counterDiv.style.opacity = '1';
-            setTimeout(() => {
-                counterDiv.style.opacity = '0.7';
-            }, 3000);
-        }
-
-        editor.on('keyup', updateWordCount);
-        editor.on('change', updateWordCount);
-
 
         editor.on('keydown', function(e) {
             if (e.ctrlKey && !e.shiftKey && e.keyCode === 13) {
@@ -143,14 +121,14 @@ tinymce.init({
         });
 
         saveBtn.addEventListener('click', async function() {
-            if (!currentEpisodeId) {
+            if (!window.currentEpisodeId) {
                 alert("에피소드 ID를 찾을 수 없습니다.");
                 return;
             }
 
             try {
                 const content = editor.getContent();
-                const docRef = doc(db, "episode", currentEpisodeId);
+                const docRef = doc(db, "episode", window.currentEpisodeId);
                 
                 await updateDoc(docRef, {
                     content: content,
