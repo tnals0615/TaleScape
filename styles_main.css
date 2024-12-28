@@ -1,8 +1,16 @@
+body{
+  line-height: 1.1 !important;
+  margin: 10px 0px 10px 0px;
+}
+
+.black-divider {
+  margin: 8px 0px 8px 0px !important;
+}
 /* Project Description */
 .project-desc {
-    padding: 15px;
-    margin-bottom: 30px;
-    color: #666;
+  padding: 15px;
+  margin-bottom: 30px;
+  color: #666;
 }
 
 /* Accordion Styles */
@@ -34,7 +42,7 @@
 /* Table Styles */
 .chapter-table {
   background-color: transparent;
-  padding: 15px;
+  padding: 0px;
   border-radius: 4px;
   margin: 30px 0px 0px 0px !important;
 }
@@ -43,39 +51,72 @@
   margin: 0px !important;
   background-color: white !important;
   color: #666 !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+/* Status 드롭다운 박스 가운데 정렬 */
+.table th:nth-child(4),
+.table td:nth-child(4) {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table td:nth-child(4) .status-select {
+  margin: 0 auto;
+  display: inline-block;
 }
 
 .table th {
-  color: black !important;
-  font-family: "NanumSquare", sans-serif !important;
+  color: black ;
+  font-family: "나눔스퀘어_ac ExtraBold", sans-serif !important;
   font-size: 16px !important;
+  text-align: center;
   font-weight: normal !important;
-  background-color: white !important;
-  border-bottom: 2px solid #dee2e6 !important;
+  background-color: #7F7F7F;
+  border-bottom: 1px solid white;
+  vertical-align: middle !important;
+  height: 45px;
+}
+
+body.dark-mode .table th{
+  background-color: #595959;
+  color: white;
 }
 
 .table td {
-  font-family: "NanumSquare", sans-serif !important;
+  font-family: "나눔스퀘어_ac", sans-serif !important;
   font-size: 16px !important;
   text-align: center;
-  background-color: white !important;
-  border-bottom: 1px solid #eee !important;
+  vertical-align: middle !important;
+  background-color: #E7E7E7;
+  border-bottom: 1px solid white;
 }
 
-/* 챕터 ���분선 스타일 */
+body.dark-mode .table td{
+  background-color: #404040;
+  color: white;
+}
+
+/* 챕터 구분선 스타일 */
 .chapter-divider td {
-  font-weight: bold !important;
-  color: #333 !important;
+  color: black;
   padding: 12px !important;
-  border-bottom: 2px solid #cccccc !important;
+  background-color: #CBCBCB;
 }
 
 .table .chapter-title {
   color: #666 !important;
 }
 
+body.dark-mode .chapter-divider td {
+  background-color: #747474;
+  color: white;
+}
+
 .table .btn-link {
-  color: #888 !important;
+  color: black !important;
   text-decoration: none;
   padding: 0;
 }
@@ -129,7 +170,7 @@ body.dark-mode .world-title {
   background-color: rgba(0, 0, 0, 0.02) !important;
 }
 
-/* 마지막 아이템 보더 제거도 메모/세계관에만 ��용 */
+/* 마지막 아이템 보더 제거도 메모/세계관에만 적용 */
 .memo-item:last-child,
 .world-item:last-child {
   border-bottom: none;
@@ -334,7 +375,7 @@ body.dark-mode .character-desc {
   color: #999;
 }
 
-/* 캐릭터 ���스트 컨테이너 */
+/* 캐릭터 리스트 컨테이너 */
 .character-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
@@ -438,14 +479,14 @@ body.dark-mode .memo-title {
 
 /* 다크모드 대응 */
 body.dark-mode .share-icon {
-    color: #999 !important;
+    color: black !important;
 }
-
-body.dark-mode .share-icon:hover {
-    color: #0d6efd !important;
-}
-
 /* URL 셀 정렬 */
 .url-cell {
     text-align: center;
+}
+
+body.dark-mode .bi-plus,
+.btn-outline-secondary {
+  color: white !important;
 }

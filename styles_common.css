@@ -11,15 +11,15 @@ body {
 main {
   display: flex;
   flex: 1;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 100px);
   overflow: hidden;
-  padding-bottom: 30px;
 }
 
 /* Divider - 공통 */
 .black-divider {
   border: none;
   border-top: 2px solid black;
+  opacity: 100%;
 }
 
 /* Title Styles - 공통 */
