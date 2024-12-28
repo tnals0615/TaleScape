@@ -38,7 +38,6 @@ tinymce.init({
         // 스타일 토글 기능
         effectToggleBtn.addEventListener('click', function() {
             stylesEnabled = !stylesEnabled;
-            const content = editor.getContent();
             
             if (stylesEnabled) {
                 // 저장된 원본 스타일 복원
