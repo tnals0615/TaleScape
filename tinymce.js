@@ -35,6 +35,34 @@ tinymce.init({
         const effectToggleBtn = document.getElementById('effectToggleBtn');
         let stylesEnabled = true;
         
+        editor.addShortcut('ctrl+s', 'Save content', function() {
+            saveContent(editor);
+            return false;
+        });
+
+        async function saveContent(editor) {
+            if (!window.currentEpisodeId) {
+                alert("에피소드 ID를 찾을 수 없습니다.");
+                return;
+            }
+
+            try {
+                const content = editor.getContent();
+                const docRef = doc(db, "episode", window.currentEpisodeId);
+                
+                await updateDoc(docRef, {
+                    content: content,
+                    lastModified: new Date()
+                });
+
+                console.log("내용이 저장되었습니다.");
+                saveBtn.style.display = 'none';
+            } catch (error) {
+                console.error("내용 저장 중 오류:", error);
+                alert("내용을 저장하는 중 문제가 발생했습니다.");
+            }
+        }
+        
         effectToggleBtn.addEventListener('click', function() {
             stylesEnabled = !stylesEnabled;
             
