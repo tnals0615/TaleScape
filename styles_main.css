@@ -1,8 +1,8 @@
 /* Project Description */
 .project-desc {
-  padding: 15px;
-  margin-bottom: 30px;
-  color: #666;
+    padding: 15px;
+    margin-bottom: 30px;
+    color: #666;
 }
 
 /* Accordion Styles */
@@ -62,7 +62,7 @@
   border-bottom: 1px solid #eee !important;
 }
 
-/* 챕터 구분선 스타일 */
+/* 챕터 ���분선 스타일 */
 .chapter-divider td {
   font-weight: bold !important;
   color: #333 !important;
@@ -129,7 +129,7 @@ body.dark-mode .world-title {
   background-color: rgba(0, 0, 0, 0.02) !important;
 }
 
-/* 마지막 아이템 보더 제거도 메모/세계관에만 적용 */
+/* 마지막 아이템 보더 제거도 메모/세계관에만 ��용 */
 .memo-item:last-child,
 .world-item:last-child {
   border-bottom: none;
@@ -334,7 +334,7 @@ body.dark-mode .character-desc {
   color: #999;
 }
 
-/* 캐릭터 리스트 컨테이너 */
+/* 캐릭터 ���스트 컨테이너 */
 .character-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
